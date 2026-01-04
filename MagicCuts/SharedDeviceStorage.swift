@@ -59,7 +59,6 @@ class SharedDeviceStorage {
 
         if let encoded = try? JSONEncoder().encode(devices) {
             defaults.set(encoded, forKey: devicesKey)
-            defaults.synchronize()
             print("💾 [SharedStorage] ✅ Saved \(devices.count) devices")
         }
     }
@@ -82,5 +81,32 @@ class SharedDeviceStorage {
 
     func getDevice(id: String) -> DeviceInfo? {
         return getAllDevices().first { $0.id == id }
+    }
+
+    func removeDevice(id: String) {
+        guard let defaults = defaults else { return }
+
+        var devices = getAllDevices()
+        devices.removeAll { $0.id == id }
+
+        if let encoded = try? JSONEncoder().encode(devices) {
+            defaults.set(encoded, forKey: devicesKey)
+            print("💾 [SharedStorage] ✅ Removed device, \(devices.count) remaining")
+        }
+    }
+
+    func clearAllDevices() {
+        defaults?.removeObject(forKey: devicesKey)
+        print("💾 [SharedStorage] ✅ Cleared all devices")
+    }
+
+    // MARK: - Async wrappers for AppIntents
+
+    func getAllDevicesAsync() async -> [DeviceInfo] {
+        return getAllDevices()
+    }
+
+    func getDeviceAsync(id: String) async -> DeviceInfo? {
+        return getDevice(id: id)
     }
 }

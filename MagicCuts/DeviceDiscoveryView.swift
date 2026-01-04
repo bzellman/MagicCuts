@@ -47,8 +47,8 @@ struct DeviceDiscoveryView: View {
         .navigationTitle("Devices")
         .toolbar { toolbarContent }
         .onAppear { sortData() }
-        .onChange(of: bluetoothViewModel.discoveredPeripherals) { _ in sortData() }
-        .onChange(of: sortMethod) { _ in sortData() }
+        .onChange(of: bluetoothViewModel.discoveredPeripherals) { sortData() }
+        .onChange(of: sortMethod) { sortData() }
         .alert(item: $bluetoothViewModel.activeAlert) { alert in
             Alert(
                 title: Text(alert.title),
@@ -209,8 +209,8 @@ struct DeviceDiscoveryView: View {
     }
 
     private func syncAllDevicesToSharedStorage() {
-        // Clear existing and re-sync all devices
-        // Note: SharedDeviceStorage doesn't have a clear method, so we'll just overwrite
+        // Clear existing and re-sync all remaining devices
+        SharedDeviceStorage.shared.clearAllDevices()
         for device in monitoredDevices {
             if let uuid = device.uuid {
                 SharedDeviceStorage.shared.saveDevice(

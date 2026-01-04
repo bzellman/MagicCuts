@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support - MagicCuts</title>
+  <meta name="description" content="Get help with MagicCuts. FAQs, troubleshooting, and contact information.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">MagicCuts</a>
+      <ul class="nav-links">
+        <li><a href="index.html#features">Features</a></li>
+        <li><a href="index.html#how-it-works">How It Works</a></li>
+        <li><a href="support.html">Support</a></li>
+        <li><a href="privacy.html">Privacy</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <header class="page-header">
+    <h1>Support</h1>
+    <p>We're here to help you get the most out of MagicCuts</p>
+  </header>
+
+  <!-- Content -->
+  <main class="page-content">
+    <h2>Get Help</h2>
+
+    <div class="support-options">
+      <div class="support-card">
+        <div class="support-card-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+          </svg>
+        </div>
+        <div>
+          <h3>Documentation</h3>
+          <p>Read the full documentation and guides on GitHub.</p>
+          <a href="https://github.com/bradzellman/MagicCuts#readme" class="btn">View Docs</a>
+        </div>
+      </div>
+
+      <div class="support-card">
+        <div class="support-card-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+          </svg>
+        </div>
+        <div>
+          <h3>Report an Issue</h3>
+          <p>Found a bug or have a feature request? Let us know on GitHub.</p>
+          <a href="https://github.com/bradzellman/MagicCuts/issues/new" class="btn">Open Issue</a>
+        </div>
+      </div>
+    </div>
+
+    <h2>Frequently Asked Questions</h2>
+
+    <div class="faq-item">
+      <h3>Why can't I find my Bluetooth device?</h3>
+      <p>Make sure your device is powered on and in discoverable mode. Some devices only broadcast when not connected to another device. Try disconnecting from other devices first, then scan again.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>What RSSI value should I use?</h3>
+      <p>RSSI (signal strength) values are negative numbers. Closer to 0 means stronger signal (closer device). Common ranges:</p>
+      <ul>
+        <li><strong>-30 to -50:</strong> Very close (same room, within a few feet)</li>
+        <li><strong>-50 to -70:</strong> Nearby (same room or adjacent room)</li>
+        <li><strong>-70 to -90:</strong> Far (multiple rooms away)</li>
+      </ul>
+      <p>Use the "Run Test" feature in the Edit screen to find the right threshold for your needs.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Why does my Shortcut say "unavailable"?</h3>
+      <p>This usually means Bluetooth is turned off or the app doesn't have permission. Check:</p>
+      <ul>
+        <li>Bluetooth is enabled in Settings</li>
+        <li>MagicCuts has Bluetooth permission (Settings → MagicCuts → Bluetooth)</li>
+        <li>The device is saved in MagicCuts' Monitored list</li>
+      </ul>
+    </div>
+
+    <div class="faq-item">
+      <h3>Does MagicCuts work in the background?</h3>
+      <p>Yes! When triggered via Shortcuts or Siri, MagicCuts performs Bluetooth scans in the background without opening the app. This makes it perfect for automations.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Why is the signal strength inconsistent?</h3>
+      <p>Bluetooth signal strength naturally fluctuates due to:</p>
+      <ul>
+        <li>Device orientation and antenna position</li>
+        <li>Physical obstacles (walls, furniture, people)</li>
+        <li>Interference from other wireless devices</li>
+        <li>Environmental factors</li>
+      </ul>
+      <p>For best results, set your threshold with some margin and test multiple times.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Does the app track my location?</h3>
+      <p>No. MagicCuts uses Bluetooth signal strength to detect proximity, not GPS or location services. All data stays on your device. See our <a href="privacy.html">Privacy Policy</a> for details.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>What Bluetooth devices work with MagicCuts?</h3>
+      <p>MagicCuts works with any Bluetooth Low Energy (BLE) device that broadcasts and is discoverable, including:</p>
+      <ul>
+        <li>Wireless headphones and earbuds</li>
+        <li>Bluetooth speakers</li>
+        <li>Apple devices (AirPods, Apple Watch, etc.)</li>
+        <li>Fitness trackers</li>
+        <li>Bluetooth tags and beacons</li>
+        <li>Smart home devices</li>
+      </ul>
+    </div>
+
+    <div class="faq-item">
+      <h3>Can I use MagicCuts with HomeKit?</h3>
+      <p>Yes! Use the Shortcuts app to create automations that combine MagicCuts with HomeKit. For example, check if your bag is nearby before leaving, then trigger a "Goodbye" scene.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>How do I use Siri with MagicCuts?</h3>
+      <p>After saving a device, you can ask Siri:</p>
+      <ul>
+        <li>"Is my [Device Name] nearby?"</li>
+        <li>"Check for my [Device Name]"</li>
+      </ul>
+      <p>Make sure Siri permission is enabled in Settings → MagicCuts → Siri & Search.</p>
+    </div>
+
+    <h2>Still Need Help?</h2>
+    <p>If your question isn't answered above, please <a href="https://github.com/bradzellman/MagicCuts/issues/new">open an issue on GitHub</a> with details about your problem. Include:</p>
+    <ul>
+      <li>Your iOS version</li>
+      <li>The device you're trying to detect</li>
+      <li>Steps to reproduce the issue</li>
+      <li>Any error messages you see</li>
+    </ul>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <ul class="footer-links">
+        <li><a href="privacy.html">Privacy Policy</a></li>
+        <li><a href="terms.html">Terms of Service</a></li>
+        <li><a href="support.html">Support</a></li>
+        <li><a href="https://github.com/bradzellman/MagicCuts">GitHub</a></li>
+      </ul>
+      <p class="footer-copy">&copy; 2025 Brad Zellman. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>

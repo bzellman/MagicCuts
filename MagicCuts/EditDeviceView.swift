@@ -9,6 +9,11 @@ struct EditDeviceView: View {
 
     @State private var signalStrength: Double
     @StateObject private var tester: BluetoothTestViewModel
+    @State private var saveError: BluetoothAlert?
+
+    private var isNameValid: Bool {
+        !device.name.trimmingCharacters(in: .whitespaces).isEmpty
+    }
 
     init(device: MonitoredDevice) {
         self.device = device
@@ -21,6 +26,11 @@ struct EditDeviceView: View {
             Form {
                 Section(header: Text("Device Details")) {
                     TextField("Device Name", text: $device.name)
+                    if !isNameValid {
+                        Text("Device name is required")
+                            .font(.caption)
+                            .foregroundColor(.red)
+                    }
                 }
                 
                 Section(header: Text("Signal Strength (RSSI)")) {
@@ -79,8 +89,16 @@ struct EditDeviceView: View {
             }
             .navigationTitle("Edit Device")
             .navigationBarItems(leading: Button("Cancel") { dismiss() },
-                                trailing: Button("Save") { saveAndDismiss() })
+                                trailing: Button("Save") { saveAndDismiss() }
+                                    .disabled(!isNameValid))
             .alert(item: $tester.activeAlert) { alert in
+                Alert(
+                    title: Text(alert.title),
+                    message: Text(alert.message),
+                    dismissButton: .default(Text("OK"))
+                )
+            }
+            .alert(item: $saveError) { alert in
                 Alert(
                     title: Text(alert.title),
                     message: Text(alert.message),
@@ -105,9 +123,13 @@ struct EditDeviceView: View {
                     serviceUUIDs: device.serviceUUIDs
                 )
             }
+            dismiss()
         } catch {
             print("Failed to save device: \(error.localizedDescription)")
+            saveError = BluetoothAlert(
+                title: "Save Failed",
+                message: "Could not save changes: \(error.localizedDescription)"
+            )
         }
-        dismiss()
     }
 }

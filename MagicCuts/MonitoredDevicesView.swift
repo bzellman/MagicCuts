@@ -65,7 +65,8 @@ struct MonitoredDevicesView: View {
     }
 
     private func syncAllDevicesToSharedStorage() {
-        // Re-sync all remaining devices
+        // Clear existing and re-sync all remaining devices
+        SharedDeviceStorage.shared.clearAllDevices()
         for device in monitoredDevices {
             if let uuid = device.uuid {
                 SharedDeviceStorage.shared.saveDevice(
