@@ -86,6 +86,7 @@ struct RoomDetailView: View {
     @Bindable var library: ProLibrary
     @Environment(RoomSession.self) private var session
     @Environment(\.dynamicTypeSize) private var dynamicType
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var room: RoomRevision?
     @State private var failure: String?
     @State private var mode = 0
@@ -131,9 +132,10 @@ struct RoomDetailView: View {
                             }
                         }
                     }
-                    ViewThatFits(in: .horizontal) {
-                        HStack { locateButton(room); updateButton }
-                        VStack { locateButton(room); updateButton }
+                    if dynamicType > .large {
+                        VStack(spacing: 12) { locateButton(room); updateButton }
+                    } else {
+                        HStack(spacing: 12) { locateButton(room, compactLabel: horizontalSizeClass == .compact); updateButton }
                     }
                     if !room.dimensions.isEmpty {
                         VStack(alignment: .leading, spacing: 12) {
@@ -241,12 +243,13 @@ struct RoomDetailView: View {
             Text("Mesh").tag(0); Text("Plan").tag(1); Text("Measurements").tag(2)
         }.accessibilityIdentifier("room.display")
     }
-    private func locateButton(_ room: RoomRevision) -> some View {
-        Button { if room.worldMapData == nil { orientationUnavailable = true } else { captureMode = RoomCaptureRoute(purpose: .localize) } } label: { Label("Locate in room", systemImage: "location.viewfinder").frame(maxWidth: .infinity, minHeight: 44) }
+    private func locateButton(_ room: RoomRevision, compactLabel: Bool = false) -> some View {
+        Button { if room.worldMapData == nil { orientationUnavailable = true } else { captureMode = RoomCaptureRoute(purpose: .localize) } } label: { Label(compactLabel ? "Locate" : "Locate in room", systemImage: "location.viewfinder").fixedSize(horizontal: false, vertical: true).frame(maxWidth: .infinity) }
             .buttonStyle(.borderedProminent).controlSize(.large).tint(MC.action).disabled(session.cameraActive)
+            .accessibilityLabel("Locate in room")
     }
     private var updateButton: some View {
-        Button { captureMode = RoomCaptureRoute(purpose: .update) } label: { Label("Update room", systemImage: "plus.viewfinder").frame(maxWidth: .infinity, minHeight: 44) }
+        Button { captureMode = RoomCaptureRoute(purpose: .update) } label: { Label("Update room", systemImage: "plus.viewfinder").fixedSize(horizontal: false, vertical: true).frame(maxWidth: .infinity) }
             .buttonStyle(.bordered).controlSize(.large).disabled(session.cameraActive)
     }
     private var measurementList: some View {

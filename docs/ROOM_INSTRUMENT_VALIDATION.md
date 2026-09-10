@@ -4,7 +4,7 @@ Implementation and validation record, September 10, 2026. Branch: `codex/room-in
 
 ## Using the feature
 
-Open **Rooms → Capture a room** on a LiDAR device. Scan visible surfaces, finish, review the mesh, name the room, and save. **Mesh**, **Plan**, and **Measurements** share dimension/component selection. Orbit, zoom, and reset have button equivalents. The plan opens measurement pins; the measurement list provides the same destinations without spatial gestures. Native sample rooms used in UI tests are explicitly marked illustrative.
+Open **Rooms → Capture a room** on a LiDAR device. Scan visible surfaces, finish, review the mesh, name the room, and save. **Mesh**, **Plan**, and **Measurements** share dimension/component selection. Orbit, zoom, and reset have button equivalents. The plan opens measurement pins; the measurement list provides the same destinations without spatial gestures. Native sample rooms used in UI tests are explicitly marked illustrative. Room actions use a compact, equal-height row at standard text sizes; iPhone labels the primary action “Locate” while VoiceOver retains “Locate in room.” Enlarged text uses stacked full-width actions.
 
 Use **Locate in room** to attempt restoration of that revision's saved AR world map. Match the reference photo and move slowly. Once tracking is reliable, choose **Use this orientation**, then open another instrument. The camera remains active and a visible orientation banner provides an **End room orientation** action. New readings keep the room, revision, coordinate frame, position, orientation, observation time, and placement method. Tracking loss clears usable position/depth instead of carrying a stale pose forward. Backgrounding ends orientation.
 
@@ -99,6 +99,8 @@ Local XCTest result bundles from this implementation run:
 - `/tmp/magiccuts-room-instruments/final-ipad-b.xcresult`: room flow and largest-text tests passed; the dark badge contrast failure was fixed and rerun successfully in `final-ipad-c.xcresult`.
 - `/tmp/magiccuts-room-instruments/build-device-review-final.log`: final signed device build.
 - `/tmp/magiccuts-room-instruments/build-release-review-final.log`: final unsigned Release build.
+- `/tmp/magiccuts-room-instruments/action-layout-phone-final.xcresult` and `action-layout-ipad.xcresult`: three UI checks per device passed after the action layout correction, covering the room flow, dark appearance and largest accessibility text.
+- `/tmp/magiccuts-room-instruments/build-action-layout-device-final.log`: signed device build passed; the corrected app was installed successfully.
 - `/tmp/magiccuts-room-instruments/physical-final.log`: physical test blocked before launch by Xcode's device-lock preflight; no scan attempted.
 
 Reproduce the software and iPhone UI suite with a booted simulator ID substituted below:
