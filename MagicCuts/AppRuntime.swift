@@ -31,5 +31,15 @@ enum AppRuntime {
         return false
         #endif
     }
+    static var roomUITestLibrary: URL? {
+        #if DEBUG
+        let args = ProcessInfo.processInfo.arguments
+        guard isUITesting, let index = args.firstIndex(of: "--room-fixture-id"), args.indices.contains(index + 1),
+              let id = UUID(uuidString: args[index + 1]) else { return nil }
+        return FileManager.default.temporaryDirectory.appendingPathComponent("MagicCuts-RoomFixture-\(id.uuidString)", isDirectory: true)
+        #else
+        return nil
+        #endif
+    }
     static var testDuration: Duration { isUITesting ? .milliseconds(600) : .seconds(10) }
 }

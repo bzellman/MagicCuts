@@ -17,7 +17,7 @@ nonisolated struct LibraryVersion: Codable, Equatable, Comparable, Sendable {
 }
 
 nonisolated enum LibraryRecordKind: String, Codable, CaseIterable, Sendable {
-    case session, profile, workflow, group, report, deviceSetup
+    case session, profile, workflow, group, report, deviceSetup, roomRevision, fieldCapture
 }
 
 nonisolated struct LibraryRecord: Codable, Equatable, Sendable {
@@ -69,6 +69,7 @@ nonisolated enum ValidatedLibraryValue {
     case deleted(LibraryRecordKind)
     case session(RecordedSession), profile(CalibrationProfile), workflow(WorkflowRecipe)
     case group(DeviceGroup), report(FieldReport), deviceSetup(PortableDeviceSetup)
+    case roomRevision(RoomRevision), fieldCapture(FieldCapture)
 
     init(_ record: LibraryRecord) throws {
         guard let (kind, id) = record.identity else { throw Self.invalid }
@@ -76,12 +77,12 @@ nonisolated enum ValidatedLibraryValue {
         switch kind {
         case .session:
             let value = try LibraryCoding.decode(RecordedSession.self, from: record)
-            guard value.id == id, !value.points.isEmpty, value.points.allSatisfy({ $0.value.isFinite && $0.elapsed.isFinite }),
+            guard value.id == id, !value.points.isEmpty, value.points.allSatisfy({ $0.value.isFinite && $0.elapsed.isFinite && ($0.placement?.isValid ?? true) }),
                   value.metadata["installationID"] != nil else { throw Self.invalid }
             self = .session(value)
         case .profile:
             let value = try LibraryCoding.decode(CalibrationProfile.self, from: record)
-            guard value.id == id, !value.points.isEmpty, value.points.allSatisfy({ $0.value.isFinite }),
+            guard value.id == id, !value.points.isEmpty, value.points.allSatisfy({ $0.value.isFinite && ($0.placement?.isValid ?? true) }),
                   value.metadata["installationID"] != nil else { throw Self.invalid }
             self = .profile(value)
         case .workflow:
@@ -104,6 +105,14 @@ nonisolated enum ValidatedLibraryValue {
             guard value.id == id, UUID(uuidString: value.device.id) != nil,
                   UUID(uuidString: value.installationID) != nil else { throw Self.invalid }
             self = .deviceSetup(value)
+        case .roomRevision:
+            let value = try LibraryCoding.decode(RoomRevision.self, from: record)
+            guard value.id == id, value.isValid else { throw Self.invalid }
+            self = .roomRevision(value)
+        case .fieldCapture:
+            let value = try LibraryCoding.decode(FieldCapture.self, from: record)
+            guard value.id == id, value.isValid else { throw Self.invalid }
+            self = .fieldCapture(value)
         }
     }
 
@@ -123,6 +132,8 @@ nonisolated enum ValidatedLibraryValue {
         case .group(let value): replace(&index.groups, with: value)
         case .report(let value): replace(&index.reports, with: value)
         case .deviceSetup(let value): replace(&index.deviceSetups, with: value)
+        case .roomRevision(let value): replace(&index.roomRevisions, with: RoomRevisionIndex(value))
+        case .fieldCapture(let value): replace(&index.fieldCaptures, with: FieldCaptureIndex(value))
         case .deleted(let kind):
             switch kind {
             case .session: index.sessions.removeAll { $0.id == id }
@@ -131,12 +142,22 @@ nonisolated enum ValidatedLibraryValue {
             case .group: index.groups.removeAll { $0.id == id }
             case .report: index.reports.removeAll { $0.id == id }
             case .deviceSetup: index.deviceSetups.removeAll { $0.id == id }
+            case .roomRevision: index.roomRevisions.removeAll { $0.id == id }
+            case .fieldCapture: index.fieldCaptures.removeAll { $0.id == id }
             }
         }
     }
 }
 
 nonisolated extension ProLibraryIndex {
+    var referencedRoomRevisionIDs: Set<UUID> {
+        var ids = Set(roomRevisions.compactMap(\.parentRevisionID))
+        ids.formUnion(fieldCaptures.compactMap { $0.placement?.revisionID })
+        ids.formUnion(fieldCaptures.flatMap { $0.roomRevisionIDs ?? [] })
+        ids.formUnion(sessions.flatMap { $0.roomRevisionIDs ?? [] })
+        ids.formUnion(profiles.flatMap { $0.points.compactMap { $0.placement?.revisionID } })
+        return ids
+    }
     func recordPayloads() throws -> [String: Data] {
         var values: [String: Data] = [:]
         func add<T: Encodable & Identifiable>(_ items: [T], kind: LibraryRecordKind) throws where T.ID == UUID {
@@ -149,6 +170,8 @@ nonisolated extension ProLibraryIndex {
         try add(groups, kind: .group)
         try add(reports, kind: .report)
         try add(deviceSetups, kind: .deviceSetup)
+        try add(roomRevisions, kind: .roomRevision)
+        try add(fieldCaptures, kind: .fieldCapture)
         return values
     }
 

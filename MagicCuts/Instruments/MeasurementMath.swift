@@ -89,7 +89,7 @@ nonisolated enum MeasurementMath {
 
     static func rebased(_ points: [MeasurementPoint]) -> [MeasurementPoint] {
         guard let first = points.first else { return [] }
-        return points.map { MeasurementPoint(elapsed: $0.elapsed - first.elapsed, date: $0.date, value: $0.value, segment: $0.segment, auxiliary: $0.auxiliary) }
+        return points.map { MeasurementPoint(elapsed: $0.elapsed - first.elapsed, date: $0.date, value: $0.value, segment: $0.segment, auxiliary: $0.auxiliary, placement: $0.placement) }
     }
 
     static func plotPoints(_ points: [MeasurementPoint], kind: InstrumentKind, limit: Int) -> [MeasurementPoint] {
@@ -105,7 +105,7 @@ nonisolated enum MeasurementMath {
         // Reduce each segment separately. No reduction can erase both sides of an interruption.
         let allocation = max(2, limit / groups.count)
         return groups.enumerated().flatMap { index, group in
-            decimated(group, limit: allocation).map { MeasurementPoint(id: $0.id, elapsed: $0.elapsed, date: $0.date, value: $0.value, segment: index, auxiliary: $0.auxiliary) }
+            decimated(group, limit: allocation).map { MeasurementPoint(id: $0.id, elapsed: $0.elapsed, date: $0.date, value: $0.value, segment: index, auxiliary: $0.auxiliary, placement: $0.placement) }
         }
     }
 

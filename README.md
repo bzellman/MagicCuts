@@ -14,6 +14,14 @@ Recordings support marks, pause/resume, explicit interruptions and recovery chec
 
 Workflows evaluate all/any conditions over named measurement windows. Bluetooth groups support all, any or a minimum observed count in a shared scan. Missing, stale, interrupted and unavailable results remain distinct from a failing condition. Saved workflows and groups are available through App Intents.
 
+## Rooms and field tools
+
+**Rooms** keeps observed LiDAR meshes, recognized room components, dimensions and immutable capture revisions. Reopen a saved room without the camera, switch between Mesh / Plan / Measurements, or use **Locate in room** to attempt restoration of its coordinate frame. While orientation is active and reliable, newly captured readings and recorded samples retain their position. Captures can also be placed manually with explicit coordinates and orientation.
+
+**Field tools** adds NFC identity/records/capacity/diagnostics; per-request network phases, consistency and bounded transfers; reported cellular technology, route-verified performance, service forecasts and delayed history; LiDAR distance, two-point dimensions, surface fitting and depth/confidence; and participating-device benchmarks, Wi-Fi Aware reports and Nearby Interaction ranging. Hardware, permissions, provider payloads and peer availability are checked at use time.
+
+Rooms export a native JSON archive, observed mesh OBJ, measurement CSV, and recognized-room USDZ when RoomPlan data exists. Field captures save to Sessions, can be compared, and export JSON/CSV. [The implementation and validation record](docs/ROOM_INSTRUMENT_VALIDATION.md) distinguishes software/simulator evidence from remaining physical acceptance. No sensor accuracy or complete-room geometry is inferred from a successful save.
+
 ## Setup and calibration
 
 Open the Bluetooth source menu and choose Manage devices. Open a device to rename it, edit its threshold, test nearby and away, inspect local history, or configure a Shortcut. Simple and Technical modes share the same settings. Technical mode adds readings and radio metadata.
@@ -38,7 +46,7 @@ This preserves the original action identity and any-sample meaning, which is wea
 
 ## Optional iCloud portability
 
-Settings → Sync with iCloud is off by default on each installation. Opting in merges saved sessions, baselines, workflows, groups, reports, and Bluetooth setup references through the user's private CloudKit database. Edits and deletions sync. Turning sync off keeps the local and iCloud copies; local instruments remain usable when iCloud is unavailable. Switching Apple Accounts pauses sync and requires another explicit opt-in.
+Settings → Sync with iCloud is off by default on each installation. Opting in merges saved sessions, baselines, workflows, groups, reports, room revisions, field captures, and Bluetooth setup references through the user's private CloudKit database. Edits and deletions sync. Turning sync off keeps the local and iCloud copies; local instruments remain usable when iCloud is unavailable. Switching Apple Accounts pauses sync and requires another explicit opt-in.
 
 Bluetooth identities and calibration remain specific to their original installation. Open Bluetooth setups from iCloud, identify and save the actual peripheral on this device, explicitly connect the reference, and test the current setup. Imported sensor baselines remain viewable but need a new capture before live comparison. Permissions, Shortcut confirmations, in-progress recordings, purchase access and iCloud consent do not sync.
 
@@ -50,7 +58,7 @@ Apple manages CloudKit transport and scheduling. There is no MagicCuts login, ba
 
 The shared scheme includes `Configuration/MagicCutsPro.storekit` for **local Xcode testing only**. Its $14.99 fixture is not approved live pricing. Configure the non-consumable product `com.bradZellman.MagicCuts.pro` in App Store Connect and verify sandbox/TestFlight purchasing before release. A missing live product leaves purchasing unavailable with retry and restore.
 
-Debug-only `--pro-development-access` permits physical instrument QA. `--uitesting --pro-demo --seed-device` uses explicitly labeled sample sessions and isolated stores. `--uitesting --pro-locked` exercises the paywall. Release builds ignore those flags.
+Debug-only `--pro-development-access` permits physical instrument QA. `--uitesting --pro-demo --room-demo` adds explicitly illustrative room fixtures; `--room-fixture-id UUID` reuses an isolated UI-test library for relaunch checks. `--uitesting --pro-demo --seed-device` uses explicitly labeled sample sessions and isolated stores. `--uitesting --pro-locked` exercises the paywall. Release builds ignore those flags.
 
 ## Architecture
 
@@ -58,6 +66,8 @@ Debug-only `--pro-development-access` permits physical instrument QA. `--uitesti
 - `MeasurementMath` defines robust summaries, angular calculations, level transforms, spectra and calibration suitability.
 - `InstrumentArchive` coordinates local file and index mutations, preserving evidence referenced by reports and recoverable interrupted sessions.
 - `CloudLibraryTransport` uses `CKSyncEngine` with the private `iCloud.com.bradZellman.MagicCuts` container only after opt-in. Library records merge by item revision, retain deletion receipts, and exclude installation-only state.
+- `RoomSession` coordinates ARKit/RoomPlan capture, restoration attempts, reliable per-reading poses and recovery snapshots.
+- The `Fieldwork` adapters retain source-specific NFC, network, cellular, depth and participating-device evidence.
 - `WorkflowRunner` evaluates observation quality and three-state conditions; Bluetooth groups share one sampling window.
 - `RadioScanning` and `ProximitySampler` retain session-scoped Bluetooth observations and the original action's full window.
 - SwiftData device storage migrates existing identities/history. `DeviceRepository` saves before replacing the app-group snapshot; launch reconciliation repairs stale snapshots.
@@ -81,4 +91,4 @@ See [Pro validation](docs/PRO_VALIDATION.md), [measurement research](docs/PRO_IN
 
 ## Privacy
 
-Permissions are requested when a selected instrument needs them. Audio analysis does not save raw audio. Location is used only by selected location/heading instruments. Endpoint tests reach a URL explicitly entered by the user. Stored sessions include their selected source and measurement metadata. Sharing with others uses the system share sheet; optional iCloud sync transfers the saved library to the user's private Apple Account database. No analytics collector, owner-operated database or hosted entitlement service is included. Support receives only information the user chooses to send. The public privacy policy must describe this opt-in behavior before release.
+Permissions are requested when a selected instrument needs them. Audio analysis does not save raw audio. Location is used only by selected location/heading instruments. Endpoint tests reach a URL explicitly entered by the user. Stored sessions include their selected source and measurement metadata. Room captures can contain surfaces, a reference camera image, an AR world map and measurement positions. NFC captures may contain tag identifiers and user-readable/raw records. A confirmed peer connection exchanges encrypted test traffic and optional ranging tokens. Sharing with others uses the system share sheet; optional iCloud sync transfers the saved library to the user's private Apple Account database. No analytics collector, owner-operated database or hosted entitlement service is included. Support receives only information the user chooses to send. The public privacy policy must describe this opt-in behavior before release.

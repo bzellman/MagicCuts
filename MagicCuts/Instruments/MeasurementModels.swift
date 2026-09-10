@@ -131,13 +131,15 @@ nonisolated struct MeasurementPoint: Codable, Equatable, Identifiable, Sendable 
     let value: Double
     let segment: Int
     var auxiliary: [String: Double]
-    init(id: UUID = UUID(), elapsed: TimeInterval, date: Date = .now, value: Double, segment: Int = 0, auxiliary: [String: Double] = [:]) {
+    var placement: RoomPlacement?
+    init(id: UUID = UUID(), elapsed: TimeInterval, date: Date = .now, value: Double, segment: Int = 0, auxiliary: [String: Double] = [:], placement: RoomPlacement? = nil) {
         self.id = id
         self.elapsed = elapsed
         self.date = date
         self.value = value
         self.segment = segment
         self.auxiliary = auxiliary
+        self.placement = placement
     }
 }
 
@@ -190,10 +192,13 @@ nonisolated struct SessionIndexEntry: Codable, Equatable, Identifiable, Sendable
     var duration: TimeInterval
     var sampleCount: Int
     var median: Double?
+    var roomRevisionIDs: [UUID]?
     init(_ session: RecordedSession) {
         id = session.id; title = session.title; kind = session.kind; sourceName = session.source.reportName
         startedAt = session.startedAt; duration = session.duration; sampleCount = session.points.count
         median = session.summary?.median
+        let revisions = Set(session.points.compactMap { $0.placement?.revisionID })
+        roomRevisionIDs = revisions.isEmpty ? nil : revisions.sorted { $0.uuidString < $1.uuidString }
     }
 }
 
@@ -304,6 +309,8 @@ nonisolated struct ProLibraryIndex: Codable, Sendable {
     var groups: [DeviceGroup] = []
     var reports: [FieldReport] = []
     var deviceSetups: [PortableDeviceSetup] = []
+    var roomRevisions: [RoomRevisionIndex] = []
+    var fieldCaptures: [FieldCaptureIndex] = []
     var sequence: Int64 = 0
     var versions: [String: LibraryVersion] = [:]
 
@@ -317,6 +324,8 @@ nonisolated struct ProLibraryIndex: Codable, Sendable {
         groups = try values.decodeIfPresent([DeviceGroup].self, forKey: .groups) ?? []
         reports = try values.decodeIfPresent([FieldReport].self, forKey: .reports) ?? []
         deviceSetups = try values.decodeIfPresent([PortableDeviceSetup].self, forKey: .deviceSetups) ?? []
+        roomRevisions = try values.decodeIfPresent([RoomRevisionIndex].self, forKey: .roomRevisions) ?? []
+        fieldCaptures = try values.decodeIfPresent([FieldCaptureIndex].self, forKey: .fieldCaptures) ?? []
         sequence = try values.decodeIfPresent(Int64.self, forKey: .sequence) ?? 0
         versions = try values.decodeIfPresent([String: LibraryVersion].self, forKey: .versions) ?? [:]
     }

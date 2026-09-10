@@ -89,6 +89,7 @@ final class InstrumentEngine: NSObject, CLLocationManagerDelegate {
     @ObservationIgnored private var recordingOrigin = 0.0
     @ObservationIgnored private var batteryMonitoringWasEnabled = false
     @ObservationIgnored private let archive: InstrumentArchive
+    @ObservationIgnored var positionProvider: ((Date) -> RoomPlacement?)?
     @ObservationIgnored private var checkpointTask: Task<Void, Never>?
     @ObservationIgnored private var lastCheckpoint = -Double.infinity
     @ObservationIgnored private let liveActivity = SessionLiveActivity()
@@ -288,12 +289,12 @@ final class InstrumentEngine: NSObject, CLLocationManagerDelegate {
         guard allowEverySample || now - lastPublished >= 0.1 else { return }
         lastPublished = now
         if let last = points.last, now - origin - last.elapsed > max(2, kind.maximumAge) { segment += 1 }
-        let point = MeasurementPoint(elapsed: now - origin, date: date, value: value, segment: segment, auxiliary: auxiliary.filter { $0.value.isFinite })
+        let point = MeasurementPoint(elapsed: now - origin, date: date, value: value, segment: segment, auxiliary: auxiliary.filter { $0.value.isFinite }, placement: positionProvider?(date))
         points.append(point)
         if points.count > 6000 { points.removeFirst(points.count - 6000) }
         phase = .running; readinessTimeout?.cancel(); readinessTimeout = nil
         if recording {
-            recordedPoints.append(MeasurementPoint(elapsed: now - recordingOrigin, date: date, value: value, segment: segment, auxiliary: point.auxiliary))
+            recordedPoints.append(MeasurementPoint(elapsed: now - recordingOrigin, date: date, value: value, segment: segment, auxiliary: point.auxiliary, placement: point.placement))
             recordingCount = recordedPoints.count; recordingDuration = now - recordingOrigin
             checkpoint()
             updateLiveActivity()

@@ -25,6 +25,7 @@ struct SessionsView: View {
                     }
                 }
             }
+            DraftRecoverySection(library: library, isRoom: false)
             Section {
                 NavigationLink { FieldReportsView(library: library) } label: {
                     HStack {
@@ -35,6 +36,19 @@ struct SessionsView: View {
             }
             if let error = library.error { InlineFailure(message: error) }
             if library.loading { ProgressView("Opening sessions…") }
+            if !library.index.fieldCaptures.isEmpty {
+                Section("Field captures") {
+                    ForEach(library.index.fieldCaptures.filter { search.isEmpty || $0.title.localizedCaseInsensitiveContains(search) || $0.source.localizedCaseInsensitiveContains(search) }) { capture in
+                        NavigationLink { FieldCaptureDetailView(id: capture.id, library: library) } label: {
+                            VStack(alignment: .leading, spacing: 6) {
+                                Label(capture.title, systemImage: capture.kind.symbol).font(.system(.headline, design: .rounded))
+                                Text("\(capture.source) · \(capture.date.formatted(date: .abbreviated, time: .shortened))").font(.caption).foregroundStyle(ProTheme.secondary)
+                                if let placement = capture.placement { Label(placement.method.title, systemImage: "mappin.and.ellipse").font(.caption).foregroundStyle(ProTheme.band) }
+                            }.padding(.vertical, 8)
+                        }
+                    }
+                }
+            }
             ForEach(sessions) { session in
                 NavigationLink {
                     SessionDetailView(id: session.id, library: library)
@@ -58,7 +72,7 @@ struct SessionsView: View {
             }
         }
         .overlay {
-            if sessions.isEmpty && !library.loading && library.error == nil {
+            if sessions.isEmpty && library.index.fieldCaptures.isEmpty && !library.loading && library.error == nil {
                 ContentUnavailableView(search.isEmpty ? "Keep the useful moments" : "No matching sessions", systemImage: "waveform.path", description: Text(search.isEmpty ? "Record an instrument session, mark what changed, then return here to compare and export it." : "Try another name, source or instrument."))
                     .allowsHitTesting(false)
             }

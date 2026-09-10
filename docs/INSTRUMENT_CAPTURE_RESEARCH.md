@@ -4,6 +4,8 @@ Research date: September 10, 2026. Status: research and design proposal complete
 
 Companion: [Saved-room capture and revision specification](ROOM_CAPTURE_SPEC.md). [Visualization examples](research/instrument-capture/visualization-grammar.png) use synthetic data and are also available as an [exportable PDF](research/instrument-capture/visualization-grammar.pdf). The three room compositions below are generated design proposals, not running software or captured room geometry.
 
+Implementation follow-up: the Room canvas direction was selected. See [Rooms and field instrument implementation / validation](ROOM_INSTRUMENT_VALIDATION.md) for delivered behavior and the separate physical acceptance status. The research claims and generated proposals below remain historical research evidence.
+
 ## Recommendation
 
 - Make **Rooms** a saved workspace: capture a room, measure it, reopen it, and save later scans as revisions. Keep the original revision available throughout an update.

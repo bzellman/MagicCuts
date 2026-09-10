@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		91A800555555555555555555 /* RoomFieldworkUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91A800666666666666666666 /* RoomFieldworkUITests.swift */; };
+		91A800333333333333333333 /* FieldNetworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91A800444444444444444444 /* FieldNetworkTests.swift */; };
+		91A800111111111111111111 /* RoomInstrumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91A800222222222222222222 /* RoomInstrumentTests.swift */; };
 		19CEACCFB2C002E085182EF2 /* MagicCutsLiveSession.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 49B42E8A2E1C2EAA99C8B7BA /* MagicCutsLiveSession.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		211596AB5B1D875B1CC18EAD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A64CB27F38E7F383DEC4BF69 /* Foundation.framework */; };
 		28FF0614335CDC3A2BB88C35 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A64CB27F38E7F383DEC4BF69 /* Foundation.framework */; };
@@ -70,6 +73,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		91A800666666666666666666 /* RoomFieldworkUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomFieldworkUITests.swift; sourceTree = "<group>"; };
+		91A800444444444444444444 /* FieldNetworkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldNetworkTests.swift; sourceTree = "<group>"; };
+		91A800222222222222222222 /* RoomInstrumentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomInstrumentTests.swift; sourceTree = "<group>"; };
 		24F947F8B9BF53D20816B55B /* MagicCutsUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MagicCutsUITests.swift; sourceTree = "<group>"; };
 		284041AEFD13EB191491546B /* MagicCutsLiveSession.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MagicCutsLiveSession.swift; sourceTree = "<group>"; };
 		49B42E8A2E1C2EAA99C8B7BA /* MagicCutsLiveSession.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MagicCutsLiveSession.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -143,6 +149,7 @@
 			children = (
 				24F947F8B9BF53D20816B55B /* MagicCutsUITests.swift */,
 				E43A2BA1A01BEB7037EF2BE7 /* ProExperienceUITests.swift */,
+				91A800666666666666666666 /* RoomFieldworkUITests.swift */,
 			);
 			path = MagicCutsUITests;
 			sourceTree = "<group>";
@@ -152,6 +159,8 @@
 			children = (
 				BCC26100B67C2C4B25837934 /* ProximityTests.swift */,
 				9CDB63A07D5BAD3E2522AFFC /* ProInstrumentTests.swift */,
+				91A800222222222222222222 /* RoomInstrumentTests.swift */,
+				91A800444444444444444444 /* FieldNetworkTests.swift */,
 			);
 			path = MagicCutsTests;
 			sourceTree = "<group>";
@@ -367,6 +376,8 @@
 			files = (
 				E3C047C450AF1CDC1FED6D0D /* ProximityTests.swift in Sources */,
 				470D4FD046314ED5C03B31C8 /* ProInstrumentTests.swift in Sources */,
+				91A800111111111111111111 /* RoomInstrumentTests.swift in Sources */,
+				91A800333333333333333333 /* FieldNetworkTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -392,6 +403,7 @@
 			files = (
 				69759A9301CA218C57AEC7C2 /* MagicCutsUITests.swift in Sources */,
 				3D6207A0F387F3221615701F /* ProExperienceUITests.swift in Sources */,
+				91A800555555555555555555 /* RoomFieldworkUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

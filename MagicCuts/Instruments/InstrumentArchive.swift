@@ -1,6 +1,16 @@
 import Foundation
 import Observation
 
+nonisolated struct UnreadableDraft: Identifiable, Equatable, Sendable {
+    var id: String
+    var isRoom: Bool
+}
+nonisolated struct LibraryDraftRecovery: Sendable {
+    var rooms: [RoomRevision] = []
+    var recordings: [RecordedSession] = []
+    var unreadable: [UnreadableDraft] = []
+}
+
 actor InstrumentArchive {
     private let root: URL?
 
@@ -31,16 +41,150 @@ actor InstrumentArchive {
         return try JSONDecoder().decode(RecordedSession.self, from: Data(contentsOf: url))
     }
 
+    func loadRoomRevision(_ id: UUID) throws -> RoomRevision {
+        let value = try JSONDecoder().decode(RoomRevision.self, from: Data(contentsOf: payloadURL(.roomRevision, id)))
+        guard value.isValid else { throw InstrumentError.storage("This room's geometry couldn't be read. Your saved file has been kept.") }
+        return value
+    }
+
+    func loadFieldCapture(_ id: UUID) throws -> FieldCapture {
+        let value = try JSONDecoder().decode(FieldCapture.self, from: Data(contentsOf: payloadURL(.fieldCapture, id)))
+        guard value.isValid else { throw InstrumentError.storage("This capture couldn't be read. Your saved file has been kept.") }
+        return value
+    }
+
+    func saveRoomRevision(_ revision: RoomRevision) throws -> ProLibraryIndex {
+        guard revision.isValid else { throw InstrumentError.storage("The scan has no usable surface mesh or contains invalid geometry. Continue scanning or retry.") }
+        let url = try payloadURL(.roomRevision, revision.id)
+        var wrote = false
+        return try update({ index in
+            guard !index.roomRevisions.contains(where: { $0.id == revision.id }) else {
+                throw InstrumentError.storage("This revision is already saved. Create a new revision to keep another scan.")
+            }
+            index.roomRevisions.insert(RoomRevisionIndex(revision), at: 0)
+        }, beforeWrite: {
+            guard !FileManager.default.fileExists(atPath: url.path) else {
+                throw InstrumentError.storage("A capture file already exists for this revision. Recover it from Rooms before saving again.")
+            }
+            try Self.write(revision, to: url); wrote = true
+        }, undoWrite: {
+            if wrote { try FileManager.default.removeItem(at: url) }
+        })
+    }
+
+    func saveRoomDraft(_ revision: RoomRevision) throws {
+        guard revision.isValid else { return }
+        let index = try loadIndex()
+        guard !index.roomRevisions.contains(where: { $0.id == revision.id }), index.versions[LibraryRecord.key(.roomRevision, revision.id)]?.deleted != true else { return }
+        let url = try directory().appendingPathComponent("room-\(revision.id).draft.json")
+        if FileManager.default.fileExists(atPath: url.path),
+           let existing = try? JSONDecoder().decode(RoomRevision.self, from: Data(contentsOf: url)), existing.endedAt > revision.endedAt { return }
+        try Self.write(revision, to: url)
+    }
+
+    func loadDraftRecovery() throws -> LibraryDraftRecovery {
+        let urls = try FileManager.default.contentsOfDirectory(at: directory(), includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])
+        let index = try loadIndex()
+        var recovery = LibraryDraftRecovery()
+        for url in urls where url.lastPathComponent.hasSuffix(".draft.json") {
+            let isRoom = url.lastPathComponent.hasPrefix("room-")
+            do {
+                let data = try Data(contentsOf: url)
+                if isRoom {
+                    let revision = try JSONDecoder().decode(RoomRevision.self, from: data)
+                    guard revision.isValid, url.lastPathComponent == "room-\(revision.id).draft.json" else { throw InstrumentError.storage("Invalid scan") }
+                    if !index.roomRevisions.contains(where: { $0.id == revision.id }), index.versions[LibraryRecord.key(.roomRevision, revision.id)]?.deleted != true { recovery.rooms.append(revision) }
+                } else {
+                    let recording = try JSONDecoder().decode(RecordedSession.self, from: data)
+                    guard url.lastPathComponent == "\(recording.id).draft.json" else { throw InstrumentError.storage("Invalid recording") }
+                    recovery.recordings.append(recording)
+                }
+            } catch { recovery.unreadable.append(UnreadableDraft(id: url.lastPathComponent, isRoom: isRoom)) }
+        }
+        recovery.rooms.sort { $0.endedAt > $1.endedAt }
+        recovery.recordings.sort { $0.endedAt > $1.endedAt }
+        return recovery
+    }
+
+    func loadRoomDrafts() throws -> [RoomRevision] {
+        let recovery = try loadDraftRecovery()
+        guard !recovery.unreadable.contains(where: \.isRoom) else {
+            throw InstrumentError.storage("An unfinished scan couldn't be read. Its file and spatial references have been kept; review it in Rooms.")
+        }
+        return recovery.rooms
+    }
+
+    func discardUnreadableDraft(_ draft: UnreadableDraft) throws {
+        // Only a filename discovered in the recovery directory can be removed.
+        guard try loadDraftRecovery().unreadable.contains(draft) else { return }
+        try FileManager.default.removeItem(at: directory().appendingPathComponent(draft.id))
+    }
+
+    func discardRoomDraft(_ id: UUID) throws {
+        let url = try directory().appendingPathComponent("room-\(id).draft.json")
+        if FileManager.default.fileExists(atPath: url.path) { try FileManager.default.removeItem(at: url) }
+    }
+
+    func saveFieldCapture(_ capture: FieldCapture) throws -> ProLibraryIndex {
+        guard capture.isValid else { throw InstrumentError.storage("This capture contains invalid readings and couldn't be saved.") }
+        let url = try payloadURL(.fieldCapture, capture.id)
+        var previous: Data?
+        return try update({ index in
+            index.fieldCaptures.removeAll { $0.id == capture.id }
+            index.fieldCaptures.insert(FieldCaptureIndex(capture), at: 0)
+        }, beforeWrite: {
+            if FileManager.default.fileExists(atPath: url.path) { previous = try Data(contentsOf: url) }
+            try Self.write(capture, to: url)
+        }, undoWrite: {
+            if let previous { try previous.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication]) }
+            else if FileManager.default.fileExists(atPath: url.path) { try FileManager.default.removeItem(at: url) }
+        }, forcedKey: LibraryRecord.key(.fieldCapture, capture.id))
+    }
+
+    func deleteFieldCapture(_ id: UUID) throws -> ProLibraryIndex {
+        // Keep the source file until the index transaction succeeds. Tombstones protect offline copies.
+        let index = try update { $0.fieldCaptures.removeAll { $0.id == id } }
+        let url = try payloadURL(.fieldCapture, id)
+        if FileManager.default.fileExists(atPath: url.path) { try FileManager.default.removeItem(at: url) }
+        return index
+    }
+
+    func deleteRoomRevision(_ id: UUID) throws -> ProLibraryIndex {
+        let drafts = try loadDrafts()
+        let roomDrafts = try loadRoomDrafts()
+        guard !roomDrafts.contains(where: { $0.parentRevisionID == id }) else {
+            throw InstrumentError.storage("A recovered scan references this revision. Save or discard that scan first.")
+        }
+        guard !drafts.contains(where: { $0.points.contains { $0.placement?.revisionID == id } }) else {
+            throw InstrumentError.storage("An unfinished recording references this room revision. Save or discard that recording first.")
+        }
+        let index = try update { index in
+            guard !index.referencedRoomRevisionIDs.contains(id) else {
+                throw InstrumentError.storage("This revision has measurement pins or later revisions. Keep it as their spatial reference.")
+            }
+            index.roomRevisions.removeAll { $0.id == id }
+        }
+        let url = try payloadURL(.roomRevision, id)
+        if FileManager.default.fileExists(atPath: url.path) { try FileManager.default.removeItem(at: url) }
+        return index
+    }
+
+    private func payloadURL(_ kind: LibraryRecordKind, _ id: UUID) throws -> URL {
+        let prefix = kind == .roomRevision ? "room-" : kind == .fieldCapture ? "capture-" : ""
+        return try directory().appendingPathComponent(prefix + id.uuidString + ".json")
+    }
+
     func saveDraft(_ session: RecordedSession) throws {
         guard !session.points.isEmpty else { return }
         try Self.write(session, to: directory().appendingPathComponent(session.id.uuidString + ".draft.json"))
     }
 
     func loadDrafts() throws -> [RecordedSession] {
-        let urls = try FileManager.default.contentsOfDirectory(at: directory(), includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])
-        return try urls.filter { $0.lastPathComponent.hasSuffix(".draft.json") }.map {
-            try JSONDecoder().decode(RecordedSession.self, from: Data(contentsOf: $0))
-        }.sorted { $0.endedAt > $1.endedAt }
+        let recovery = try loadDraftRecovery()
+        guard !recovery.unreadable.contains(where: { !$0.isRoom }) else {
+            throw InstrumentError.storage("An unfinished recording couldn't be read. Its file and spatial references have been kept; review it in Sessions.")
+        }
+        return recovery.recordings
     }
 
     func discardDraft(_ id: UUID) throws {
@@ -172,6 +316,8 @@ actor InstrumentArchive {
     func pruneDeletedSessionFiles() throws {
         let url = try indexURL()
         let directory = try directory()
+        let recordingReferences = Set(try loadDrafts().flatMap { $0.points.compactMap { $0.placement?.revisionID } })
+        let recoveredReferences = Set(try loadRoomDrafts().compactMap(\.parentRevisionID))
         var coordinationError: NSError?
         var outcome: Result<Void, Error>?
         NSFileCoordinator().coordinate(writingItemAt: url, options: .forMerging, error: &coordinationError) { coordinated in
@@ -180,10 +326,23 @@ actor InstrumentArchive {
                 let attached = Set(index.reports.flatMap(\.sessionIDs))
                 for (key, version) in index.versions where version.deleted {
                     let record = LibraryRecord(key: key, version: version)
-                    guard let (kind, id) = record.identity, kind == .session, !attached.contains(id),
-                          !index.sessions.contains(where: { $0.id == id }) else { continue }
+                    guard let (kind, id) = record.identity else { continue }
+                    let prefix: String
+                    switch kind {
+                    case .session:
+                        guard !attached.contains(id), !index.sessions.contains(where: { $0.id == id }) else { continue }
+                        prefix = ""
+                    case .roomRevision:
+                        guard !index.referencedRoomRevisionIDs.contains(id), !recordingReferences.contains(id),
+                              !recoveredReferences.contains(id), !index.roomRevisions.contains(where: { $0.id == id }) else { continue }
+                        prefix = "room-"
+                    case .fieldCapture:
+                        guard !index.fieldCaptures.contains(where: { $0.id == id }) else { continue }
+                        prefix = "capture-"
+                    default: continue
+                    }
                     for suffix in [".json", ".draft.json"] {
-                        let file = directory.appendingPathComponent(id.uuidString + suffix)
+                        let file = directory.appendingPathComponent(prefix + id.uuidString + suffix)
                         if FileManager.default.fileExists(atPath: file.path) { try FileManager.default.removeItem(at: file) }
                     }
                 }
@@ -212,6 +371,8 @@ actor InstrumentArchive {
                     var profile = try LibraryCoding.decode(CalibrationProfile.self, from: record)
                     if profile.metadata["installationID"] == nil { profile.metadata["installationID"] = "unverified-legacy-source" }
                     record.payload = try LibraryCoding.encode(profile)
+                case .roomRevision: record.payload = try LibraryCoding.encode(loadRoomRevision(id))
+                case .fieldCapture: record.payload = try LibraryCoding.encode(loadFieldCapture(id))
                 default: break
                 }
                 guard record.payload != nil else { throw InstrumentError.storage("An item is missing from the local library. Sync paused to keep your iCloud copy safe.") }
@@ -230,7 +391,12 @@ actor InstrumentArchive {
         }
         // Decode and validate before touching the index or its sample files.
         let value = try ValidatedLibraryValue(record)
-        let sessionURL = try directory().appendingPathComponent(id.uuidString + ".json")
+        let sessionURL = try payloadURL(kind, id)
+        let draftReferences: Set<UUID>
+        if kind == .roomRevision, record.version.deleted {
+            draftReferences = Set(try loadDrafts().flatMap { $0.points.compactMap { $0.placement?.revisionID } })
+                .union(try loadRoomDrafts().compactMap(\.parentRevisionID))
+        } else { draftReferences = [] }
         var accepted = false
         var previousSession: Data?
         var wroteSession = false
@@ -244,13 +410,23 @@ actor InstrumentArchive {
             value.apply(to: &index, id: id)
             index.sequence = max(index.sequence, record.version.sequence)
             index.versions[record.key] = record.version
-            deleteSessionBytes = kind == .session && record.version.deleted && !index.reports.contains { $0.sessionIDs.contains(id) }
+            deleteSessionBytes = record.version.deleted && (
+                (kind == .session && !index.reports.contains { $0.sessionIDs.contains(id) }) || kind == .fieldCapture ||
+                (kind == .roomRevision && !index.referencedRoomRevisionIDs.contains(id) && !draftReferences.contains(id)))
             accepted = true
         }, beforeWrite: {
-            guard accepted, kind == .session else { return }
+            guard accepted, [.session, .roomRevision, .fieldCapture].contains(kind) else { return }
             if case .session(let session) = value {
                 if FileManager.default.fileExists(atPath: sessionURL.path) { previousSession = try Data(contentsOf: sessionURL) }
                 try Self.write(session, to: sessionURL)
+                wroteSession = true
+            } else if !record.version.deleted, let payload = record.payload {
+                if FileManager.default.fileExists(atPath: sessionURL.path) { previousSession = try Data(contentsOf: sessionURL) }
+                if kind == .roomRevision, let previousSession,
+                   try JSONDecoder().decode(RoomRevision.self, from: previousSession) != JSONDecoder().decode(RoomRevision.self, from: payload) {
+                    throw InstrumentError.storage("A synced room revision conflicts with its original geometry. Your local copy has been kept.")
+                }
+                try payload.write(to: sessionURL, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
                 wroteSession = true
             } else if deleteSessionBytes, FileManager.default.fileExists(atPath: sessionURL.path) {
                 previousSession = try Data(contentsOf: sessionURL)
@@ -335,6 +511,8 @@ final class ProLibrary {
     private(set) var index = ProLibraryIndex()
     private(set) var loading = false
     private(set) var recovered: [RecordedSession] = []
+    private(set) var recoveredRooms: [RoomRevision] = []
+    private(set) var unreadableDrafts: [UnreadableDraft] = []
     var error: String?
     @ObservationIgnored let archive: InstrumentArchive
     let sync: CloudLibrarySync
@@ -349,9 +527,12 @@ final class ProLibrary {
         defer { loading = false }
         do {
             index = try await archive.loadIndex()
-            recovered = try await archive.loadDrafts().filter { draft in
+            let recovery = try await archive.loadDraftRecovery()
+            recovered = recovery.recordings.filter { draft in
                 !index.sessions.contains { $0.id == draft.id } && index.versions[LibraryRecord.key(.session, draft.id)]?.deleted != true
             }
+            recoveredRooms = recovery.rooms
+            unreadableDrafts = recovery.unreadable
             error = nil
             await cleanDeletedFiles()
         }
@@ -381,6 +562,18 @@ final class ProLibrary {
     }
     func save(_ report: FieldReport) async throws {
         index = try await archive.saveReport(report)
+        error = nil
+    }
+
+    func save(_ revision: RoomRevision) async throws {
+        index = try await archive.saveRoomRevision(revision)
+        recoveredRooms.removeAll { $0.id == revision.id }
+        do { try await archive.discardRoomDraft(revision.id); error = nil }
+        catch { self.error = "Room saved. Its recovery copy couldn't be removed: \(error.localizedDescription)" }
+    }
+
+    func save(_ capture: FieldCapture) async throws {
+        index = try await archive.saveFieldCapture(capture)
         error = nil
     }
 
