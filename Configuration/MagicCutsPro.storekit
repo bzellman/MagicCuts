@@ -1,0 +1,32 @@
+{
+  "identifier": "A7F34B66-14D7-4D48-932B-FCFC3844915D",
+  "nonRenewingSubscriptions": [],
+  "products": [
+    {
+      "displayPrice": "14.99",
+      "familyShareable": false,
+      "internalID": "6544391523",
+      "localizations": [
+        {
+          "description": "Local instruments, calibration, workflows, sessions and field reports.",
+          "displayName": "MagicCuts Pro",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.bradZellman.MagicCuts.pro",
+      "referenceName": "Pro - LOCAL TEST ONLY",
+      "type": "NonConsumable"
+    }
+  ],
+  "settings": {
+    "_failTransactionsEnabled": false,
+    "_locale": "en_US",
+    "_storefront": "USA",
+    "_storeKitErrors": []
+  },
+  "subscriptionGroups": [],
+  "version": {
+    "major": 3,
+    "minor": 0
+  }
+}

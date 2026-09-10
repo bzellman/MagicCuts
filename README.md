@@ -1,136 +1,84 @@
-# MagicCuts
+# MagicCuts Pro
 
-**Bluetooth Device Proximity Detection for iOS Shortcuts**
+Native iPhone and iPad instruments for measuring a setup, establishing a reference, comparing a change, and using the result in Shortcuts. Every feature requires a one-time Pro purchase, including saved Bluetooth devices and all App Intents.
 
-MagicCuts is an iOS app that monitors Bluetooth device proximity and integrates with Apple Shortcuts and Siri. Detect when your devices are nearby and trigger powerful iOS automations based on signal strength.
+Requires iOS 26 or later and Xcode 26 or later. Swift 6 with complete strict concurrency. The library works locally by default. Users can opt into private iCloud portability with their Apple Account; no MagicCuts account or owner-operated service is required.
 
-## Features
+## Instruments and evidence
 
-- 📡 **Bluetooth LE Device Discovery** - Scan and discover nearby Bluetooth Low Energy devices
-- 📊 **RSSI Monitoring** - Track signal strength (RSSI) in real-time to detect proximity
-- 💾 **Device Persistence** - Save devices with custom names and signal thresholds
-- ⚡ **Shortcuts Integration** - Run proximity checks directly from Shortcuts app
-- 🎙️ **Siri Support** - Ask Siri "Is my device nearby?"
-- 🔄 **Background Operation** - Shortcuts run without opening the app
-- ⚙️ **Configurable Thresholds** - Set custom RSSI values for each device
+Twelve instruments share Live, Inspect and Compare views: Bluetooth signal, tilt, vibration, rotation rate, magnetic field, pressure, relative altitude, heading, speed, digital sound level, endpoint response time, and battery level. Each adapter checks hardware and permission availability. Choose a source and start a measurement deliberately. Sound is dBFS, not calibrated sound pressure; RSSI is received power, not distance; endpoint response time measures an HTTP HEAD request, not ICMP ping.
 
-## How It Works
+Pin a chart reading, inspect time and metadata, save a named compatible baseline, or compare measurements on a shared scale. Bluetooth calibration collects nearby and away trials, proposes a threshold only when the distributions separate, then requires another measured check.
 
-1. **Discover** - Scan for Bluetooth devices in range
-2. **Monitor** - Save devices with custom signal strength thresholds
-3. **Automate** - Create Shortcuts that check device proximity
-4. **Trigger** - Run automations when devices are near or far
+Recordings support marks, pause/resume, explicit interruptions and recovery checkpoints. Sessions export retained samples and metadata as CSV/JSON or a paginated PDF. Field reports combine protocols, notes and saved sessions. Live Activities show recording status; iOS backgrounding pauses capture and records a gap.
 
-## Use Cases
+Workflows evaluate all/any conditions over named measurement windows. Bluetooth groups support all, any or a minimum observed count in a shared scan. Missing, stale, interrupted and unavailable results remain distinct from a failing condition. Saved workflows and groups are available through App Intents.
 
-- Trigger smart home scenes when you arrive home (detect car Bluetooth)
-- Send notifications when you leave devices behind
-- Log presence for time tracking
-- Create location-based reminders using device proximity
-- Automate tasks based on nearby wearables or accessories
+## Setup and calibration
 
-## Requirements
+Open the Bluetooth source menu and choose Manage devices. Open a device to rename it, edit its threshold, test nearby and away, inspect local history, or configure a Shortcut. Simple and Technical modes share the same settings. Technical mode adds readings and radio metadata.
 
-- iOS 16.0+
-- Bluetooth-enabled iOS device
-- Physical device (Bluetooth scanning not available in simulator)
+Threshold edits are drafts until **Apply threshold**. **Test draft** retains a labeled history record but cannot validate saved settings. The editor accepts −100 through −1 dBm; the default remains −70 dBm. Older unusable thresholds remain visible for explicit repair and produce an actionable Shortcut error.
 
-## Installation
+Validation observes a full ten-second window after Bluetooth becomes ready. At least two valid readings must all meet the threshold for nearby validation, or all fall below it for away validation. Mixed, sparse, and missing readings are inconclusive. Changing the threshold or service filter invalidates previous evidence and Shortcut confirmation. Tests describe the observed window; they do not guarantee future results.
 
-1. Clone this repository
-2. Open `MagicCuts.xcodeproj` in Xcode
-3. Select your development team in project settings
-4. Build and run on your iOS device
+History is per device and newest first. It includes threshold, position, draft status, timestamps, readings, and errors. With optional iCloud sync, another device can inspect this history as an original setup reference. Cancelled or interrupted runs are discarded. Individual records can be deleted; clearing history or deleting a device requires confirmation.
 
-## Usage
+New users can skip the welcome or proceed to discovery. Bluetooth access begins only when scanning starts. Discovery includes named and unnamed advertisements, search, signal/name sorting, last-seen and stale indicators, and identification guidance. Naming requires explicit Save; Cancel leaves no saved device. Existing saved device identities and history remain available.
 
-### Setting Up Device Monitoring
+## Shortcuts
 
-1. Open MagicCuts app
-2. Tap "Discover Devices"
-3. Grant Bluetooth permissions when prompted
-4. Wait for nearby devices to appear
-5. Tap a device to monitor it
-6. Set a custom name and RSSI threshold
-7. Save the device
+Add **Check if Bluetooth Device is Nearby**, select a saved device, and use an **If** action to branch on its Boolean result. Every invocation requires a verified Pro entitlement and resolves the latest saved settings.
 
-### Creating a Shortcut
+- `true`: at least one valid reading met the saved threshold.
+- `false`: no qualifying reading was detected during the completed window. This does not confirm absence.
+- Error: Bluetooth unavailable/denied/off/resetting, initialization failure, deleted device, unusable settings, or unreadable shared settings.
 
-1. Open the Shortcuts app
-2. Create a new shortcut
-3. Add the "Check if Bluetooth Device is Nearby" action
-4. Select your monitored device
-5. Use the boolean result in automation logic
+This preserves the original action identity and any-sample meaning, which is weaker evidence than the app's repeated validation. Opening Shortcuts does not mark setup complete; confirmation requires the user to test their actual shortcut. Background execution depends on iOS scheduling, permissions, and device advertisements. A device without saved advertised service identifiers may not be discoverable in the background. Test the intended foreground/background use on hardware.
 
-### RSSI Guidelines
+## Optional iCloud portability
 
-RSSI (Received Signal Strength Indicator) values are negative:
-- **-30 to -50**: Very close (< 1 meter)
-- **-50 to -70**: Close (1-5 meters)
-- **-70 to -90**: Far (5-15 meters)
-- **< -90**: Very far or unreliable
+Settings → Sync with iCloud is off by default on each installation. Opting in merges saved sessions, baselines, workflows, groups, reports, and Bluetooth setup references through the user's private CloudKit database. Edits and deletions sync. Turning sync off keeps the local and iCloud copies; local instruments remain usable when iCloud is unavailable. Switching Apple Accounts pauses sync and requires another explicit opt-in.
 
-Lower numbers (more negative) = weaker signal = farther away
+Bluetooth identities and calibration remain specific to their original installation. Open Bluetooth setups from iCloud, identify and save the actual peripheral on this device, explicitly connect the reference, and test the current setup. Imported sensor baselines remain viewable but need a new capture before live comparison. Permissions, Shortcut confirmations, in-progress recordings, purchase access and iCloud consent do not sync.
 
-## Technical Details
+Apple manages CloudKit transport and scheduling. There is no MagicCuts login, backend, analytics collector, paid sync service or custom push server. Pro purchase restoration uses StoreKit independently of the iCloud library. See [iCloud architecture and acceptance](docs/ICLOUD_PORTABILITY.md) for the schema, account behavior, tested scope and production release requirements.
 
-### Architecture
+## Purchase configuration
 
-- **SwiftUI** - Modern declarative UI
-- **SwiftData** - Device persistence with shared app group
-- **CoreBluetooth** - Bluetooth LE scanning and RSSI tracking
-- **AppIntents** - Shortcuts and Siri integration
-- **UserDefaults** - Cross-process data sharing with app group
+`ProAccess` verifies StoreKit current entitlements and transaction updates. Purchase, restore, pending approval, cancellation and revocation retain distinct states. App Intents independently check access before measurements.
 
-### Key Components
+The shared scheme includes `Configuration/MagicCutsPro.storekit` for **local Xcode testing only**. Its $14.99 fixture is not approved live pricing. Configure the non-consumable product `com.bradZellman.MagicCuts.pro` in App Store Connect and verify sandbox/TestFlight purchasing before release. A missing live product leaves purchasing unavailable with retry and restore.
 
-- `BluetoothViewModel` - Manages BLE scanning and device discovery
-- `MonitoredDevice` - SwiftData model for saved devices
-- `IsDeviceNearbyIntent` - AppIntent for Shortcuts integration
-- `DeviceStorage` - Shared storage using app group container
+Debug-only `--pro-development-access` permits physical instrument QA. `--uitesting --pro-demo --seed-device` uses explicitly labeled sample sessions and isolated stores. `--uitesting --pro-locked` exercises the paywall. Release builds ignore those flags.
 
-### App Group
+## Architecture
 
-The app uses the shared container `group.com.bradzellman.magiccuts` to enable data access from Shortcuts extension context.
+- `InstrumentEngine` owns sensor sessions, timestamps, segments, bounded display history, checkpointing and Live Activity state.
+- `MeasurementMath` defines robust summaries, angular calculations, level transforms, spectra and calibration suitability.
+- `InstrumentArchive` coordinates local file and index mutations, preserving evidence referenced by reports and recoverable interrupted sessions.
+- `CloudLibraryTransport` uses `CKSyncEngine` with the private `iCloud.com.bradZellman.MagicCuts` container only after opt-in. Library records merge by item revision, retain deletion receipts, and exclude installation-only state.
+- `WorkflowRunner` evaluates observation quality and three-state conditions; Bluetooth groups share one sampling window.
+- `RadioScanning` and `ProximitySampler` retain session-scoped Bluetooth observations and the original action's full window.
+- SwiftData device storage migrates existing identities/history. `DeviceRepository` saves before replacing the app-group snapshot; launch reconciliation repairs stale snapshots.
+- App-group identifier: `group.com.bradzellman.magiccuts`.
 
-### Permissions
+## Build and test
 
-- **Bluetooth Always Usage** - Required for background proximity checks
-- **Siri Integration** - Required for voice commands
+Open `MagicCuts.xcodeproj`, choose the MagicCuts scheme and a simulator or signed device. Run tests serially because StoreKit testing shares one environment:
 
-## Building
-
-```bash
-# Build for simulator (Debug)
-xcodebuild -project MagicCuts.xcodeproj -scheme MagicCuts -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 15' build
-
-# Build for device (Release)
-xcodebuild -project MagicCuts.xcodeproj -scheme MagicCuts -configuration Release -destination generic/platform=iOS build
+```sh
+xcodebuild -project MagicCuts.xcodeproj -scheme MagicCuts \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' \
+  -parallel-testing-enabled NO -collect-test-diagnostics never test
 ```
 
-## Known Limitations
+Tests cover measurement math, source compatibility, calibration quality, full windows, interruption/cancellation, shared Bluetooth groups, archive coordination, recovery, report bytes, legacy migration, StoreKit transitions and UI journeys. Simulator tests prove software behavior; physical sensors, background restrictions and real Shortcuts need device acceptance.
 
-- Bluetooth scanning requires physical iOS device (doesn't work in simulator)
-- Background scanning may be limited by iOS power management
-- Some Bluetooth devices may not advertise consistently
-- RSSI values can fluctuate based on interference and device orientation
+The local StoreKit suite is verified through the shared StoreKit scheme on an iOS 27 simulator; the validation report records the iOS 26.5 test-environment limitation.
+
+See [Pro validation](docs/PRO_VALIDATION.md), [measurement research](docs/PRO_INSTRUMENT_RESEARCH.md) and the [capability inventory](docs/CAPABILITY_EXPANSION_PLAN.md). The inventory distinguishes current tools from future APIs that require separate hardware, participating peers or further implementation.
 
 ## Privacy
 
-MagicCuts only scans for Bluetooth devices - it does not connect to them or access any device data beyond their broadcast UUID, name, and signal strength.
-
-## License
-
-[Add your license here]
-
-## Contributing
-
-Contributions welcome! Please open an issue or submit a pull request.
-
-## Author
-
-Bradley Zellman
-
-## Support
-
-For issues or questions, please open an issue on GitHub.
+Permissions are requested when a selected instrument needs them. Audio analysis does not save raw audio. Location is used only by selected location/heading instruments. Endpoint tests reach a URL explicitly entered by the user. Stored sessions include their selected source and measurement metadata. Sharing with others uses the system share sheet; optional iCloud sync transfers the saved library to the user's private Apple Account database. No analytics collector, owner-operated database or hosted entitlement service is included. Support receives only information the user chooses to send. The public privacy policy must describe this opt-in behavior before release.

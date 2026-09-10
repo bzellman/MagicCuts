@@ -1,0 +1,349 @@
+{
+  "recordedAt": "2026-09-10T06:09:41.460603+00:00",
+  "scope": "Local test evidence and delivery-source fingerprints. Not hosted CI, TestFlight, physical accuracy or a release receipt. Earlier aggregate failures are preserved with their corrected focused runs.",
+  "runs": [
+    {
+      "label": "non-purchase unit suite",
+      "log": "unit-delivery.log",
+      "logSHA256": "ad8962ba1f2882b3e4fde8a7784f7fe86b13020a03efd5d44e81de2437daf3b5",
+      "resultBundle": "Test-MagicCuts-2026.09.10_01-07-32--0500.xcresult",
+      "bundleStillRetained": true,
+      "evidenceType": "xcresult summary and test tree",
+      "result": "Passed",
+      "passed": 32,
+      "failed": 0,
+      "skipped": 0,
+      "platforms": [
+        {
+          "model": "iPhone 17 Pro",
+          "os": "27.0"
+        }
+      ],
+      "tests": [
+        {
+          "test": "ProArchiveTests/testArchivesRoundTripAndReferencedSessionsCannotDisappear()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProArchiveTests/testConcurrentArchiveWritersPreserveEachOthersChanges()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProArchiveTests/testMalformedIndexIsNotOverwrittenByASave()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProArchiveTests/testOlderProIndexLoadsAdditiveReportField()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProArchiveTests/testRecoveryDraftDoesNotBecomeACompletedSessionUntilSaved()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProCaptureTests/testConnectionProbeUsesRealHTTPAndStopsAtItsRequestLimit()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProCaptureTests/testGroupCancellationNeverReturnsAPartialSuccess()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProCaptureTests/testGroupUsesOneWindowAndMissingMembersStayUnknown()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProCaptureTests/testLiveActivityPublishesPausesAndEndsThroughActivityKit()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProCaptureTests/testPauseResumeAndCancelledCallbacksKeepDistinctSegments()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProCaptureTests/testWorkflowWindowStartsAfterRadioReadiness()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProMeasurementTests/testBaselineCompatibilityIncludesAudioInputAndReferenceFrame()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProMeasurementTests/testCalibrationRequiresSeparationAndEnoughFreshSamples()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProMeasurementTests/testDisplayedRangeRetainsTheContractAndChartReductionPreservesGaps()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProMeasurementTests/testNorthWrapAndTiltReferencesDoNotUseOrdinarySubtraction()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProMeasurementTests/testRobustStatisticsAndSilenceHaveDefinedUnits()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProMeasurementTests/testSpectrumUsesMeasuredCadenceAndRejectsGaps()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProMeasurementTests/testUnknownLogicForAllAnyAndMinimumCounts()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProReportTests/testExportsContainAllReadingsAndPaginatedNotesWithoutEndpointQueries()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProximityTests/testAdditiveStoreMigrationRetainsIdentifier()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProximityTests/testCancellationDiscardsRunAndStopsSession()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProximityTests/testCancelledBeforeStartDoesNotOpenSession()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProximityTests/testClassificationAndBoundary()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProximityTests/testCorruptServiceFilterFailsBeforeRadioStarts()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProximityTests/testDeletedDeviceCannotReceiveLateHistory()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProximityTests/testDiscoveryStopDoesNotStopReplacementSession()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProximityTests/testFullWindowFiltersInvalidAndOtherDevices()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProximityTests/testIntentUsesLatestThresholdAndPropagatesFailures()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProximityTests/testOldSessionCleanupCannotStopReplacement()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProximityTests/testPersistenceHistoryAndSyncFailure()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProximityTests/testPrematureEndThrows()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProximityTests/testSnapshotReplacementAndLegacyDecoding()",
+          "result": "Passed"
+        }
+      ]
+    },
+    {
+      "label": "full UI run before final audit corrections",
+      "log": "fix-validation.log",
+      "logSHA256": "54f4d902048866e5f2cf7b8b3d63cc4f0f6b30b6e3d7662d7a193e3f7c239c88",
+      "resultBundle": "Test-MagicCuts-2026.09.10_00-40-55--0500.xcresult",
+      "bundleStillRetained": true,
+      "evidenceType": "xcresult summary and test tree",
+      "result": "Failed",
+      "passed": 9,
+      "failed": 2,
+      "skipped": 2,
+      "platforms": [
+        {
+          "model": "iPhone 17 Pro",
+          "os": "26.5"
+        }
+      ],
+      "tests": [
+        {
+          "test": "MagicCutsUITests/testCaptureApprovedScreens()",
+          "result": "Passed"
+        },
+        {
+          "test": "MagicCutsUITests/testDiscoveryPermissionFailureAndEmptyScan()",
+          "result": "Passed"
+        },
+        {
+          "test": "MagicCutsUITests/testExistingUserSkipsWelcomeAndResumesEvidence()",
+          "result": "Passed"
+        },
+        {
+          "test": "MagicCutsUITests/testInterruptedTestRecoversControls()",
+          "result": "Passed"
+        },
+        {
+          "test": "MagicCutsUITests/testLargeTextAndAccessibility()",
+          "result": "Failed"
+        },
+        {
+          "test": "MagicCutsUITests/testPhysicalDiscoveryReceivesAdvertisements()",
+          "result": "Skipped"
+        },
+        {
+          "test": "MagicCutsUITests/testReducedMotionJourneyWhenEnabled()",
+          "result": "Skipped"
+        },
+        {
+          "test": "MagicCutsUITests/testSavedDeviceModesThresholdAndHistory()",
+          "result": "Passed"
+        },
+        {
+          "test": "MagicCutsUITests/testWelcomeUnnamedIdentificationAndExplicitSave()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProExperienceUITests/testBaselineInspectRecordExportAndFieldReport()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProExperienceUITests/testInstrumentNavigationAndLargeText()",
+          "result": "Failed"
+        },
+        {
+          "test": "ProExperienceUITests/testLockedAppHasNoInstrumentEntryPoints()",
+          "result": "Passed"
+        },
+        {
+          "test": "ProExperienceUITests/testWorkflowCreationAndMeasuredResult()",
+          "result": "Passed"
+        }
+      ]
+    },
+    {
+      "label": "Pro visible-content accessibility",
+      "log": "a11y-final.log",
+      "logSHA256": "376a790a02a835d9f7b000881f539a06472a8c578635dca3fb78c090514ba870",
+      "resultBundle": "Test-MagicCuts-2026.09.10_00-49-20--0500.xcresult",
+      "bundleStillRetained": true,
+      "evidenceType": "xcresult summary and test tree",
+      "result": "Failed",
+      "passed": 1,
+      "failed": 1,
+      "skipped": 0,
+      "platforms": [
+        {
+          "model": "iPhone 17 Pro",
+          "os": "26.5"
+        }
+      ],
+      "tests": [
+        {
+          "test": "MagicCutsUITests/testLargeTextAndAccessibility()",
+          "result": "Failed"
+        },
+        {
+          "test": "ProExperienceUITests/testInstrumentNavigationAndLargeText()",
+          "result": "Passed"
+        }
+      ]
+    },
+    {
+      "label": "retained device visible-content accessibility",
+      "log": "device-a11y-final.log",
+      "logSHA256": "024a68ad924d6ceef025729fc78e32b34644a4f606ec6b454f4c64e8749553d0",
+      "resultBundle": "Test-MagicCuts-2026.09.10_00-51-31--0500.xcresult",
+      "bundleStillRetained": false,
+      "evidenceType": "retained xcodebuild log; Xcode pruned the older bundle",
+      "result": "Passed",
+      "tests": [
+        {
+          "test": "MagicCutsUITests/testLargeTextAndAccessibility()",
+          "result": "Passed"
+        }
+      ]
+    },
+    {
+      "label": "Reduce Motion",
+      "log": "reduced-motion-final.log",
+      "logSHA256": "9345f0ed90acf3d8094891f29f79e733e28aed5affcf11bb67675886211a6af5",
+      "resultBundle": "Test-MagicCuts-2026.09.10_00-50-22--0500.xcresult",
+      "bundleStillRetained": false,
+      "evidenceType": "retained xcodebuild log; Xcode pruned the older bundle",
+      "result": "Passed",
+      "tests": [
+        {
+          "test": "MagicCutsUITests/testReducedMotionJourneyWhenEnabled()",
+          "result": "Passed"
+        }
+      ]
+    },
+    {
+      "label": "StoreKit lifecycle",
+      "evidenceType": "exported xcresult summary and test tree",
+      "resultBundle": "Test-MagicCuts StoreKit Tests-2026.09.10_00-39-11--0500.xcresult",
+      "result": "Passed",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "platforms": [
+        {
+          "model": "iPhone 17 Pro",
+          "os": "27.0"
+        }
+      ],
+      "tests": [
+        {
+          "test": "ProPurchaseTests/testPurchaseRestoreRefundAndPendingApprovalUseVerifiedEntitlements()",
+          "result": "Passed"
+        }
+      ]
+    }
+  ],
+  "sourceSHA256": {
+    "MagicCuts/AppRuntime.swift": "d634c906b4f424e96eca34561173f0b21a831de91cae3a1eec186c209c0cf370",
+    "MagicCuts/AppShortcuts.swift": "5763cd42e78725996f7bc6084ae5e9d4d6a54f3ad0090dd7ef86c285964f053f",
+    "MagicCuts/BluetoothScanner.swift": "c0959996d08683dce8b1a84f855d0a8a03d7bde3b890a6987baf88d97bc01f43",
+    "MagicCuts/BluetoothViewModel.swift": "8f4dcea24d7cd5110b54be5f363691453887b745a550ae256b808f8da6297b51",
+    "MagicCuts/ContentView.swift": "564365d00558ba5bc5051f151d0ce5c792aff9ff60bdfd1ea3bafa00c950b914",
+    "MagicCuts/DesignSystem.swift": "52bb91bfa67d407f92c1aa220ba00790b8f79816d4f3c1730fe61917f0af7a06",
+    "MagicCuts/DeviceDetailView.swift": "1ba867f7908fa8fa22efcb46afc770a5c7f6b163024494cbd22dbf59baad0045",
+    "MagicCuts/DeviceDiscoveryView.swift": "9e569a52494a901e6c40cf1ef1e33691aa161b7302050ae307178574445b9f06",
+    "MagicCuts/DeviceRepository.swift": "a1a8b87fdc37c3c542b3ee00aca446b711e4f62d62e48bbfa2e7113fdbfac006",
+    "MagicCuts/EditDeviceView.swift": "61caf2d298f7836e8606c79e56c4e6da94125eda208b47c97cca9329586526d4",
+    "MagicCuts/Guidance.swift": "11760a03f34b29f7bf68196be24965cc6f5f1dd1fecf481e52a91c8f86a1909e",
+    "MagicCuts/Instruments/InstrumentArchive.swift": "9be84f46f7f8d23252d6cd62eb9f6ec4fd4d34537e9478c1b2213473017a7bfe",
+    "MagicCuts/Instruments/InstrumentEngine.swift": "170bf23da12a15910eab59efcd7cb1d1f9567053a85e522bcced87e3d135061e",
+    "MagicCuts/Instruments/MeasurementMath.swift": "e99706c120729d704753805282db05bd94a2bf875cd42236c9aee9cfd7692877",
+    "MagicCuts/Instruments/MeasurementModels.swift": "863440dd42b11cef9a750394687de9ec5b404c7c7112301292353ce27143cae1",
+    "MagicCuts/Instruments/SessionActivityAttributes.swift": "538ebd69fa4ae0c5236258e9a755fef87a41e5daf4f15b0c4abc95926bf47daa",
+    "MagicCuts/Instruments/SessionLiveActivity.swift": "1157fc3ee4214bc1aebd90a4289b3467e4e4966c1402406a2c1a1294e64c4673",
+    "MagicCuts/Instruments/SessionReport.swift": "b5766f79bb8d5835ba38a9903aba6ab33a00dfa27445ceed973242b79cac4b0d",
+    "MagicCuts/Instruments/WorkflowRunner.swift": "206a18a1f8b05075ac5b774f22bbf5f364e7795f594305dc5e14bdd95f20ba0c",
+    "MagicCuts/IsDeviceNearbyIntent.swift": "5fe51e0a339b4aba2114f6223746ca5e96bfecd487e31509ba3a0250e5911ac5",
+    "MagicCuts/MagicCutsApp.swift": "f75778c0f65c7524f98a550d3662a70e3a2890c66332671e9e48610d7afde28b",
+    "MagicCuts/MonitoredDevice.swift": "95cf563915ccdc99e0d957253d054bccf174aec072238611635d1d9b189281f0",
+    "MagicCuts/MonitoredDevicesView.swift": "51260b83d3b14480bb0308086b1279126efc24ea61e5c9c5fb896cddf45ae6d0",
+    "MagicCuts/PrivacyInfo.xcprivacy": "a6e0d41f4d509e5616868a3f698c747b171c53c837f3a6d5134f44c9719ba0f6",
+    "MagicCuts/Pro/FieldReportsView.swift": "0a5ce43346ae732df663a0e424778e0791bb618ae1e5b647787b2cc044fdf3b5",
+    "MagicCuts/Pro/InstrumentComponents.swift": "2855cda34b863239b642975b2390e8790f965006a88a4451dce594930af7ed94",
+    "MagicCuts/Pro/InstrumentForms.swift": "9f8bc156dd21241c286a0e228b9fe30decda045bea1c249282c645fb39866672",
+    "MagicCuts/Pro/ProAccess.swift": "09efdb33d694b44de787db0f2bd6619143b45822914d4e24a2ded545469a9f66",
+    "MagicCuts/Pro/ProExperience.swift": "b9e4599c91aa9b0a84fe5471e159637c75e707fdd41e06b4eb23dd230cfb5b5c",
+    "MagicCuts/Pro/ProIntents.swift": "50eb3dc3010005710fb8ddca535fba2459b3ba40f357a128025006905afb092f",
+    "MagicCuts/Pro/SessionsView.swift": "d4850911eae9fb1d99d9cfcb062d2cc6f5eac0dab375f0d86b612ca3f9f21d98",
+    "MagicCuts/Pro/WorkflowsView.swift": "8beebb66868faccd7d0c3c71a974a92a734f071e8b6e92a14560338068b007a8",
+    "MagicCuts/Proximity.swift": "0079d0a340f797cb89a4fc28d95f7a81cca4e3c3aa151288195eb341f213c385",
+    "MagicCuts/SharedDeviceStorage.swift": "31b954687c63bc01a7274f44a285ee95b36e5ea209fbf83a67d4f60c1caa65e4",
+    "MagicCutsLiveSession/MagicCutsLiveSession.swift": "1ae1ab8a7244f3ba190399480e6ab78e6f293ceedea5adb96e1b8d302a0ee4b9",
+    "MagicCutsTests/ProInstrumentTests.swift": "72f9f936ca97a126b73ae5368e4299aea018155f1a56f4a521f50dfcca7d74ea",
+    "MagicCutsTests/ProximityTests.swift": "e28828348e5d6b0f8d042d826efd470de536eaeec379f35cbe5ec406cb4c4c32",
+    "MagicCutsUITests/MagicCutsUITests.swift": "4b7973d24bc32c232640676b0120ef9b0ef54849620b22f05a55ef7adc4c9cd5",
+    "MagicCutsUITests/ProExperienceUITests.swift": "bf39dfb830712e952ea5e5cba1c7c8312286efab61f58c02780041cbc3fc6950",
+    "Configuration/App-Info.plist": "2c0695aea6fd12858191b4463b139c99da94ec96e33f4e46bf1d91b2863052b1",
+    "Configuration/LiveSession-Info.plist": "567714e28ae489b0ac30b44b10e76d6a347bc7547f80811535e4fec28f2ad9cf",
+    "Configuration/MagicCutsPro.storekit": "094f4f8281b779734040d39f6aad100add6944e07c46f8a152e3c27a4f238ca7"
+  }
+}

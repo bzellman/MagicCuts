@@ -8,7 +8,11 @@ final class MonitoredDevice {
     var name: String
     var requiredSignalStrength: Int
     var serviceUUIDs: [String]
+    var validationResetAt: Date = Date(timeIntervalSince1970: 0)
+    var portabilityIdentifier: UUID? = nil
     
+    var confirmationKey: String { "\(requiredSignalStrength):\(validationResetAt.timeIntervalSince1970)" }
+
     // Computed property to work with UUIDs in the app
     var uuid: UUID? {
         UUID(uuidString: persistentIdentifier)
@@ -19,5 +23,7 @@ final class MonitoredDevice {
         self.name = name
         self.requiredSignalStrength = requiredSignalStrength
         self.serviceUUIDs = serviceUUIDs
+        self.validationResetAt = Date()
+        self.portabilityIdentifier = UUID()
     }
 }

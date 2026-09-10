@@ -1,112 +1,48 @@
-//
-//  SharedDeviceStorage.swift
-//  MagicCuts
-//
-//  Shared between app and extension
-//
-
 import Foundation
 
-struct DeviceInfo: Codable {
+nonisolated struct DeviceInfo: Codable, Equatable, Sendable {
     let id: String
     let name: String
     let requiredSignalStrength: Int
     let serviceUUIDs: [String]
-    
-    init(id: String, name: String, requiredSignalStrength: Int, serviceUUIDs: [String] = []) {
-        self.id = id
-        self.name = name
-        self.requiredSignalStrength = requiredSignalStrength
-        self.serviceUUIDs = serviceUUIDs
+    let radioID: String?
+    var radioUUID: UUID? { UUID(uuidString: radioID ?? id) }
+    init(id: String, name: String, rssi: Int, serviceUUIDs: [String] = [], radioID: String? = nil) {
+        self.id = id; self.name = name; requiredSignalStrength = rssi; self.serviceUUIDs = serviceUUIDs
+        self.radioID = radioID
     }
-    
     init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(String.self, forKey: .id)
-        name = try container.decode(String.self, forKey: .name)
-        requiredSignalStrength = try container.decode(Int.self, forKey: .requiredSignalStrength)
-        serviceUUIDs = try container.decodeIfPresent([String].self, forKey: .serviceUUIDs) ?? []
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(String.self, forKey: .id)
+        name = try c.decode(String.self, forKey: .name)
+        requiredSignalStrength = try c.decode(Int.self, forKey: .requiredSignalStrength)
+        serviceUUIDs = try c.decodeIfPresent([String].self, forKey: .serviceUUIDs) ?? []
+        radioID = try c.decodeIfPresent(String.self, forKey: .radioID)
     }
 }
 
-class SharedDeviceStorage {
-    static let shared = SharedDeviceStorage()
+@MainActor
+final class SharedDeviceStorage {
+    static let shared: SharedDeviceStorage = {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("--uitesting") || NSClassFromString("XCTestCase") != nil {
+            return SharedDeviceStorage(defaults: UserDefaults(suiteName: "MagicCuts.UITests"))
+        }
+        #endif
+        return SharedDeviceStorage()
+    }()
     private let defaults: UserDefaults?
-    private let devicesKey = "monitored_devices"
-
-    init() {
-        defaults = UserDefaults(suiteName: "group.com.bradzellman.magiccuts")
-        print("💾 [SharedStorage] UserDefaults suite initialized: \(defaults != nil)")
+    init(defaults: UserDefaults? = UserDefaults(suiteName: "group.com.bradzellman.magiccuts")) { self.defaults = defaults }
+    func replace(_ devices: [DeviceInfo]) throws {
+        guard let defaults else { throw BluetoothError.storage }
+        let data = try JSONEncoder().encode(devices)
+        defaults.set(data, forKey: "monitored_devices")
+        guard defaults.data(forKey: "monitored_devices") == data else { throw BluetoothError.storage }
     }
-
-    func saveDevice(id: String, name: String, rssi: Int, serviceUUIDs: [String]? = nil) {
-        guard let defaults = defaults else {
-            print("💾 [SharedStorage] ❌ Failed to get UserDefaults suite")
-            return
-        }
-
-        var devices = getAllDevices()
-
-        let resolvedServices: [String]
-        if let index = devices.firstIndex(where: { $0.id == id }) {
-            let existing = devices[index]
-            resolvedServices = serviceUUIDs ?? existing.serviceUUIDs
-            devices[index] = DeviceInfo(id: id, name: name, requiredSignalStrength: rssi, serviceUUIDs: resolvedServices)
-        } else {
-            resolvedServices = serviceUUIDs ?? []
-            devices.append(DeviceInfo(id: id, name: name, requiredSignalStrength: rssi, serviceUUIDs: resolvedServices))
-        }
-
-        if let encoded = try? JSONEncoder().encode(devices) {
-            defaults.set(encoded, forKey: devicesKey)
-            print("💾 [SharedStorage] ✅ Saved \(devices.count) devices")
-        }
+    func getAllDevices() throws -> [DeviceInfo] {
+        guard let defaults else { throw BluetoothError.storage }
+        guard let data = defaults.data(forKey: "monitored_devices") else { return [] }
+        return try JSONDecoder().decode([DeviceInfo].self, from: data)
     }
-
-    func getAllDevices() -> [DeviceInfo] {
-        guard let defaults = defaults else {
-            print("💾 [SharedStorage] ❌ Failed to get UserDefaults suite")
-            return []
-        }
-
-        guard let data = defaults.data(forKey: devicesKey),
-              let devices = try? JSONDecoder().decode([DeviceInfo].self, from: data) else {
-            print("💾 [SharedStorage] No devices found")
-            return []
-        }
-
-        print("💾 [SharedStorage] Retrieved \(devices.count) devices")
-        return devices
-    }
-
-    func getDevice(id: String) -> DeviceInfo? {
-        return getAllDevices().first { $0.id == id }
-    }
-
-    func removeDevice(id: String) {
-        guard let defaults = defaults else { return }
-
-        var devices = getAllDevices()
-        devices.removeAll { $0.id == id }
-
-        if let encoded = try? JSONEncoder().encode(devices) {
-            defaults.set(encoded, forKey: devicesKey)
-            print("💾 [SharedStorage] ✅ Removed device, \(devices.count) remaining")
-        }
-    }
-
-    func clearAllDevices() {
-        defaults?.removeObject(forKey: devicesKey)
-        print("💾 [SharedStorage] ✅ Cleared all devices")
-    }
-
-    // MARK: - Async wrappers for AppIntents
-
-    func getAllDevicesAsync() async -> [DeviceInfo] {
-        return getAllDevices()
-    }
-
-    func getDeviceAsync(id: String) async -> DeviceInfo? {
-        return getDevice(id: id)
-    }
+    func getDevice(id: String) throws -> DeviceInfo? { try getAllDevices().first { $0.id == id } }
 }

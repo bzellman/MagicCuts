@@ -1,113 +1,45 @@
-//
-//  IsDeviceNearbyIntent.swift
-//  MagicCuts
-//
-//  AppIntent for checking if a Bluetooth device is nearby via Shortcuts.
-//
-
-import SwiftUI
 import AppIntents
-import CoreBluetooth
+import Foundation
 
 struct IsDeviceNearbyIntent: AppIntent {
-    static var title: LocalizedStringResource = "Check if Bluetooth Device is Nearby"
-    static var description: IntentDescription = IntentDescription("Scans for a specific Bluetooth device and checks if its signal strength (RSSI) is within the required range.")
-
-    static var openAppWhenRun: Bool = false
-    static var authenticationPolicy: IntentAuthenticationPolicy = .alwaysAllowed
-
-    @Parameter(title: "Device to Check")
-    var device: MonitoredDeviceEntity
-
+    static let title: LocalizedStringResource = "Check if Bluetooth Device is Nearby"
+    static let description = IntentDescription("Returns true if a valid Bluetooth reading meets your saved threshold. False means not detected above threshold, not confirmed absence. Bluetooth failures stop the shortcut with an error.")
+    static let openAppWhenRun = false
+    static let authenticationPolicy: IntentAuthenticationPolicy = .alwaysAllowed
+    @Parameter(title: "Device to Check") var device: MonitoredDeviceEntity
+    static var parameterSummary: some ParameterSummary { Summary("Check if \(\.$device) is nearby") }
+    @MainActor
     func perform() async throws -> some IntentResult & ReturnsValue<Bool> {
-        print("🎯 [Intent] ========================================")
-        print("🎯 [Intent] Starting IsDeviceNearbyIntent.perform()")
-        print("🎯 [Intent] Device: \(device.name) (\(device.id))")
-        print("🎯 [Intent] Required RSSI: \(device.requiredSignalStrength)")
-        print("🎯 [Intent] Service UUID filters: \(device.serviceUUIDs)")
-        print("🎯 [Intent] ========================================")
-
-        let serviceFilters = device.serviceUUIDs.compactMap { CBUUID(string: $0) }
-        if serviceFilters.isEmpty {
-            print("📡 [BT] ⚠️ No service UUIDs stored for this device. Shortcut runs may require foreground access.")
-        }
-
-        do {
-            let scanner = BluetoothScanner(
-                targetUUID: device.id,
-                requiredRSSI: device.requiredSignalStrength,
-                serviceFilters: serviceFilters
-            )
-            let isNearby = try await scanner.scan()
-
-            print("🎯 [Intent] ✅ Complete. Result: \(isNearby)")
-            print("🎯 [Intent] ========================================")
-
-            return .result(value: isNearby)
-
-        } catch {
-            print("🎯 [Intent] ❌ Error: \(error)")
-            print("🎯 [Intent] ========================================")
-
-            // Return false if Bluetooth unavailable
-            return .result(value: false)
-        }
+        try await ProAccess.require()
+        let result = try await Self.check(id: device.id, storage: .shared, radio: BluetoothRadio())
+        return .result(value: result)
+    }
+    @MainActor
+    static func check(id: UUID, storage: SharedDeviceStorage, radio: any RadioScanning, duration: Duration = .seconds(10)) async throws -> Bool {
+        guard let saved = try storage.getDevice(id: id.uuidString) else { throw BluetoothError.deletedDevice }
+        guard (-100 ... -1).contains(saved.requiredSignalStrength) else { throw BluetoothError.invalidThreshold }
+        let samples = try await ProximitySampler(radio: radio).collect(id: id, services: saved.serviceUUIDs, duration: duration)
+        return samples.contains { $0.rssi >= saved.requiredSignalStrength }
     }
 }
-
-// MARK: - AppEntity for Shortcuts device selection
 
 struct MonitoredDeviceEntity: AppEntity {
     var id: UUID
     var name: String
     var requiredSignalStrength: Int
     var serviceUUIDs: [String]
-
-    static var typeDisplayRepresentation: TypeDisplayRepresentation = "Monitored Device"
-    static var defaultQuery = MonitoredDeviceQuery()
-
-    var displayRepresentation: DisplayRepresentation {
-        DisplayRepresentation(title: "\(name)")
-    }
+    static let typeDisplayRepresentation: TypeDisplayRepresentation = "Monitored Device"
+    static let defaultQuery = MonitoredDeviceQuery()
+    var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(name)") }
 }
 
-// MARK: - EntityQuery for providing devices to Shortcuts
-
 struct MonitoredDeviceQuery: EntityQuery {
-    func entities(for identifiers: [UUID]) async throws -> [MonitoredDeviceEntity] {
-        print("🔍 [Query] entities(for:) called with \(identifiers.count) identifiers")
-        let allDevices = await loadAllDevices()
-        print("🔍 [Query] Found \(allDevices.count) devices in storage")
-        let filtered = allDevices.filter { identifiers.contains($0.id) }
-        print("🔍 [Query] Returning \(filtered.count) matching devices")
-        return filtered
-    }
-
-    func suggestedEntities() async throws -> [MonitoredDeviceEntity] {
-        print("🔍 [Query] suggestedEntities() called")
-        let devices = await loadAllDevices()
-        print("🔍 [Query] Returning \(devices.count) suggested devices")
-        for device in devices {
-            print("🔍 [Query]   - \(device.name) (\(device.id))")
-        }
-        return devices
-    }
-
-    // MARK: - Private
-
-    private func loadAllDevices() async -> [MonitoredDeviceEntity] {
-        let deviceInfos = await SharedDeviceStorage.shared.getAllDevicesAsync()
-        return deviceInfos.compactMap { info in
-            guard let uuid = UUID(uuidString: info.id) else {
-                print("🔍 [Query] ⚠️ Invalid UUID stored: \(info.id)")
-                return nil
-            }
-            return MonitoredDeviceEntity(
-                id: uuid,
-                name: info.name,
-                requiredSignalStrength: info.requiredSignalStrength,
-                serviceUUIDs: info.serviceUUIDs
-            )
+    @MainActor func entities(for identifiers: [UUID]) async throws -> [MonitoredDeviceEntity] { try load().filter { identifiers.contains($0.id) } }
+    @MainActor func suggestedEntities() async throws -> [MonitoredDeviceEntity] { try load() }
+    @MainActor private func load() throws -> [MonitoredDeviceEntity] {
+        try SharedDeviceStorage.shared.getAllDevices().compactMap { info in
+            guard let id = UUID(uuidString: info.id) else { return nil }
+            return MonitoredDeviceEntity(id: id, name: info.name, requiredSignalStrength: info.requiredSignalStrength, serviceUUIDs: info.serviceUUIDs)
         }
     }
 }
