@@ -1,0 +1,1 @@
+PASS: Level interrupted by Signal while Level was moving; prior reading froze exactly: Level, demo 1.5 °. Surface angle. Same accessibility value after two seconds; Signal completed to -58 dBm. Native captures phone-rapid-tap-start/end.

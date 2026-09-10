@@ -5,7 +5,7 @@ prototype_output="${1:-/tmp/MagicCutsOnboardingPreview}"
 prototype_sdk="$(xcrun --sdk iphonesimulator --show-sdk-path)"
 mkdir -p "$prototype_output/OnboardingPreview.app"
 SDKROOT="$prototype_sdk" xcrun --sdk iphonesimulator swiftc -warnings-as-errors -parse-as-library -O -sdk "$prototype_sdk" -target arm64-apple-ios26.0-simulator \
-  "$prototype_root/OnboardingPreview.swift" -o "$prototype_output/OnboardingPreview.app/OnboardingPreview"
+  "$prototype_root/OnboardingPreview.swift" "$prototype_root/InstrumentTiles.swift" -o "$prototype_output/OnboardingPreview.app/OnboardingPreview"
 cat > "$prototype_output/OnboardingPreview.app/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

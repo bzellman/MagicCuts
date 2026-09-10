@@ -2,96 +2,86 @@ import SwiftUI
 
 @main
 struct OnboardingPreviewApp: App {
-    var body: some Scene {
-        WindowGroup { OnboardingPreview() }
-    }
+    var body: some Scene { WindowGroup { OnboardingPreview() } }
 }
 
-private enum PreviewPalette {
-    static let action = Color(uiColor: UIColor { traits in
-        traits.userInterfaceStyle == .dark
-            ? UIColor(red: 0.122, green: 0.4, blue: 0.851, alpha: 1)
-            : UIColor(red: 0, green: 0.322, blue: 0.78, alpha: 1)
-    })
-    static let blue = Color(uiColor: UIColor { traits in
-        traits.userInterfaceStyle == .dark
-            ? UIColor(red: 0.38, green: 0.72, blue: 1, alpha: 1)
-            : UIColor(red: 0, green: 0.322, blue: 0.78, alpha: 1)
-    })
-    static let canvas = Color(uiColor: UIColor { traits in
-        traits.userInterfaceStyle == .dark
-            ? UIColor(red: 0.059, green: 0.078, blue: 0.102, alpha: 1)
-            : UIColor(red: 0.949, green: 0.961, blue: 0.969, alpha: 1)
-    })
-    static let secondary = Color(uiColor: UIColor { traits in
-        traits.userInterfaceStyle == .dark
-            ? UIColor(red: 0.659, green: 0.702, blue: 0.741, alpha: 1)
-            : UIColor(red: 0.349, green: 0.388, blue: 0.431, alpha: 1)
-    })
+enum PreviewPalette {
+    static let action = adaptive(light: (0, 0.322, 0.78), dark: (0.122, 0.4, 0.851))
+    static let blue = adaptive(light: (0, 0.322, 0.78), dark: (0.38, 0.72, 1))
+    static let canvas = adaptive(light: (0.949, 0.961, 0.969), dark: (0.059, 0.078, 0.102))
+    static let secondary = adaptive(light: (0.349, 0.388, 0.431), dark: (0.659, 0.702, 0.741))
+    static let card = adaptive(light: (0.906, 0.925, 0.945), dark: (0.078, 0.11, 0.145))
+    static let activeCard = adaptive(light: (0.976, 0.988, 1), dark: (0.082, 0.157, 0.247))
+
+    private static func adaptive(light: (CGFloat, CGFloat, CGFloat), dark: (CGFloat, CGFloat, CGFloat)) -> Color {
+        Color(uiColor: UIColor { traits in
+            let rgb = traits.userInterfaceStyle == .dark ? dark : light
+            return UIColor(red: rgb.0, green: rgb.1, blue: rgb.2, alpha: 1)
+        })
+    }
 }
 
 struct OnboardingPreview: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var typeSize
-    @State private var step = 0
-    @State private var signal = -62.0
-    @State private var referenceVisible = false
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOver
+    @State private var page = 0
+    @State private var selected: TourInstrument = .level
+    @State private var readings = Array(repeating: 0.0, count: TourInstrument.allCases.count)
+    @State private var tourRunning = true
+    @State private var tourRun = UUID()
+    @State private var cardRun = UUID()
     @State private var showPurchasePreview = false
-    @State private var showHelp = false
-    @State private var started = false
-    @ScaledMetric(relativeTo: .largeTitle) private var readingSize = 66
+    @State private var showRestore = false
+    @State private var firstReading = false
+    @State private var presentation = false
+    @State private var configured = false
 
-    private let reference = -72.0
-    private var motion: Animation { .easeInOut(duration: reduceMotion ? 0.12 : 0.35) }
-    private var adaptiveLayout: AnyLayout {
-        typeSize.isAccessibilitySize
-            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
-            : AnyLayout(HStackLayout(alignment: .top, spacing: 16))
-    }
+    private var compactHeight: Bool { verticalSizeClass == .compact && !typeSize.isAccessibilitySize }
+    private var compactCards: Bool { page == 1 || compactHeight }
+
+    private var transition: Animation { .easeInOut(duration: reduceMotion ? 0.12 : 0.42) }
     private var heading: String {
-        switch step {
-        case 0: "Turn readings\ninto answers."
-        case 1: "Know what\nchanged."
-        case 2: "Your instruments.\nOne purchase."
-        default: started ? "Ready when\nyou are." : "Make your first\nmeasurement."
+        switch page {
+        case 0: selected.heading
+        case 1: "Your instruments.\nOne purchase."
+        default: firstReading ? "Ready when\nyou are." : "Make your first\nmeasurement."
         }
     }
     private var explanation: String {
-        switch step {
-        case 0: "Find a stronger signal. See it respond."
-        case 1: "Keep a reference. See the difference."
-        case 2: "Measure, compare and put your results to work."
+        switch page {
+        case 0: selected.explanation
+        case 1: "A whole toolkit, ready when you need it."
         default: "Start with Level. See the angle of a surface."
         }
     }
+    private var textKey: String { "\(page)-\(page == 0 ? selected.rawValue : -1)-\(firstReading)" }
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 26) {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text(heading)
-                            .font(.system(.largeTitle, design: .rounded).bold())
-                            .fixedSize(horizontal: false, vertical: true)
-                            .contentTransition(.opacity)
-                        Text(explanation)
-                            .font(.body)
-                            .foregroundStyle(PreviewPalette.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    if step < 3 {
-                        signalInstrument
-                        if step < 2 { signalControl }
-                        else { purchaseDetails }
+                VStack(alignment: .leading, spacing: 18) {
+                    if page == 0 && compactHeight {
+                        HStack(alignment: .center, spacing: 24) {
+                            narration.frame(width: 210)
+                            instrumentMosaic
+                        }
                     } else {
-                        firstInstrument
+                        narration
+                        if page == 0 && typeSize.isAccessibilitySize { tourControls }
+                        if page < 2 {
+                            instrumentMosaic
+                            if page == 1 { purchaseDetails }
+                        } else { firstInstrument }
                     }
-                    if typeSize.isAccessibilitySize { previewAnnotation }
+                    if typeSize.isAccessibilitySize || compactHeight { previewAnnotation }
                 }
-                .padding(.horizontal, 26)
-                .padding(.top, 22)
-                .padding(.bottom, 28)
-                .frame(maxWidth: 540)
+                .padding(.horizontal, 22)
+                .padding(.top, 14)
+                .padding(.bottom, 18)
+                .frame(maxWidth: compactHeight ? 800 : 560)
                 .frame(maxWidth: .infinity)
             }
             .background(PreviewPalette.canvas)
@@ -99,200 +89,184 @@ struct OnboardingPreview: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    if step > 0 {
-                        Button("Back", systemImage: "chevron.left") { advance(to: step - 1) }
-                    } else { Button("Restore") { showHelp = true } }
+                    if page == 0 { Button("Restore") { stopTour(); showRestore = true } }
+                    else { Button("Back", systemImage: "chevron.left") { navigate(to: page - 1) } }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    if step < 2 { Button("View Pro") { advance(to: 2) } }
-                    else { Button("Replay", systemImage: "arrow.counterclockwise") { advance(to: 0) } }
+                    if page == 0 { Button("View Pro") { navigate(to: 1) } }
+                    else { Button("Replay", systemImage: "arrow.counterclockwise") { replay() } }
                 }
             }
             .safeAreaInset(edge: .bottom, spacing: 0) { footer }
-            .sheet(isPresented: $showPurchasePreview) {
-                NavigationStack {
-                    VStack(alignment: .leading, spacing: 24) {
-                        Text("Purchase preview").font(.system(.largeTitle, design: .rounded).bold())
-                        Text("No payment will be made. In the app, Apple confirms the localized price and completes the purchase.")
-                        Button("Preview successful purchase") {
-                            showPurchasePreview = false
-                            advance(to: 3)
-                        }.buttonStyle(.borderedProminent).tint(PreviewPalette.action).controlSize(.large)
-                        Button("Preview cancellation") { showPurchasePreview = false }
-                            .frame(minHeight: 44)
-                        Spacer()
-                    }
-                    .padding(24)
-                    .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { showPurchasePreview = false } } }
-                }
-                .presentationDetents([.medium, .large])
-            }
-            .alert("Restore purchases", isPresented: $showHelp) {
-                Button("Preview restored purchase") { advance(to: 3) }
+            .sheet(isPresented: $showPurchasePreview) { purchasePreview }
+            .alert("Restore purchases", isPresented: $showRestore) {
+                Button("Preview restored purchase") { navigate(to: 2) }
                 Button("Cancel", role: .cancel) { }
             } message: {
                 Text("This standalone preview does not contact the App Store. In the app, this restores a verified Pro purchase.")
             }
-            .task(id: step) { await animateStep() }
-            .task {
-                let arguments = ProcessInfo.processInfo.arguments
-                if let argument = arguments.first(where: { $0.hasPrefix("--page=") }),
-                   let page = Int(argument.dropFirst(7)), (0...3).contains(page) { advance(to: page) }
-                if arguments.contains("--autoplay") { await playPresentation() }
-            }
         }
         .tint(PreviewPalette.blue)
+        .task {
+            configure()
+            if ProcessInfo.processInfo.arguments.contains("--landscape") {
+                try? await Task.sleep(for: .milliseconds(250))
+                if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                    scene.requestGeometryUpdate(.iOS(interfaceOrientations: .landscapeRight))
+                }
+            }
+        }
+        .task(id: tourRun) { await runTour() }
+        .task(id: cardRun) { await animateSelectedCard() }
+        .task(id: presentation) { if presentation { await playPresentation() } }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active {
+                if readings[selected.rawValue] == 0 { cardRun = UUID() }
+            } else { stopTour(); presentation = false }
+        }
+        .onChange(of: reduceMotion) { _, enabled in
+            if enabled { stopTour(); readings[selected.rawValue] = 1 }
+        }
+        .onChange(of: typeSize) { _, size in
+            if size.isAccessibilitySize { stopTour() }
+        }
+        .onChange(of: voiceOver) { _, enabled in
+            if enabled { stopTour() }
+        }
+        .onDisappear { stopTour(); presentation = false }
     }
 
-    private var signalInstrument: some View {
-        VStack(spacing: 10) {
-            adaptiveLayout {
-                Label("Bluetooth signal", systemImage: "antenna.radiowaves.left.and.right")
-                    .font(.subheadline.weight(.medium))
-                if !typeSize.isAccessibilitySize { Spacer(minLength: 8) }
-                Text("Demo data").font(.caption).foregroundStyle(PreviewPalette.secondary)
-            }
-            .accessibilityElement(children: .combine)
-            SignalDial(value: signal, reference: referenceVisible ? reference : nil)
-                .opacity(typeSize.isAccessibilitySize ? 0 : 1)
-                .frame(height: typeSize.isAccessibilitySize ? 100 : step == 2 ? 130 : 244)
-                .accessibilityHidden(true)
-                .overlay(alignment: .bottom) {
-                    HStack(alignment: .firstTextBaseline, spacing: 6) {
-                        Text(signal, format: .number.precision(.fractionLength(0)))
-                            .font(typeSize.isAccessibilitySize ? .system(.largeTitle, design: .rounded).weight(.semibold) : .system(size: step == 2 ? 44 : readingSize, weight: .semibold, design: .rounded))
-                            .monospacedDigit()
-                            .contentTransition(.numericText(value: signal))
-                        Text("dBm").font(.callout).foregroundStyle(PreviewPalette.secondary)
-                    }
-                    .padding(.bottom, 9)
-                    .accessibilityElement(children: .ignore)
-                    .accessibilityLabel("Demo signal")
-                    .accessibilityValue("\(Int(signal)) decibel milliwatts")
-                }
-            if step == 1 {
-                adaptiveLayout {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Label("Reference", systemImage: "diamond")
-                            .font(.caption).foregroundStyle(PreviewPalette.secondary)
-                        Text("−72 dBm").font(.system(.headline, design: .rounded)).monospacedDigit()
-                    }
-                    if !typeSize.isAccessibilitySize { Spacer() }
-                    VStack(alignment: typeSize.isAccessibilitySize ? .leading : .trailing, spacing: 4) {
-                        Text("Difference").font(.caption).foregroundStyle(PreviewPalette.secondary)
-                        Text("\((signal - reference).formatted(.number.sign(strategy: .always()).precision(.fractionLength(0)))) dB")
-                    }
-                    .font(.system(.title2, design: .rounded).weight(.semibold))
-                    .monospacedDigit()
-                    .foregroundStyle(PreviewPalette.blue)
-                    .contentTransition(.numericText(value: signal - reference))
-                }
-                .padding(.top, 8)
-                .transition(.opacity)
-            } else if step == 0 {
-                Text("Less negative means stronger.")
-                    .font(.callout).foregroundStyle(PreviewPalette.secondary)
+    private var narration: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(heading)
+                .font(.system(.title, design: .rounded).bold())
+                .fixedSize(horizontal: false, vertical: true)
+            Text(explanation)
+                .font(.body).foregroundStyle(PreviewPalette.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, minHeight: typeSize.isAccessibilitySize ? nil : 124, alignment: .topLeading)
+        .id(textKey)
+        .transition(.opacity.combined(with: .offset(y: reduceMotion ? 0 : 5)))
+    }
+
+    private var instrumentMosaic: some View {
+        VStack(spacing: compactCards ? 8 : 12) {
+            if typeSize.isAccessibilitySize {
+                ForEach(TourInstrument.allCases) { tile($0) }
+            } else {
+                HStack(spacing: compactCards ? 8 : 12) { tile(.level); tile(.signal) }
+                tile(.vibration)
+                HStack(spacing: compactCards ? 8 : 12) { tile(.heading); tile(.elevation) }
             }
         }
     }
 
-    private var signalControl: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Slider(value: $signal, in: -90 ... -45, step: 1) {
-                Text("Demo signal strength")
+    @ViewBuilder
+    private func tile(_ kind: TourInstrument) -> some View {
+        if page == 0 {
+            Button {
+                stopTour()
+                spotlight(kind)
+            } label: {
+                InstrumentTile(kind: kind, active: selected == kind, compact: compactCards, progress: readings[kind.rawValue])
             }
-            .accessibilityValue("\(Int(signal)) decibel milliwatts")
-            HStack {
-                Text("Weaker")
-                Spacer()
-                Text("Stronger")
-            }.font(.caption).foregroundStyle(PreviewPalette.secondary)
-            Text(step == 0 ? "Slide to explore the signal." : signal == reference ? "Matches your reference." : signal > reference ? "Stronger than your reference." : "Weaker than your reference.")
-                .font(.callout).padding(.top, 7)
-                .contentTransition(.opacity)
+            .buttonStyle(.plain)
+            .accessibilityHint("Show the \(kind.title.lowercased()) explanation and replay its demonstration")
+        } else {
+            InstrumentTile(kind: kind, active: true, compact: true, progress: readings[kind.rawValue])
         }
     }
 
     private var purchaseDetails: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            if typeSize.isAccessibilitySize {
-                Text("One-time purchase. No subscription.")
-                    .font(.footnote).foregroundStyle(PreviewPalette.secondary)
-            }
-            benefit("12 instruments", detail: "Signal, motion, pressure and more.", symbol: "gauge.with.dots.needle.50percent")
-            benefit("Save. Compare. Automate.", detail: "References, sessions, reports and Shortcuts.", symbol: "slider.horizontal.3")
-            Text("Available measurements depend on your device, permissions and connected equipment.")
+        VStack(alignment: .leading, spacing: 8) {
+            Text("12 instruments. One toolkit.").font(.system(.headline, design: .rounded))
+            Text("Save references. Record sessions. Run Shortcuts.")
+                .font(.callout).foregroundStyle(PreviewPalette.secondary)
+            Text("Measurements depend on your device, permissions and connected equipment.")
                 .font(.footnote).foregroundStyle(PreviewPalette.secondary)
-            if typeSize.isAccessibilitySize { purchaseLinks }
-        }
-    }
-
-    private func benefit(_ title: String, detail: String, symbol: String) -> some View {
-        HStack(alignment: .top, spacing: 14) {
-            if !typeSize.isAccessibilitySize {
-                Image(systemName: symbol).font(.title3).foregroundStyle(PreviewPalette.blue).frame(width: 26)
-            }
-            VStack(alignment: .leading, spacing: 3) {
-                Text(title).font(.system(.headline, design: .rounded))
-                Text(detail).font(.callout).foregroundStyle(PreviewPalette.secondary)
+                .padding(.top, 4)
+            if typeSize.isAccessibilitySize || compactHeight {
+                Text("One-time purchase. No subscription.").font(.footnote)
+                purchaseLinks
             }
         }
     }
 
     private var firstInstrument: some View {
-        VStack(spacing: 24) {
+        VStack(alignment: .leading, spacing: 24) {
             ZStack {
-                Circle().stroke(PreviewPalette.secondary.opacity(0.22), lineWidth: 1)
+                Circle().stroke(PreviewPalette.secondary.opacity(0.3), lineWidth: 1)
                 Rectangle().fill(PreviewPalette.blue).frame(height: 2)
-                    .rotationEffect(.degrees(started ? 0 : 8))
-                Circle().fill(PreviewPalette.canvas).frame(width: 120, height: 120)
-                VStack(spacing: 4) {
-                    Text(started ? "0.0°" : "8.0°")
-                        .font(.system(size: 44, weight: .semibold, design: .rounded)).monospacedDigit()
+                    .rotationEffect(.degrees(firstReading ? 0 : 8))
+                Circle().fill(PreviewPalette.canvas).frame(width: 140, height: 140)
+                VStack(spacing: 6) {
+                    Text(firstReading ? "0.0°" : "8.0°")
+                        .font(.system(.largeTitle, design: .rounded).weight(.semibold)).monospacedDigit()
                         .contentTransition(.numericText())
                     Text("Level · Demo").font(.caption).foregroundStyle(PreviewPalette.secondary)
                 }
             }
-            .frame(width: 230, height: 230)
+            .frame(width: 240, height: 240).frame(maxWidth: .infinity)
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel(started ? "Demo level, zero degrees" : "Demo level, eight degrees")
-            VStack(alignment: .leading, spacing: 8) {
-                Text(started ? "That’s your first reading." : "A simple place to start.")
-                    .font(.system(.title3, design: .rounded).weight(.semibold))
-                Text(started ? "From here, set a reference or record a session when you need one." : "Place your phone on a surface to check its angle. Permission requests appear when an instrument needs them.")
-                    .font(.body).foregroundStyle(PreviewPalette.secondary)
-            }
+            .accessibilityLabel(firstReading ? "Demo level, zero degrees" : "Demo level, eight degrees")
+            Text(firstReading ? "That’s your first reading." : "A simple place to start.")
+                .font(.system(.title3, design: .rounded).weight(.semibold))
+            Text(firstReading ? "Set a reference or record a session when you need one." : "Place your phone on a surface to check its angle. Permissions appear when an instrument needs them.")
+                .font(.body).foregroundStyle(PreviewPalette.secondary)
         }
-        .frame(maxWidth: .infinity)
+        .padding(.vertical, 16)
+    }
+
+    private var tourControls: some View {
+        let layout = typeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
+            : AnyLayout(HStackLayout(spacing: 12))
+        return layout {
+            if !compactHeight { Text("Demo instruments").font(.footnote).foregroundStyle(PreviewPalette.secondary) }
+            if !typeSize.isAccessibilitySize && !compactHeight { Spacer() }
+            Button {
+                if reduceMotion || typeSize.isAccessibilitySize || voiceOver {
+                    spotlight(TourInstrument.allCases[(selected.rawValue + 1) % TourInstrument.allCases.count])
+                } else if tourRunning { stopTour() }
+                else {
+                    if selected == .elevation { spotlight(.level) }
+                    tourRunning = true; tourRun = UUID()
+                }
+            } label: {
+                let manual = reduceMotion || typeSize.isAccessibilitySize || voiceOver
+                Label(manual ? "Next instrument" : tourRunning ? "Pause tour" : "Play tour",
+                      systemImage: manual ? "forward.end" : tourRunning ? "pause.circle" : "play.circle")
+                    .font(.footnote).frame(minHeight: 44).contentShape(Rectangle())
+            }.buttonStyle(.plain).foregroundStyle(PreviewPalette.blue)
+        }
     }
 
     private var footer: some View {
-        VStack(spacing: 10) {
+        let layout = compactHeight
+            ? AnyLayout(HStackLayout(alignment: .center, spacing: 24))
+            : AnyLayout(VStackLayout(spacing: 6))
+        return layout {
+            if page == 0 && !typeSize.isAccessibilitySize { tourControls }
             Button {
-                if step < 2 { advance(to: step + 1) }
-                else if step == 2 { showPurchasePreview = true }
-                else if started { advance(to: 0) }
-                else { withAnimation(reduceMotion ? nil : .smooth(duration: 0.6)) { started = true } }
+                if page == 0 { navigate(to: 1) }
+                else if page == 1 { showPurchasePreview = true }
+                else if firstReading { replay() }
+                else { withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.65)) { firstReading = true } }
             } label: {
-                Text(step == 0 ? "See the difference" : step == 1 ? "Explore Pro" : step == 2 ? "Unlock Pro" : started ? "Replay introduction" : "Try Level")
+                Text(page == 0 ? "Explore Pro" : page == 1 ? "Unlock Pro" : firstReading ? "Replay introduction" : "Try Level")
                     .font(.system(.headline, design: .rounded))
                     .frame(maxWidth: .infinity, minHeight: 28)
             }
-            .buttonStyle(.borderedProminent)
-            .tint(PreviewPalette.action)
-            .controlSize(.large)
-            if step == 2 && !typeSize.isAccessibilitySize {
-                Text("One-time purchase. No subscription.")
-                    .font(.footnote).foregroundStyle(PreviewPalette.secondary)
+            .buttonStyle(.borderedProminent).tint(PreviewPalette.action).controlSize(.large)
+            if page == 1 && !typeSize.isAccessibilitySize && !compactHeight {
+                Text("One-time purchase. No subscription.").font(.footnote).foregroundStyle(PreviewPalette.secondary)
                 purchaseLinks
             }
-            if !typeSize.isAccessibilitySize { previewAnnotation }
+            if page > 0 && !typeSize.isAccessibilitySize && !compactHeight { previewAnnotation }
         }
-        .padding(.horizontal, 24)
-        .padding(.top, 14)
-        .padding(.bottom, 8)
-        .frame(maxWidth: 540)
-        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 22).padding(.top, page == 0 ? 0 : 14).padding(.bottom, 8)
+        .frame(maxWidth: compactHeight ? 800 : 560).frame(maxWidth: .infinity)
         .background(.bar)
     }
 
@@ -302,97 +276,118 @@ struct OnboardingPreview: View {
     }
 
     private var purchaseLinks: some View {
-        adaptiveLayout {
-            Button("Restore purchases") { showHelp = true }.frame(minHeight: 44)
+        let layout = typeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
+            : AnyLayout(HStackLayout(spacing: 16))
+        return layout {
+            Button("Restore purchases") { showRestore = true }.frame(minHeight: 44)
             if !typeSize.isAccessibilitySize { Spacer(minLength: 0) }
             Link("Privacy", destination: URL(string: "https://bradzellman.com/magiccuts-policies.html#privacy")!).frame(minHeight: 44)
             Link("Terms", destination: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!).frame(minHeight: 44)
         }.font(.footnote)
     }
 
-    private func advance(to next: Int) {
-        withAnimation(motion) {
-            step = next
-            referenceVisible = next == 1
-            started = false
+    private var purchasePreview: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    Text("Purchase preview").font(.system(.largeTitle, design: .rounded).bold())
+                    Text("No payment will be made. In the app, Apple confirms the localized price and completes the purchase.")
+                    Button("Preview successful purchase") { showPurchasePreview = false; navigate(to: 2) }
+                        .buttonStyle(.borderedProminent).tint(PreviewPalette.action).controlSize(.large)
+                    Button("Preview cancellation") { showPurchasePreview = false }.frame(minHeight: 44)
+                }.padding(24)
+            }
+            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { showPurchasePreview = false } } }
         }
+        .presentationDetents([.medium, .large])
     }
 
-    private func animateStep() async {
-        if step == 0 {
-            signal = reduceMotion ? -62 : -84
-            guard !reduceMotion else { return }
-            do { try await Task.sleep(for: .milliseconds(350)) } catch { return }
-            withAnimation(.easeInOut(duration: 1.6)) { signal = -62 }
-        } else if step == 1 {
-            signal = reduceMotion ? -62 : reference
-            guard !reduceMotion else { return }
-            do { try await Task.sleep(for: .milliseconds(450)) } catch { return }
-            withAnimation(.easeInOut(duration: 1.2)) { signal = -62 }
+    private func configure() {
+        guard !configured else { return }
+        configured = true
+        let args = ProcessInfo.processInfo.arguments
+        if let arg = args.first(where: { $0.hasPrefix("--page=") }), let value = Int(arg.dropFirst(7)), (0 ... 2).contains(value) {
+            page = value
         }
+        if let arg = args.first(where: { $0.hasPrefix("--card=") }), let value = Int(arg.dropFirst(7)), let instrument = TourInstrument(rawValue: value) {
+            selected = instrument; tourRunning = false
+        }
+        if reduceMotion || typeSize.isAccessibilitySize || voiceOver { tourRunning = false }
+        if page != 0 { tourRunning = false; readings = Array(repeating: 1, count: readings.count) }
+        if args.contains("--autoplay") { tourRunning = false; presentation = true }
+        tourRun = UUID(); cardRun = UUID()
+    }
+
+    private func stopTour() { tourRunning = false; tourRun = UUID() }
+
+    private func spotlight(_ instrument: TourInstrument) {
+        var transaction = Transaction(); transaction.disablesAnimations = true
+        withTransaction(transaction) { readings[instrument.rawValue] = reduceMotion ? 1 : 0 }
+        withAnimation(transition) { selected = instrument }
+        cardRun = UUID()
+    }
+
+    private func navigate(to destination: Int) {
+        stopTour(); presentation = false
+        withAnimation(transition) {
+            page = destination; firstReading = false
+            if destination == 1 { readings = Array(repeating: 1, count: readings.count) }
+        }
+        cardRun = UUID()
+    }
+
+    private func replay() {
+        navigate(to: 0)
+        var transaction = Transaction(); transaction.disablesAnimations = true
+        withTransaction(transaction) { readings = Array(repeating: 0, count: readings.count) }
+        spotlight(.level)
+        tourRunning = !reduceMotion && !typeSize.isAccessibilitySize && !voiceOver; tourRun = UUID()
+    }
+
+    private func animateSelectedCard() async {
+        guard page == 0, scenePhase == .active else { return }
+        if reduceMotion { readings[selected.rawValue] = 1; return }
+        let instrument = selected
+        do {
+            try await Task.sleep(for: .milliseconds(350))
+            let started = ContinuousClock.now
+            while !Task.isCancelled, page == 0, selected == instrument, scenePhase == .active {
+                let elapsed = started.duration(to: .now).components
+                let seconds = Double(elapsed.seconds) + Double(elapsed.attoseconds) / 1e18
+                let fraction = min(seconds / 1.6, 1)
+                let eased = 1 - pow(1 - fraction, 3)
+                var transaction = Transaction(); transaction.disablesAnimations = true
+                withTransaction(transaction) { readings[instrument.rawValue] = eased }
+                if fraction == 1 { return }
+                try await Task.sleep(for: .milliseconds(16))
+            }
+        } catch { return }
+    }
+
+    private func runTour() async {
+        guard configured, page == 0, tourRunning, !reduceMotion, !typeSize.isAccessibilitySize, !voiceOver, !presentation else { return }
+        do {
+            while tourRunning {
+                try await Task.sleep(for: .seconds(3.7))
+                guard page == 0, tourRunning else { return }
+                guard let next = TourInstrument(rawValue: selected.rawValue + 1) else { tourRunning = false; return }
+                spotlight(next)
+            }
+        } catch { return }
     }
 
     private func playPresentation() async {
         do {
+            for instrument in TourInstrument.allCases {
+                spotlight(instrument)
+                try await Task.sleep(for: .seconds(3.7))
+            }
+            withAnimation(transition) { page = 1; readings = Array(repeating: 1, count: readings.count) }
             try await Task.sleep(for: .seconds(5))
-            advance(to: 1)
+            withAnimation(transition) { page = 2 }
             try await Task.sleep(for: .seconds(2))
-            withAnimation(reduceMotion ? nil : .easeInOut(duration: 1.3)) { signal = -80 }
-            try await Task.sleep(for: .seconds(2))
-            withAnimation(reduceMotion ? nil : .easeInOut(duration: 1.3)) { signal = -58 }
-            try await Task.sleep(for: .seconds(3))
-            advance(to: 2)
-            try await Task.sleep(for: .seconds(7))
-            advance(to: 3)
-            try await Task.sleep(for: .seconds(3))
-            withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.7)) { started = true }
+            withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.65)) { firstReading = true }
         } catch { return }
-    }
-}
-
-private struct SignalDial: View, Animatable {
-    var value: Double
-    let reference: Double?
-    var animatableData: Double {
-        get { value }
-        set { value = newValue }
-    }
-
-    var body: some View {
-        Canvas { context, size in
-            let center = CGPoint(x: size.width / 2, y: size.height * 0.64)
-            let radius = min(size.width * 0.42, size.height * 0.55, center.y - 24)
-            func point(_ value: Double, radius: Double) -> CGPoint {
-                let angle = (-210 + (value + 100) / 60 * 240) * .pi / 180
-                return CGPoint(x: center.x + cos(angle) * radius, y: center.y + sin(angle) * radius)
-            }
-            for tick in 0...60 {
-                let sample = -100.0 + Double(tick)
-                let major = tick.isMultiple(of: 10)
-                let active = sample <= value
-                var path = Path()
-                path.move(to: point(sample, radius: radius - (major ? 16 : 8)))
-                path.addLine(to: point(sample, radius: radius))
-                context.stroke(path, with: .color(active ? PreviewPalette.blue : PreviewPalette.secondary.opacity(0.3)), style: StrokeStyle(lineWidth: major ? 2.5 : 1, lineCap: .round))
-            }
-            for sample in [-100.0, -70.0, -40.0] {
-                let label = Text("\(Int(sample))").font(.caption2).foregroundStyle(PreviewPalette.secondary)
-                context.draw(label, at: point(sample, radius: radius + 14))
-            }
-            if let reference {
-                let marker = point(reference, radius: radius - 26)
-                var diamond = Path()
-                diamond.move(to: CGPoint(x: marker.x, y: marker.y - 5))
-                diamond.addLine(to: CGPoint(x: marker.x + 5, y: marker.y))
-                diamond.addLine(to: CGPoint(x: marker.x, y: marker.y + 5))
-                diamond.addLine(to: CGPoint(x: marker.x - 5, y: marker.y))
-                diamond.closeSubpath()
-                context.fill(diamond, with: .color(.primary))
-            }
-            var needle = Path()
-            needle.move(to: point(value, radius: radius - 29))
-            needle.addLine(to: point(value, radius: radius + 5))
-            context.stroke(needle, with: .color(PreviewPalette.blue), style: StrokeStyle(lineWidth: 4, lineCap: .round))
-        }
     }
 }

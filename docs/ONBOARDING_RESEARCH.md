@@ -58,7 +58,7 @@ Halide is the closest commercial comparator: its current developer-authored App 
 
 Flighty’s design team describes preserving the most useful information and drawing on established airport-signage conventions. That is the relevant analogy for our dial: familiar measurement notation can do explanatory work. [Apple: Behind the Design — Flighty, June 5, 2023](https://developer.apple.com/news/?id=970ncww4)
 
-## Motion specification for this revision
+## Original motion specification (revision 1)
 
 | Moment | Meaning and interaction | Motion | Reduced motion |
 |---|---|---|---|
@@ -100,3 +100,24 @@ Validate with five people who have not seen MagicCuts: can they explain what the
 For later quantitative evaluation, define denominators and windows before comparing: eligible first launches → offer views → confirmed purchases; confirmed purchasers → first valid supported reading; canceled purchases → successful recovery. Track refunds and support confusion alongside conversion. Use existing consent and privacy commitments; this research does not authorize adding telemetry or a backend.
 
 Open decisions: final localized price; Bluetooth versus Level as the leading demonstration after comprehension testing; exact source choice on unsupported hardware; returning-purchaser and interrupted-purchase runtime verification. Production implementation follows review of the motion revision.
+
+
+## Selected card-tour revision (revision 2)
+
+The user selected a new presentation direction after the initial signal/reference prototype: widget-like instrument cards, sized for their purpose, with one card lighting up at a time while the explanation above changes smoothly. The current [native prototype](../prototypes/onboarding/README.md) and [motion film](screenshots/onboarding-cards/magiccuts-onboarding-cards.mp4) implement that direction. The original research and first recording remain historical evidence.
+
+The selected reference is **0951, [ShutEye: Patent Award Graph Animation](https://60fps.design/shots/shuteye-patent-award-graph-animation)**. Its recording was opened, played and inspected on September 10, 2026. It combines a stable group of small chart cards, staggered chart reveals and an award treatment. We borrow the stable collection and sequential emphasis. The patent badge and implied validation are specific to that product and do not transfer. This recording adds a motion reference, not purchase-conversion evidence. Third-party footage is not redistributed.
+
+| Instrument | Card shape and demonstration | Explanation |
+|---|---|---|
+| Level | Small card; a bubble centers as 8.0° approaches 0.0°. | Level a surface; find the angle that works. |
+| Bluetooth signal | Small card; tick illumination, needle and −84 → −58 dBm reading agree. | Watch signal change as you move. |
+| Vibration | Full-width card; a trace settles as the example changes from 0.082 to 0.014 g RMS. | Turn vibration into a trace you can compare. |
+| Magnetic heading | Small card; a compass approaches north, 325° → 0°. | Keep a direction reference. |
+| Relative elevation | Small card; a vertical tape rises from +0.0 to +4.2 m. | Track elevation from where you started. |
+
+The mosaic keeps its positions while the active card changes every 3.7 seconds; the selected data follows a cancellable cubic ease-out over 1.6 seconds after a 350 ms focus lead. Rapid taps freeze the previous sample immediately. The reading and graphic use the same interpolation. Narration crossfades over 420 ms in a reserved area. Completed readings remain visible in inactive cards. The tour runs once and stays on the showcase; Explore Pro remains available throughout. Tapping a card pauses the sequence and replays that demonstration. Pause stops sequencing; an already-started reading settles.
+
+Phone landscape places compact versions of the same cards beside the narration so the full set stays visible. The five cards contract into the one-time offer, followed by the existing simulated purchase and first-Level flow. Reduce Motion removes reading sweeps and auto progression, retaining a 120 ms narration crossfade and manual Next instrument. Accessibility text sizes use a scrolling single column and manual progression; VoiceOver also disables automatic progression. These are authored design decisions, not claims of user-tested comprehension.
+
+The formative questions now include which instruments people remember, whether they understand the highlighted card and explanation as one step, and whether they can take control or skip to the offer. Final pricing, supported-device behavior and real purchase/sensor acceptance remain open production work.
