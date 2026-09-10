@@ -1,0 +1,44 @@
+{
+  "date": "2026-09-10",
+  "source_sha256": "13de6194ce4b9421ad9f318bf311434da3422c7ffad897ba7729120413ab5b57",
+  "baseline_commit": "ce126814f3ea4e125ad62afd72b98eb500b3a87f",
+  "phone": {
+    "udid": "29E307AD-9D74-43B5-BA98-EDED5FD4CC3D",
+    "model": "iPhone 17 Pro",
+    "os": "iOS 26.5",
+    "sizes": [
+      "Large",
+      "Accessibility XXXL"
+    ]
+  },
+  "tablet": {
+    "udid": "4B683049-3398-4177-99A7-8A009924C75B",
+    "model": "iPad Air 11-inch M3",
+    "os": "iPadOS 26.5",
+    "sizes": [
+      "Large",
+      "Accessibility XXXL"
+    ]
+  },
+  "motion": "Native simulator frames, normalized to constant 60 fps H.264; no composited app elements. Final hero recorded from final source. Reduced Motion normal-size capture preceded only the AX footer relocation, with normal-size behavior unchanged. Delivery trims 1.5s of home/launch prefix and holds the actual final frame for 2.5s.",
+  "reduced_motion": "ReduceMotionEnabled enabled before cold launch; immediate -62 reading and reference verified in captured frames. Restored false afterward.",
+  "verification": [
+    "Standalone Swift build passed with warnings as errors",
+    "Slider comparison and delta match stronger/weaker state",
+    "Simulated purchase cancellation, retry and success",
+    "Simulated restored purchase",
+    "First Level reading from 8 to 0 degrees",
+    "Replay and View Pro skip",
+    "Largest text native scrolling and pinned CTA",
+    "Whole-file video decode and first/last frame inspection"
+  ],
+  "limitations": [
+    "No StoreKit, sensor or iCloud calls from standalone prototype",
+    "No real transaction or hardware acceptance evidence",
+    "Localized price not selected",
+    "VoiceOver navigation not fully verified; idb omitted toolbar nodes after replay, visible View Pro worked by screenshot coordinates",
+    "Playback path auto-advances only under --autoplay and omits simulated purchase sheet",
+    "Phone/tablet static captures span geometry-only and AX-footer corrections; final hero records final source"
+  ],
+  "review": "Fresh substitute finish reviewer: ship at local extension scope; compact dial and AX footer findings resolved. Fresh substitute documenter preserved incumbent DESIGN.md and design sidecar."
+}
