@@ -1,0 +1,1 @@
+PASS: five card selections and narration, matching final readings, frozen prior readings, tap-to-pause, pause/resume, ordinary tour completes once without navigating; simulated purchase cancellation/retry/success, first Level zero, replay, simulated restore. Native idb accessibility queries and taps on 29E307AD-9D74-43B5-BA98-EDED5FD4CC3D. No sensors or App Store calls.

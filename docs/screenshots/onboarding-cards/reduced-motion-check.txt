@@ -1,0 +1,1 @@
+PASS: Simulator Accessibility ReduceMotionEnabled=true; app exposes Next instrument, initial Level final at first assertion, stays on Level, manual Signal and Vibration final immediately. Recorded native interaction. Reset to false after capture.

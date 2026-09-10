@@ -1,0 +1,1 @@
+PASS: slider comparison, offer, simulated cancellation/success, first reading, replay, skip, simulated restore. No payment or sensor APIs. Dedicated simulator 29E307AD-9D74-43B5-BA98-EDED5FD4CC3D. Toolbar View Pro used visible screenshot coordinates because idb AX export omitted native toolbar buttons after replay; actual VoiceOver traversal not verified.
