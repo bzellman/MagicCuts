@@ -34,9 +34,17 @@ enum SessionReport {
         let auxiliary = Set(session.points.flatMap { $0.auxiliary.keys }).sorted()
         let formatter = ISO8601DateFormatter(); formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         func field(_ text: String) -> String { "\"" + text.replacingOccurrences(of: "\"", with: "\"\"") + "\"" }
-        var lines = [( ["timestamp_utc", "elapsed_seconds", "segment", "instrument", "value", "unit"] + auxiliary ).map(field).joined(separator: ",")]
+        let spatialHeaders = ["room_id", "room_revision_id", "coordinate_frame_id", "room_x_m", "room_y_m", "room_z_m", "orientation_radians", "placement_method", "position_timestamp_utc"]
+        var lines = [( ["timestamp_utc", "elapsed_seconds", "segment", "instrument", "value", "unit"] + auxiliary + spatialHeaders ).map(field).joined(separator: ",")]
         for point in session.points {
-            let values = [formatter.string(from: point.date), String(point.elapsed), String(point.segment), session.kind.rawValue, String(point.value), session.kind.unit] + auxiliary.map { point.auxiliary[$0].map { String($0) } ?? "" }
+            let spatial: [String]
+            if let placement = point.placement {
+                let position = placement.pose.position
+                spatial = [placement.roomID.uuidString, placement.revisionID.uuidString, placement.coordinateFrameID.uuidString,
+                           String(position.x), String(position.y), String(position.z), String(placement.pose.heading),
+                           placement.method.rawValue, formatter.string(from: placement.observedAt)]
+            } else { spatial = Array(repeating: "", count: spatialHeaders.count) }
+            let values = [formatter.string(from: point.date), String(point.elapsed), String(point.segment), session.kind.rawValue, String(point.value), session.kind.unit] + auxiliary.map { point.auxiliary[$0].map { String($0) } ?? "" } + spatial
             lines.append(values.map(field).joined(separator: ","))
         }
         return Data((lines.joined(separator: "\r\n") + "\r\n").utf8)
@@ -106,6 +114,11 @@ enum SessionReport {
             }
             text("Method", size: 14, weight: .bold)
             text(session.method)
+            let placed = session.points.filter { $0.placement != nil }
+            if !placed.isEmpty {
+                text("Room positions", size: 14, weight: .bold)
+                text("\(placed.count) readings have a room position and orientation. Complete coordinates, revision identifiers, placement methods and timestamps are included in the CSV and JSON exports. Positions are room-relative, not geographic coordinates.")
+            }
             text("Ended: \(session.termination). Missing readings are not treated as zero. This report describes the observed session, not a guarantee of future results.")
             for key in session.metadata.keys.sorted().filter({ !["audioInput", "referenceFrame", "installationID"].contains($0) }) {
                 text("\(MeasurementMetadata.label(key)): \(session.metadata[key] ?? "")", size: 9)

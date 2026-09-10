@@ -391,10 +391,14 @@ actor CloudLibraryTransport: CKSyncEngineDelegate {
                 if case .saveRecord(let id) = change { return id.recordName }
                 return nil
             })
-            let records = try await archive.syncRecords(keys: keys)
-            guard engine === current, state.consent.enabled else { return nil }
-            guard records.count == keys.count else { throw CloudLibraryError.invalidRecord }
-            let values = try records.map { try makeCloudRecord($0) }
+            // Materialize one payload at a time; a room's mesh and orientation map can be much larger than scalar sessions.
+            var values: [CKRecord] = []
+            for key in keys.sorted() {
+                let records = try await archive.syncRecords(keys: [key])
+                guard engine === current, state.consent.enabled else { return nil }
+                guard records.count == 1, let record = records.first else { throw CloudLibraryError.invalidRecord }
+                values.append(try makeCloudRecord(record))
+            }
             return values.isEmpty ? nil : CKSyncEngine.RecordZoneChangeBatch(recordsToSave: values, atomicByZone: false)
         } catch {
             await report(error, resetFetch: true)

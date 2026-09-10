@@ -24,65 +24,46 @@
   <!-- Page Header -->
   <header class="page-header">
     <h1>Privacy Policy</h1>
-    <p>Last updated: January 2025</p>
+    <p>Last updated: September 10, 2026</p>
   </header>
 
   <!-- Content -->
   <main class="page-content">
-    <h2>Our Commitment to Privacy</h2>
-    <p>MagicCuts is designed with privacy as a core principle. We believe your data belongs to you and should stay on your device.</p>
+    <h2>Your data and MagicCuts</h2>
+    <p>MagicCuts stores its library on your device by default. We do not operate a server that receives your instrument readings, tag contents, room captures, or usage history. There are no advertising or third-party analytics SDKs.</p>
 
-    <h2>Data Collection</h2>
-    <p><strong>We do not collect, store, or transmit any personal data to external servers.</strong></p>
-    <p>MagicCuts operates entirely on your device. There are no analytics, no tracking, no telemetry, and no cloud services involved.</p>
-
-    <h2>Local Storage</h2>
-    <p>All information is stored locally on your iPhone using iOS's secure storage mechanisms:</p>
+    <h2>What the app stores</h2>
+    <p>Depending on the tools you use and what you save, the local library can include:</p>
     <ul>
-      <li><strong>Device Names:</strong> The names you assign to your monitored Bluetooth devices</li>
-      <li><strong>Device Identifiers:</strong> Bluetooth UUIDs used to recognize your devices</li>
-      <li><strong>Signal Thresholds:</strong> Your configured RSSI proximity settings</li>
-      <li><strong>Service UUIDs:</strong> Bluetooth service identifiers for device filtering</li>
+      <li>Bluetooth device names, identifiers, service filters, and proximity settings.</li>
+      <li>Instrument readings, timestamps, source information, baselines, workflows, notes, and reports.</li>
+      <li>NFC tag identifiers and contents, raw NDEF records, capacity, and scan diagnostics.</li>
+      <li>Network request timing and route information, reported cellular technology, service forecasts, and delayed cellular-condition summaries provided by iOS.</li>
+      <li>Room geometry, recognized walls and objects, depth samples, dimensions, an orientation map, a reference camera image, and positions of measurements within a room.</li>
     </ul>
-    <p>This data never leaves your device and is not accessible to us or any third party.</p>
+    <p>Sound measurements retain numeric levels, not audio recordings. Room positions are relative to the captured room; location-based instruments can separately use location information you permit.</p>
 
-    <h2>Bluetooth Data</h2>
-    <p>MagicCuts scans for nearby Bluetooth devices only when:</p>
-    <ul>
-      <li>You manually initiate a scan in the app</li>
-      <li>A Shortcut or Siri command requests a proximity check</li>
-    </ul>
-    <p>Bluetooth device identifiers are used solely for matching your saved devices. We do not collect, store, or transmit information about other Bluetooth devices in your environment.</p>
+    <h2>Optional iCloud sync</h2>
+    <p>You can enable iCloud library sync separately on each installation. When enabled, eligible library data, including saved room assets and field captures, is uploaded to your private CloudKit database using your Apple account. Apple provides this service under its own policies. Turning sync off stops further sync on that installation; it does not automatically delete copies already stored in iCloud or on other devices.</p>
 
-    <h2>No Analytics or Tracking</h2>
-    <p>MagicCuts does not include any:</p>
-    <ul>
-      <li>Analytics frameworks</li>
-      <li>Crash reporting services</li>
-      <li>Advertising SDKs</li>
-      <li>User behavior tracking</li>
-      <li>Usage telemetry</li>
-    </ul>
+    <h2>Network and nearby-device tools</h2>
+    <p>Network tests send requests to the endpoint you choose. That endpoint and network providers can observe ordinary connection information, including your IP address. Upload tests send generated test bytes. Saved field-test captures omit the endpoint query, but the requested endpoint receives the request itself.</p>
+    <p>Peer tools communicate with participating devices you connect. The local benchmark uses an ephemeral encrypted connection and asks both users to verify the same connection code before exchanging test traffic or Nearby Interaction tokens. Wi-Fi Aware pairing uses the system pairing interface. These tools do not upload your room library to a peer.</p>
+    <p>NFC reads begin when you start a scan. A URL found on a tag opens only when you choose to open it; that destination then applies its own policies.</p>
 
-    <h2>No Accounts Required</h2>
-    <p>MagicCuts does not require account creation, sign-in, or any form of registration. The app works fully offline after initial download.</p>
+    <h2>Device permissions and system services</h2>
+    <p>MagicCuts requests access as needed for the selected feature: Bluetooth and local networking for discovery; camera for room/depth capture and orientation; motion for movement instruments; microphone for sound levels; location for location-dependent readings; nearby interaction for participating-device ranging; and Siri for Shortcuts. Availability and permissions are controlled by iOS and can be changed in Settings.</p>
+    <p>Apple's MetricKit can provide delayed cellular-condition summaries for this app. MagicCuts keeps the supported summary locally as a field capture; it is not sent to a developer analytics service. An enabled iCloud library can sync that saved capture.</p>
 
-    <h2>Permissions</h2>
-    <p>MagicCuts requests the following permissions:</p>
-    <ul>
-      <li><strong>Bluetooth:</strong> Required to scan for and detect nearby Bluetooth devices. This is the core functionality of the app.</li>
-      <li><strong>Siri:</strong> Required to enable voice commands and Shortcuts integration. You can use the app without granting this permission.</li>
-    </ul>
-    <p>You can modify these permissions at any time in iOS Settings.</p>
+    <h2>Sharing and deletion</h2>
+    <p>Exports and the share sheet send the selected files to the app or destination you choose. Room archives can contain a reference image and orientation map; field-capture JSON can contain raw NFC contents. Review the export's description before sharing. Recipients control copies they receive.</p>
+    <p>You can delete saved items in the app. A room revision that other saved measurements or unfinished work reference is retained to preserve those measurements' spatial context. Library deletion is propagated through iCloud when sync is enabled and available.</p>
 
-    <h2>Data Sharing</h2>
-    <p>We do not share any data with third parties because we do not collect any data. Period.</p>
+    <h2>Accounts and purchases</h2>
+    <p>MagicCuts does not require a developer account. Apple handles App Store purchases and optional iCloud access through your Apple account. Saved rooms and records can be viewed offline; network, cloud, and participating-device features require their respective connections.</p>
 
-    <h2>Children's Privacy</h2>
-    <p>MagicCuts does not collect any personal information from anyone, including children under 13. The app contains no objectionable content and is rated 4+.</p>
-
-    <h2>Changes to This Policy</h2>
-    <p>If we make changes to this privacy policy, we will update the "Last updated" date at the top of this page. Continued use of the app after changes constitutes acceptance of the updated policy.</p>
+    <h2>Changes to this policy</h2>
+    <p>We update this page when the app's data practices change and show the revision date above.</p>
 
     <h2>Contact</h2>
     <p>If you have questions about this privacy policy, please visit our <a href="support.html">support page</a> or <a href="https://github.com/bradzellman/MagicCuts/issues">open an issue on GitHub</a>.</p>
@@ -97,7 +78,7 @@
         <li><a href="support.html">Support</a></li>
         <li><a href="https://github.com/bradzellman/MagicCuts">GitHub</a></li>
       </ul>
-      <p class="footer-copy">&copy; 2025 Brad Zellman. All rights reserved.</p>
+      <p class="footer-copy">&copy; 2026 Brad Zellman. All rights reserved.</p>
     </div>
   </footer>
 </body>

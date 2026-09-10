@@ -103,6 +103,8 @@ struct ProWorkspaceView: View {
     var requestedRecordingID: UUID?
     @State private var engine: InstrumentEngine
     @State private var library: ProLibrary
+    @State private var roomSession: RoomSession
+    @State private var cellular = CellularInstrument()
     @State private var selectedTab = 0
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.modelContext) private var context
@@ -110,9 +112,13 @@ struct ProWorkspaceView: View {
     init(radio: any RadioScanning, access: ProAccess, guidanceWarning: String?, requestedRecordingID: UUID? = nil) {
         self.radio = radio; self.access = access; self.guidanceWarning = guidanceWarning
         self.requestedRecordingID = requestedRecordingID
-        let archive = InstrumentArchive(useSharedContainer: !AppRuntime.isUITesting)
+        let archive = InstrumentArchive(root: AppRuntime.roomUITestLibrary, useSharedContainer: !AppRuntime.isUITesting)
         _library = State(initialValue: ProLibrary(archive: archive))
-        _engine = State(initialValue: InstrumentEngine(archive: archive))
+        let roomSession = RoomSession()
+        let engine = InstrumentEngine(archive: archive)
+        engine.positionProvider = { [weak roomSession] date in roomSession?.placement(at: date) }
+        _roomSession = State(initialValue: roomSession)
+        _engine = State(initialValue: engine)
     }
 
     var body: some View {
@@ -126,16 +132,27 @@ struct ProWorkspaceView: View {
             Tab("Workflows", systemImage: "arrow.triangle.branch", value: 2) {
                 NavigationStack { WorkflowsView(library: library, radio: AppRuntime.isUITesting ? DemoRadio() : BluetoothRadio()) }
             }
+            Tab("Rooms", systemImage: "square.3.layers.3d", value: 3) {
+                NavigationStack { RoomsView(library: library) }
+            }
         }
+        .environment(roomSession)
+        .environment(cellular)
+        .onChange(of: roomSession.cameraActive) { _, active in UIApplication.shared.isIdleTimerDisabled = active }
         .task {
             await SessionLiveActivity.endAbandoned()
             await library.sync.mirrorDevices(in: context)
             await library.reload()
             await library.seedDemoIfNeeded()
+            #if DEBUG
+            await FieldDemo.seed(library)
+            #endif
+            cellular.positionProvider = { [weak roomSession] date in roomSession?.placement(at: date) }
+            if !AppRuntime.isUITesting { cellular.start(library: library) }
             await library.sync.transport.resume()
         }
         .onChange(of: scenePhase) { _, phase in
-            if phase == .background { engine.interruptedByBackground() }
+            if phase == .background { engine.interruptedByBackground(); roomSession.backgrounded(); cellular.stopForecasts() }
             else if phase == .active {
                 Task {
                     await library.sync.mirrorDevices(in: context)
@@ -159,6 +176,9 @@ struct ProWorkspaceView: View {
         }
         .onDisappear {
             engine.stop(reason: "Pro experience closed"); engine.endLiveActivity()
+            roomSession.end()
+            cellular.stop()
+            UIApplication.shared.isIdleTimerDisabled = false
             Task { await library.sync.transport.suspend() }
         }
     }
@@ -185,6 +205,8 @@ struct InstrumentWorkspaceView: View {
     @State private var calibrationSheet = false
     @State private var failure: String?
     @State private var endpoint = ""
+    @State private var fieldCapture: FieldCapture?
+    @Environment(RoomSession.self) private var roomSession
     @Environment(\.dynamicTypeSize) private var dynamicType
     @Environment(\.horizontalSizeClass) private var horizontalSize
 
@@ -216,6 +238,7 @@ struct InstrumentWorkspaceView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
+                RoomOrientationBanner()
                 sourceControl
                 InstrumentSegments(selection: $mode)
                 statusLine
@@ -231,6 +254,9 @@ struct InstrumentWorkspaceView: View {
                         if mode != .inspect { history(height: mode == .compare ? 190 : 120) }
                         if mode != .compare { statistics }
                         baselineControl
+                        Button { if let point = selectedPoint { fieldCapture = .reading(point, kind: chosenKind, source: source) } } label: {
+                            Label("Capture this reading", systemImage: "mappin.and.ellipse")
+                        }.frame(minHeight: 44).disabled(selectedPoint == nil)
                         if chosenKind == .bluetooth {
                             Button("Calibrate nearby and away") { engine.pause(); calibrationSheet = true }
                                 .font(.system(.headline, design: .rounded)).frame(minHeight: 44).disabled(engine.recording)
@@ -256,6 +282,7 @@ struct InstrumentWorkspaceView: View {
         .navigationTitle("Instruments")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) { NavigationLink { FieldToolsView(library: library) } label: { Label("Field tools", systemImage: "square.grid.2x2") }.frame(minWidth: 44, minHeight: 44).accessibilityIdentifier("instruments.field-tools") }
             ToolbarItem(placement: .topBarTrailing) { Button { settings = true } label: { Label("Settings", systemImage: "gearshape") }.frame(minWidth: 44, minHeight: 44) }
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
@@ -270,6 +297,7 @@ struct InstrumentWorkspaceView: View {
             }
         }
         .sheet(isPresented: $settings) { ProSettingsView(access: access, library: library) }
+        .sheet(item: $fieldCapture) { FieldCaptureSaveView(capture: $0, library: library) }
         .sheet(isPresented: $devicesSheet, onDismiss: { if chosenKind == .bluetooth { Task { await start() } } }) {
             ContentView(radio: radio)
                 .safeAreaInset(edge: .bottom) { Button("Done") { devicesSheet = false }.frame(maxWidth: .infinity, minHeight: 44).background(.bar) }

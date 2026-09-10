@@ -2,6 +2,21 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Capture room surfaces and locate your measurements within saved rooms.</string>
+	<key>NFCReaderUsageDescription</key>
+	<string>Read a nearby tag's reported identity, NDEF contents, and capacity when you start a scan.</string>
+	<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
+	<array><string>D2760000850101</string></array>
+	<key>NSNearbyInteractionUsageDescription</key>
+	<string>Measure distance and direction to a participating nearby device you connect.</string>
+	<key>NSBonjourServices</key>
+	<array><string>_magiccuts._tcp</string></array>
+	<key>WiFiAwareServices</key>
+	<dict>
+		<key>_magiccuts._tcp</key>
+		<dict><key>Publishable</key><dict/><key>Subscribable</key><dict/></dict>
+	</dict>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
