@@ -1,6 +1,6 @@
 import Foundation
 
-struct DeviceInfo: Codable, Equatable, Sendable {
+nonisolated struct DeviceInfo: Codable, Equatable, Sendable {
     let id: String
     let name: String
     let requiredSignalStrength: Int

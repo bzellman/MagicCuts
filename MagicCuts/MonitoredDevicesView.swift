@@ -19,7 +19,7 @@ struct MonitoredDevicesView: View {
             if devices.isEmpty {
                 Section {
                     ContentUnavailableView("Your devices, within reach", systemImage: "wave.3.right", description: Text("Save a Bluetooth device to check its signal in Shortcuts."))
-                    NavigationLink { discovery } label: { HandoffRow(title: "Find a device", symbol: "plus") }
+                    NavigationLink { discovery } label: { HandoffRow(title: "Find a device", symbol: "plus") }.accessibilityIdentifier("saved-devices.find")
                 }
             } else {
                 Section {
@@ -30,10 +30,10 @@ struct MonitoredDevicesView: View {
                                 Text(progress(device)).font(.callout).foregroundStyle(.secondary)
                                 Text("Threshold \(device.requiredSignalStrength) dBm").font(.caption).monospacedDigit().foregroundStyle(.secondary)
                             }.padding(.vertical, 8)
-                        }.swipeActions { Button("Delete", role: .destructive) { pendingDelete = device } }
+                        }.accessibilityIdentifier("saved-device.\(device.persistentIdentifier)").swipeActions { Button("Delete", role: .destructive) { pendingDelete = device } }
                     }
                 } header: { Text("Saved devices") }
-                Section { NavigationLink { discovery } label: { HandoffRow(title: "Find a device", symbol: "plus") } }
+                Section { NavigationLink { discovery } label: { HandoffRow(title: "Find a device", symbol: "plus") }.accessibilityIdentifier("saved-devices.find") }
             }
         }.scrollContentBackground(.hidden).background(MC.canvas).navigationTitle("Devices")
             .toolbar { NavigationLink { HelpView() } label: { Label("Help", systemImage: "questionmark.circle") } }

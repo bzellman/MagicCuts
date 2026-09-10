@@ -25,7 +25,7 @@ struct MagicCutsApp: App {
         WindowGroup {
             Group {
                 if AppRuntime.isUnitTesting { Color.clear }
-                else if let container { ContentView(radio: radio, guidanceWarning: guidanceWarning).modelContainer(container) }
+                else if let container { ProRootView(radio: radio, guidanceWarning: guidanceWarning).modelContainer(container) }
                 else if let failure {
                     VStack(spacing: 20) {
                         ContentUnavailableView("Could not open your devices", systemImage: "externaldrive.badge.exclamationmark", description: Text(failure))

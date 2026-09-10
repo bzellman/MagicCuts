@@ -1,0 +1,142 @@
+[
+  {
+    "file": "pro-altitude.png",
+    "sha256": "20c69ae94ef01eae61caa73c8eb777046c466ee6de0c038e4d12a6d67ad9b667",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-battery.png",
+    "sha256": "dfe75dfc3b754b5603f4b2428dc83fb8e8afdd5553a5495ec6f2641b9e4bd855",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-compare-dark.png",
+    "sha256": "09f0f943de06bee0e2978c37a7a5b0502eb83f2e914fc7bd5d9c7a7b3951d91a",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-export.png",
+    "sha256": "a16903d29a753fa26f8ff06be7137026435e9c6d1d3717d374ee0012d2cd9081",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-field-reports.png",
+    "sha256": "b3552b45ce11c660f068b1d3bc74b66cec6baba55f7f548ba10991de6615467e",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-heading.png",
+    "sha256": "b29640d7b4d93ce3a6043f2858ef6c28d7576a94df3e401e9feb53ce2ee056f5",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-inspect-dark.png",
+    "sha256": "73b6df1a42780873f5e3f11aaeae8f1b17e6c8a0965bae14d1855ecd70de9529",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-inspect-largest-text.png",
+    "sha256": "60c56cf6a32bad65153e3a8c7681d19697d47e86556651603cdb354a37375ff3",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-largest-bottom.png",
+    "sha256": "25092fcd8836118cf31f15df5909796c7b9dfba26a3e168aa2012e35d2806030",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-largest-chart.png",
+    "sha256": "36895c8df115cb53037c1d7f605fa411e7cc0d111db15f12dab55b81fb2472ed",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-largest-controls.png",
+    "sha256": "527944949b16773bf5269124923c55abbd2815723f30e87e7c3507857f67f1d8",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-largest-reading.png",
+    "sha256": "2722397c61618b2d75bcd8cda6a64838043d1676740c837161ef63d97c89bfdd",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-largest-text.png",
+    "sha256": "6becdcb49e08a3eaeb131d54f69d035769002dfac70170e005ae55dee805d10f",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-live-dark.png",
+    "sha256": "b408b7e9d48bfb716a9aac38dc5ff43ed93506db248907e2a93ce114ca58e01e",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-live-light.png",
+    "sha256": "6fa8f165c0245406d218bce0950ea7810fe9c9393379246be9d20b92c775373f",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-magnetic.png",
+    "sha256": "486b2089b1e6c2efcaacd8ccdff91934097dd345e710487df43ce652e9d870a0",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-paywall-purchase.png",
+    "sha256": "4e715f9eb5a1fec6b1f179c4cf268a05a1a7d5173dc8a82e63af946bb15d2fa8",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-paywall.png",
+    "sha256": "086cc735209fecf5170a6d9c5b682a7396b97dbfe3d7adb16ae6e5548c989c17",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-pressure.png",
+    "sha256": "2acfe45837c66578540f871b71d5a29ee8ade768e9ce1337231cf1c21a52ce9e",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-rotation.png",
+    "sha256": "86ce15b235b22f2901483451997609a5365deadde4c072980927c739cd2d3633",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-sound.png",
+    "sha256": "1288aebe707fc8a64a10409295428f167ae7daa50646610f19c5d6f03a82a8d7",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-speed.png",
+    "sha256": "619f1028da45bc182bd3aacfce967cb063c3ed3b287b31c28cbbe7e506348888",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-tilt.png",
+    "sha256": "3a1840963ba25e52c6861bb69e2ffb55294c203d34b0ceaa204c75781f72799f",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-vibration.png",
+    "sha256": "f80ff2b1cd2aa2b403852a3b280be3d1dc42abcc9a9b9361be454136511d15fa",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "pro-workflow-result.png",
+    "sha256": "82817425efa588ea80f18f447a3301269c1571ff514a17965fb8106949cf5cbc",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "tablet-dark.png",
+    "sha256": "cf890353af6fb32fe630162fbe2588e707b34f1cac03f157be5a5b4a537c71a1",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "tablet-largest.png",
+    "sha256": "b4a798c3f55998e132e35f3b89b634e6a2ef38eefe5dceba22e0a01063a5d000",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  },
+  {
+    "file": "tablet-light.png",
+    "sha256": "19bb30ec0870adfd33dafb0e374786243837e56f51a417a531f238cdcb6bf8b7",
+    "source": "Native simulator capture; sample data explicitly labeled in app"
+  }
+]

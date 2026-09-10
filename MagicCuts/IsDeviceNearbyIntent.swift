@@ -10,6 +10,7 @@ struct IsDeviceNearbyIntent: AppIntent {
     static var parameterSummary: some ParameterSummary { Summary("Check if \(\.$device) is nearby") }
     @MainActor
     func perform() async throws -> some IntentResult & ReturnsValue<Bool> {
+        try await ProAccess.require()
         let result = try await Self.check(id: device.id, storage: .shared, radio: BluetoothRadio())
         return .result(value: result)
     }

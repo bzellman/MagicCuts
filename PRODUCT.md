@@ -7,21 +7,28 @@
 ios
 
 ## Users
-Automation enthusiasts who want to identify Bluetooth devices easily, set proximity thresholds, configure Apple Shortcuts, and test and validate the outcome.
+Automation enthusiasts and people setting up or troubleshooting equipment who want useful measurements, repeatable comparisons, and reliable inputs to Apple Shortcuts.
 
 ## Product Purpose
-Make Bluetooth proximity useful in personal automations through a clear discover, identify, configure, test, and Shortcuts workflow.
+Turn locally available sensor and connectivity data into understandable readings, calibrated references, comparisons, recorded evidence, and Shortcuts workflows.
 
 ## Operating Context
 Native SwiftUI app using CoreBluetooth, SwiftData, and AppIntents. Actual Bluetooth scanning requires physical hardware; simulator visuals cannot establish radio reliability.
 
 ## Capabilities and Constraints
+The Pro implementation includes twelve instruments: Bluetooth signal, level, vibration, rotation, magnetic field, pressure, relative elevation, magnetic heading, speed, microphone dBFS, HTTP response time, and battery state. A shared native Live / Inspect / Compare system connects named baselines, calibration, recordings, field reports, groups, and Shortcuts workflows. See docs/PRO_INSTRUMENT_RESEARCH.md for calculation contracts and docs/CAPABILITY_EXPANSION_PLAN.md for the broader research inventory; that inventory includes future hardware-dependent adapters and is not a list of shipped features.
+
 Existing code discovers Bluetooth LE advertisements, saves named devices and RSSI thresholds, tests proximity, and exposes a proximity-check intent to Shortcuts.
-Requested design adds Simple and Technical modes. Both explain signal variation and reliability in everyday language. Technical mode exposes useful measurements without replacing explanations with jargon.
+The Bluetooth setup flow retains Simple and Technical modes. Both explain signal variation and reliability in everyday language. Technical mode exposes useful measurements without replacing explanations with jargon.
 Signal strength is evidence of proximity, not a precise distance measurement. A missing advertisement must not imply confirmed absence. Shortcuts configuration improvements are requested; direct installation and background-trigger behavior must be verified before promised.
 
 ## Brand Commitments
-MagicCuts name. Native iOS interactions remain familiar. No other visual identity is pinned.
+MagicCuts name. Native iOS interactions remain familiar. Apple Watch face level of polish, thought, and utility is the minimum: consistent typography, meaningful data geometry, precise interaction, and carefully composed states. No web UI framework or generic component-library visual system.
+
+## Commercial and Infrastructure Commitments
+One hard Pro paywall covers all working functionality, including existing Bluetooth and Shortcuts actions, Device Groups, and every additional instrument. There is no free legacy or basic sensor tier. Purchase, restore, legal information and purchase recovery remain accessible before unlocking. Use a verified StoreKit entitlement across every entry point; no writable local-flag unlock in production. Final pricing has not been chosen.
+
+No additional owner-operated infrastructure: computation, storage, purchase verification, reports and workflow definitions stay on device. No new backend, hosted database, paid API, cloud inference, managed entitlement service or push provider.
 
 ## Evidence on Hand
 README.md and Swift sources describe the incumbent implementation. All sample devices and readings in mockups must be labeled as demo data.
@@ -33,4 +40,4 @@ README.md and Swift sources describe the incumbent implementation. All sample de
 - Treat testing and validation as part of setup.
 
 ## Open Decisions
-Exact device-identification assistance, Shortcuts handoff capabilities, and validation sampling behavior require implementation investigation. Mockups may propose these interactions but do not prove they exist.
+Live StoreKit product/price and physical acceptance of each supported sensor. The combined native composition was approved with the existing blue palette and rounded segment labels. The local StoreKit configuration's price is test data. Sessions pause in the background; the Live Activity reports this state and does not claim unrestricted background sensing. Mockups and explicitly labeled sample sessions demonstrate design intent and do not prove sensor availability or accuracy.
