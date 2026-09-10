@@ -97,3 +97,6 @@ iOSInjectionProject/
 AGENTS.md
 CLAUDE.md
 LLM Agent.md
+
+# Local design workflow captures and session state
+.impeccable/
