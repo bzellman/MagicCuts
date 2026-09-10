@@ -7,8 +7,29 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		211596AB5B1D875B1CC18EAD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A64CB27F38E7F383DEC4BF69 /* Foundation.framework */; };
+		28FF0614335CDC3A2BB88C35 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A64CB27F38E7F383DEC4BF69 /* Foundation.framework */; };
+		69759A9301CA218C57AEC7C2 /* MagicCutsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F947F8B9BF53D20816B55B /* MagicCutsUITests.swift */; };
 		994BBB512E9388A00083267A /* MagicCuts.icon in Resources */ = {isa = PBXBuildFile; fileRef = 994BBB402E9388A00083267A /* MagicCuts.icon */; };
+		E3C047C450AF1CDC1FED6D0D /* ProximityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC26100B67C2C4B25837934 /* ProximityTests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		0D2BCC0FCBB49E60B265C7B9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 99B2F9AA2E926703004ECE09 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 99B2F9B12E926703004ECE09;
+			remoteInfo = MagicCuts;
+		};
+		5A8FB22A82B9D77BC38809EC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 99B2F9AA2E926703004ECE09 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 99B2F9B12E926703004ECE09;
+			remoteInfo = MagicCuts;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		99B2F9EA2E934B50004ECE09 /* Embed Foundation Extensions */ = {
@@ -24,20 +45,43 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		24F947F8B9BF53D20816B55B /* MagicCutsUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MagicCutsUITests.swift; sourceTree = "<group>"; };
+		5665DAF179DDE97F927F8CE8 /* MagicCutsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MagicCutsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6A040DD8A64473E3C73F1669 /* MagicCutsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MagicCutsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		994BBB402E9388A00083267A /* MagicCuts.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = MagicCuts.icon; sourceTree = "<group>"; };
 		99B2F9B22E926703004ECE09 /* MagicCuts.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MagicCuts.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		99B2F9DD2E934B50004ECE09 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
+		A64CB27F38E7F383DEC4BF69 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		BCC26100B67C2C4B25837934 /* ProximityTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProximityTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		99B2F9B42E926703004ECE09 /* MagicCuts */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = MagicCuts;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		0C5DE9AFB310A719AE89FC92 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				28FF0614335CDC3A2BB88C35 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7AD67FFE331CF1E154F2645F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				211596AB5B1D875B1CC18EAD /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		99B2F9AF2E926703004ECE09 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -48,6 +92,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		68892D83A800CBE0A6A5FF2A /* MagicCutsUITests */ = {
+			isa = PBXGroup;
+			children = (
+				24F947F8B9BF53D20816B55B /* MagicCutsUITests.swift */,
+			);
+			name = MagicCutsUITests;
+			path = MagicCutsUITests;
+			sourceTree = "<group>";
+		};
+		7368DEAC3967622D7FAE83C5 /* MagicCutsTests */ = {
+			isa = PBXGroup;
+			children = (
+				BCC26100B67C2C4B25837934 /* ProximityTests.swift */,
+			);
+			name = MagicCutsTests;
+			path = MagicCutsTests;
+			sourceTree = "<group>";
+		};
 		99B2F9A92E926703004ECE09 = {
 			isa = PBXGroup;
 			children = (
@@ -55,6 +117,8 @@
 				99B2F9DC2E934B50004ECE09 /* Frameworks */,
 				99B2F9B32E926703004ECE09 /* Products */,
 				994BBB402E9388A00083267A /* MagicCuts.icon */,
+				7368DEAC3967622D7FAE83C5 /* MagicCutsTests */,
+				68892D83A800CBE0A6A5FF2A /* MagicCutsUITests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -62,6 +126,8 @@
 			isa = PBXGroup;
 			children = (
 				99B2F9B22E926703004ECE09 /* MagicCuts.app */,
+				6A040DD8A64473E3C73F1669 /* MagicCutsTests.xctest */,
+				5665DAF179DDE97F927F8CE8 /* MagicCutsUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -70,13 +136,40 @@
 			isa = PBXGroup;
 			children = (
 				99B2F9DD2E934B50004ECE09 /* Intents.framework */,
+				D424C8E4E7CA1B3A725E69BD /* iOS */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D424C8E4E7CA1B3A725E69BD /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				A64CB27F38E7F383DEC4BF69 /* Foundation.framework */,
+			);
+			name = iOS;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		67CD5972C76D24B75BAFDE86 /* MagicCutsUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA2800CD4623410B190DB392 /* Build configuration list for PBXNativeTarget "MagicCutsUITests" */;
+			buildPhases = (
+				CC26A8890E3DF0E838CB1D83 /* Sources */,
+				7AD67FFE331CF1E154F2645F /* Frameworks */,
+				F30EF1F39EF49DE2FD399CF6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F9B02379561A70C2535361E4 /* PBXTargetDependency */,
+			);
+			name = MagicCutsUITests;
+			productName = MagicCutsUITests;
+			productReference = 5665DAF179DDE97F927F8CE8 /* MagicCutsUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		99B2F9B12E926703004ECE09 /* MagicCuts */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 99B2F9BF2E926703004ECE09 /* Build configuration list for PBXNativeTarget "MagicCuts" */;
@@ -94,11 +187,27 @@
 				99B2F9B42E926703004ECE09 /* MagicCuts */,
 			);
 			name = MagicCuts;
-			packageProductDependencies = (
-			);
 			productName = QuirkCuts;
 			productReference = 99B2F9B22E926703004ECE09 /* MagicCuts.app */;
 			productType = "com.apple.product-type.application";
+		};
+		C5639992CCC492248EB4E021 /* MagicCutsTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E3BBBE132A9E38F0EB08F644 /* Build configuration list for PBXNativeTarget "MagicCutsTests" */;
+			buildPhases = (
+				08872768BBB4BEEA3C0CAB4E /* Sources */,
+				0C5DE9AFB310A719AE89FC92 /* Frameworks */,
+				57F8CA557AA87AADF07ED04F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				046F6C3E2BBA46F38EBC9075 /* PBXTargetDependency */,
+			);
+			name = MagicCutsTests;
+			productName = MagicCutsTests;
+			productReference = 6A040DD8A64473E3C73F1669 /* MagicCutsTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -130,11 +239,20 @@
 			projectRoot = "";
 			targets = (
 				99B2F9B12E926703004ECE09 /* MagicCuts */,
+				C5639992CCC492248EB4E021 /* MagicCutsTests */,
+				67CD5972C76D24B75BAFDE86 /* MagicCutsUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		57F8CA557AA87AADF07ED04F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		99B2F9B02E926703004ECE09 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -143,9 +261,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F30EF1F39EF49DE2FD399CF6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		08872768BBB4BEEA3C0CAB4E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E3C047C450AF1CDC1FED6D0D /* ProximityTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		99B2F9AE2E926703004ECE09 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -153,9 +286,92 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CC26A8890E3DF0E838CB1D83 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				69759A9301CA218C57AEC7C2 /* MagicCutsUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		046F6C3E2BBA46F38EBC9075 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MagicCuts;
+			target = 99B2F9B12E926703004ECE09 /* MagicCuts */;
+			targetProxy = 5A8FB22A82B9D77BC38809EC /* PBXContainerItemProxy */;
+		};
+		F9B02379561A70C2535361E4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MagicCuts;
+			target = 99B2F9B12E926703004ECE09 /* MagicCuts */;
+			targetProxy = 0D2BCC0FCBB49E60B265C7B9 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		696A561EEDA1EFDDE2F3C432 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2ZRX2278BV;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.bradZellman.MagicCutsTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MagicCuts.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MagicCuts";
+			};
+			name = Debug;
+		};
+		71EAAC478DF83D9F57A8A7E9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2ZRX2278BV;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.bradZellman.MagicCutsUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = MagicCuts;
+			};
+			name = Debug;
+		};
+		965C4CCEB7D8CFAAB1E46EFB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2ZRX2278BV;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.bradZellman.MagicCutsTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MagicCuts.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MagicCuts";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		99B2F9BD2E926703004ECE09 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -292,14 +508,13 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = MagicCuts;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Check if selected items are in the set proximity via strength when triggered";
-				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "Check if selected items are in the set proximity via strength when triggered and search";
-				INFOPLIST_KEY_NSBluetoothWhileInUseUsageDescription = "Working ";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Find Bluetooth devices you choose and check their signal strength for Shortcuts.";
 				INFOPLIST_KEY_NSSiriUsageDescription = "Checks if a device is near by";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -316,8 +531,9 @@
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -337,14 +553,13 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = MagicCuts;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Check if selected items are in the set proximity via strength when triggered";
-				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "Check if selected items are in the set proximity via strength when triggered and search";
-				INFOPLIST_KEY_NSBluetoothWhileInUseUsageDescription = "Working ";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Find Bluetooth devices you choose and check their signal strength for Shortcuts.";
 				INFOPLIST_KEY_NSSiriUsageDescription = "Checks if a device is near by";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -361,9 +576,30 @@
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		A5ACCA56E9C9B39E708E4884 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2ZRX2278BV;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.bradZellman.MagicCutsUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = MagicCuts;
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -384,6 +620,24 @@
 			buildConfigurations = (
 				99B2F9C02E926703004ECE09 /* Debug */,
 				99B2F9C12E926703004ECE09 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA2800CD4623410B190DB392 /* Build configuration list for PBXNativeTarget "MagicCutsUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A5ACCA56E9C9B39E708E4884 /* Release */,
+				71EAAC478DF83D9F57A8A7E9 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E3BBBE132A9E38F0EB08F644 /* Build configuration list for PBXNativeTarget "MagicCutsTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				965C4CCEB7D8CFAAB1E46EFB /* Release */,
+				696A561EEDA1EFDDE2F3C432 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

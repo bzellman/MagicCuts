@@ -1,0 +1,58 @@
+{
+  "platform": "ios",
+  "updatedAt": "2026-09-10T01:01:56.678416+00:00",
+  "webAutomation": "not_applicable: native equivalence does not assert passing CSS/font/raster comp gates",
+  "stages": {
+    "approved_design": {
+      "status": "complete",
+      "evidence": [
+        ".impeccable/design-system/control-surfaces-v2.json",
+        ".impeccable/mocks/onboarding-discovery.json"
+      ]
+    },
+    "specification": {
+      "status": "complete",
+      "evidence": [
+        ".impeccable/build/native-spec.md"
+      ]
+    },
+    "assets": {
+      "status": "complete",
+      "evidence": "Shipping Assets.xcassets scan: 0 raster files, 0 missing provenance. SF Symbols and live SwiftUI controls."
+    },
+    "controls_and_journey": {
+      "status": "complete",
+      "evidence": [
+        ".impeccable/review/phone-current/manifest.json",
+        ".impeccable/review/fresh-logic-review.md"
+      ]
+    },
+    "motion": {
+      "status": "complete",
+      "evidence": "OS ReduceMotionEnabled + UIKit runtime isReduceMotionEnabled verified; modes/draft/history UI journey passed in /tmp/MagicCuts-b54f-reduced-motion.log. All custom animation sites check accessibilityReduceMotion."
+    },
+    "responsive": {
+      "status": "complete",
+      "evidence": [
+        ".impeccable/review/ipad-final/manifest.json",
+        ".impeccable/review/phone-ax-final/manifest.json"
+      ],
+      "note": "Latest phone capture follows stacked accessibility-size mode correction."
+    },
+    "finish_review": {
+      "status": "complete",
+      "disposition": "ship",
+      "scope": "Both findings resolved in verdict pass",
+      "evidence": [
+        ".impeccable/review/native-finish-review.md"
+      ]
+    },
+    "documentation": {
+      "status": "complete",
+      "evidence": [
+        "DESIGN.md",
+        ".impeccable/design.json"
+      ]
+    }
+  }
+}

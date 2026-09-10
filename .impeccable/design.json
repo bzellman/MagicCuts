@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-10T00:57:58Z",
+  "title": "Design System: MagicCuts",
+  "nativeAdaptation": {
+    "platform": "iOS",
+    "framework": "SwiftUI",
+    "tokenAuthority": "MagicCuts/DesignSystem.swift and named asset color sets",
+    "implementationNote": "This sidecar describes native SwiftUI implementation. Components intentionally omit HTML and CSS because no web or shadow-DOM implementation exists."
+  },
+  "extensions": {
+    "colorMeta": {
+      "canvas": {"role": "neutral", "displayName": "Cool Canvas", "canonical": "#F2F5F7", "darkAppearance": "#0F141A", "tonalRamp": ["#0F141A", "#26303A", "#4B5660", "#737D86", "#9DA6AE", "#C5CCD2", "#E2E7EB", "#F2F5F7"]},
+      "instrument": {"role": "neutral", "displayName": "Matte Instrument", "canonical": "#122438", "darkAppearance": "#172B40", "tonalRamp": ["#09121C", "#122438", "#203B53", "#36536C", "#55738A", "#7E9AAC", "#B4C7D2", "#E8F0F3"]},
+      "action": {"role": "primary", "displayName": "Calibration Cobalt", "canonical": "#0052C7", "darkAppearance": "#1F66D9", "tonalRamp": ["#001A42", "#003372", "#0052C7", "#1F66D9", "#548BE5", "#8BB2EF", "#BED8F7", "#E7F1FC"]}
+    },
+    "typographyMeta": {
+      "display": {"displayName": "Task title", "purpose": "SwiftUI .largeTitle.bold() introduces Proximity and the welcome proposition."},
+      "title": {"displayName": "Section and action title", "purpose": "SwiftUI .headline, .title2, and .title3 support task hierarchy and controls."},
+      "body": {"displayName": "Explanatory body", "purpose": "SwiftUI .body and .callout keep calibration caveats and next steps readable."},
+      "label": {"displayName": "Instrument label", "purpose": "SwiftUI .subheadline and .caption label readings, ranges, and demo states."},
+      "measurement": {"displayName": "Live measurement", "purpose": "A 42pt @ScaledMetric rounded threshold value with monospaced digit data."}
+    },
+    "shadows": [],
+    "motion": [
+      {"name": "mode-selection", "value": ".snappy(duration: 0.22)", "purpose": "Moves the selected mode underline; disabled when accessibilityReduceMotion is true."},
+      {"name": "threshold-change", "value": ".easeOut(duration: 0.18)", "purpose": "Animates numeric threshold content transition; disabled when accessibilityReduceMotion is true."},
+      {"name": "discovery-expansion", "value": ".snappy(duration: 0.22)", "purpose": "Expands a selected discovery row; disabled when accessibilityReduceMotion is true."},
+      {"name": "welcome-symbol", "value": ".symbolEffect(.variableColor)", "purpose": "Native welcome-chart effect; inactive when accessibilityReduceMotion is true."}
+    ],
+    "breakpoints": [
+      {"name": "phone-and-iPad-reading-column", "value": "640pt maxWidth", "purpose": "Normal scroll content column."},
+      {"name": "threshold-sheet-column", "value": "600pt maxWidth", "purpose": "Threshold editor reading column."},
+      {"name": "accessibility-content-size", "value": "dynamicTypeSize.isAccessibilitySize", "purpose": "Mode tabs and joined test controls stack vertically; the Technical decorative icon is omitted."}
+    ]
+  },
+  "components": [
+    {"name": "Primary Action", "kind": "button", "refersTo": "action-button", "description": "Reusable 52pt-minimum filled action for scan, apply, and verification steps.", "actualImplementation": {"type": "SwiftUI ButtonStyle", "symbol": "ControlStyle(primary: true)", "source": "MagicCuts/DesignSystem.swift", "states": ["pressed opacity 0.75", "disabled uses SwiftUI disabled state"]}},
+    {"name": "Mode Tabs", "kind": "custom", "refersTo": "mode-tab", "description": "Remembered Simple/Technical configuration selector with a native selected trait and cobalt underline.", "actualImplementation": {"type": "SwiftUI View", "symbol": "ModeTabs", "source": "MagicCuts/DesignSystem.swift", "states": ["Simple selected", "Technical selected", "Reduce Motion", "vertical accessibility layout with decorative icon omitted"]}},
+    {"name": "Signal Gauge", "kind": "custom", "refersTo": "signal-gauge", "description": "Live dark calibration surface with ruler, selected threshold, optional observed band, steppers, and direct manipulation.", "actualImplementation": {"type": "SwiftUI View", "symbol": "SignalGauge", "source": "MagicCuts/DesignSystem.swift", "accessibility": "Editable gauge exposes a SwiftUI Slider labeled Nearby threshold with live dBm value.", "states": ["read-only", "editable", "samples present", "Reduce Motion"]}},
+    {"name": "Joined Test Controls", "kind": "button", "refersTo": "action-button", "description": "Sibling nearby and away tests in a single clipped control assembly, with a running Stop state.", "actualImplementation": {"type": "SwiftUI composed view", "symbol": "DeviceDetailView.testControls", "source": "MagicCuts/DeviceDetailView.swift", "states": ["idle", "testing nearby or away", "Stop", "vertical accessibility layout"]}},
+    {"name": "Discovery Observation Row", "kind": "card", "description": "Expandable Bluetooth observation with signal value, freshness, identity coaching, and an explicit save or open action.", "actualImplementation": {"type": "SwiftUI View", "symbol": "DeviceDiscoveryView.row", "source": "MagicCuts/DeviceDiscoveryView.swift", "states": ["collapsed", "expanded", "saved device", "unnamed device", "stale"]}},
+    {"name": "Plain Handoff Row", "kind": "nav", "description": "48pt-minimum text row for Shortcuts configuration and test-history navigation.", "actualImplementation": {"type": "SwiftUI View", "symbol": "HandoffRow", "source": "MagicCuts/DesignSystem.swift", "states": ["default navigation row"]}},
+    {"name": "Inline Failure", "kind": "custom", "description": "Compact explanatory failure treatment with an SF Symbol and orange low-opacity surface.", "actualImplementation": {"type": "SwiftUI View", "symbol": "InlineFailure", "source": "MagicCuts/DesignSystem.swift", "states": ["error message"]}}
+  ],
+  "narrative": {
+    "northStar": "The native calibration workbench",
+    "overview": "MagicCuts makes a Bluetooth signal setting legible as an instrument instead of a generic form. A cool system-aware canvas recedes behind one matte-navy gauge, where a large threshold, tick scale, observed range, and restrained cyan cursor give the product its recognizable working surface. Strong cobalt is reserved for the immediate action, selection underline, and discovery emphasis. The system stays native on purpose: navigation stacks, sheets, search, forms, SF Symbols, SwiftUI text styles, Dynamic Type, and system semantic colors do the platform work.",
+    "keyCharacteristics": ["One dark instrument surface carries measurement and adjustment context.", "Cobalt marks an action, current setting, or selected state rather than decorating every control.", "Simple and Technical are one stored configuration with different information density.", "Everyday language accompanies every measurement and test state.", "Familiar iOS navigation and accessibility semantics take priority over imitating a web design system."],
+    "rules": [
+      {"name": "The Signal-Only Accent Rule", "body": "Cyan is a measurement cursor, not a general interactive color. Cobalt identifies the action or selected state that needs attention; other controls stay system ink or a low-opacity system surface.", "section": "colors"},
+      {"name": "The Semantic Type Rule", "body": "Use SwiftUI text styles for every ordinary label. Only live data gets rounded or monospaced treatment, and those treatments never replace the explanatory sentence beside it.", "section": "typography"},
+      {"name": "The Instrument-First Depth Rule", "body": "The dark gauge earns visual weight because it contains live calibration data. Quiet buttons, discovery rows, and handoff rows do not compete through added shadow or glow.", "section": "elevation"}
+    ],
+    "dos": ["Do use the Canvas, Instrument, and Action asset colors for branded surfaces; let system semantic colors adapt ordinary text and chrome.", "Do keep the gauge live and readable: threshold, ticks, cursor, observed values, and editing affordances must describe the current model state.", "Do preserve 44pt minimum targets, 48pt gauge steppers and handoff rows, and 52pt primary actions.", "Do use .monospacedDigit() for changing RSSI, count, duration, and threshold-adjacent figures.", "Do honor Reduce Motion and retain the Slider accessibility representation whenever the gauge is editable.", "Do keep the iPad content column capped at 640pt (600pt in the threshold sheet), and stack mode tabs and test actions at accessibility sizes."],
+    "donts": ["Don't turn the signal gauge into a static image, a generic slider, or a distance promise.", "Don't spread cyan through general navigation, buttons, or decorative effects.", "Don't add web hover, CSS, custom shadows, glass, gradients, or raster control plates to this native SwiftUI system.", "Don't remove plain-language caveats about walls, movement, advertising, and the limits of a missing Bluetooth reading.", "Don't label simulator sample readings as real-world Bluetooth proof; retain the demo label in UI-test contexts."]
+  }
+}
