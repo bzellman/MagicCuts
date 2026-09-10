@@ -179,6 +179,12 @@ The baseline selector is a 44pt native menu that only lists compatible profiles.
 
 The app uses the native Instruments, Sessions, and Workflows `TabView`, navigation titles, toolbars, sheets, and safe areas. The iOS/iPadOS 26 system tab presentation supplies the floating chrome; the Pro design does not replace it with a custom tab bar.
 
+### Optional iCloud settings
+
+The existing native Settings list adds a “Your library, across devices” section. A system toggle defaults off, followed by readable status, progress/error recovery, manual sync when enabled and Bluetooth setup references. The footer explains what moves, that edits and deletions sync, and that disabling keeps both copies. Purchase restoration remains a separate StoreKit action.
+
+Other-device Bluetooth references use a native list, navigation, picker and history disclosure. A reference never looks connected until the user chooses a locally identified saved device. Original evidence and the next local test remain clearly distinguished. Text wraps at accessibility sizes; the section reuses Action blue, rounded headings and existing quiet text tokens without new motion or custom chrome.
+
 ## Do's and Don'ts
 
 ### Do:

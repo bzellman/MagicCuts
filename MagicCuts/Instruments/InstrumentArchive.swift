@@ -61,7 +61,7 @@ actor InstrumentArchive {
         }, undoWrite: {
             if let previous { try previous.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication]) }
             else if FileManager.default.fileExists(atPath: url.path) { try FileManager.default.removeItem(at: url) }
-        })
+        }, forcedKey: LibraryRecord.key(.session, session.id))
     }
 
     func deleteSession(_ id: UUID) throws -> ProLibraryIndex {
@@ -122,7 +122,7 @@ actor InstrumentArchive {
         guard !report.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw InstrumentError.storage("Give this report a title.") }
         return try update { index in
             guard report.sessionIDs.allSatisfy({ id in index.sessions.contains { $0.id == id } }) else {
-                throw InstrumentError.storage("An attached session has been deleted. Edit the report and select its measurements again.")
+                throw InstrumentError.storage("An attached session is unavailable on this device. Finish syncing, or remove the unavailable attachment before saving.")
             }
             index.reports.removeAll { $0.id == report.id }
             index.reports.insert(report, at: 0)
@@ -130,6 +130,151 @@ actor InstrumentArchive {
     }
 
     func deleteReport(_ id: UUID) throws -> ProLibraryIndex { try update { $0.reports.removeAll { $0.id == id } } }
+
+    func installationID() throws -> String {
+        var url = try directory().appendingPathComponent("installation-id.json")
+        var coordinationError: NSError?
+        var outcome: Result<String, Error>?
+        NSFileCoordinator().coordinate(writingItemAt: url, options: .forMerging, error: &coordinationError) { coordinated in
+            outcome = Result {
+                if FileManager.default.fileExists(atPath: coordinated.path) {
+                    let value = try JSONDecoder().decode(UUID.self, from: Data(contentsOf: coordinated))
+                    return value.uuidString
+                }
+                let value = UUID()
+                try Self.write(value, to: coordinated)
+                return value.uuidString
+            }
+        }
+        if let coordinationError { throw coordinationError }
+        guard let outcome else { throw InstrumentError.storage("This device's library identity couldn't be saved.") }
+        var resources = URLResourceValues()
+        resources.isExcludedFromBackup = true
+        try url.setResourceValues(resources)
+        return try outcome.get()
+    }
+
+    func mirrorDeviceSetups(_ setups: [PortableDeviceSetup]) throws -> ProLibraryIndex {
+        let localID = try installationID()
+        guard setups.allSatisfy({ $0.installationID == localID }) else { throw InstrumentError.storage("These setups belong to another device.") }
+        let incomingIDs = Set(setups.map(\.id))
+        return try update { index in
+            index.deviceSetups.removeAll { $0.installationID == localID || incomingIDs.contains($0.id) }
+            index.deviceSetups.append(contentsOf: setups)
+            index.deviceSetups.sort { $0.id.uuidString < $1.id.uuidString }
+        }
+    }
+
+    func prepareSync() throws -> ProLibraryIndex { try update { _ in } }
+
+    func pruneDeletedSessionFiles() throws {
+        let url = try indexURL()
+        let directory = try directory()
+        var coordinationError: NSError?
+        var outcome: Result<Void, Error>?
+        NSFileCoordinator().coordinate(writingItemAt: url, options: .forMerging, error: &coordinationError) { coordinated in
+            outcome = Result {
+                let index = try Self.readIndex(coordinated)
+                let attached = Set(index.reports.flatMap(\.sessionIDs))
+                for (key, version) in index.versions where version.deleted {
+                    let record = LibraryRecord(key: key, version: version)
+                    guard let (kind, id) = record.identity, kind == .session, !attached.contains(id),
+                          !index.sessions.contains(where: { $0.id == id }) else { continue }
+                    for suffix in [".json", ".draft.json"] {
+                        let file = directory.appendingPathComponent(id.uuidString + suffix)
+                        if FileManager.default.fileExists(atPath: file.path) { try FileManager.default.removeItem(at: file) }
+                    }
+                }
+            }
+        }
+        if let coordinationError { throw coordinationError }
+        guard let outcome else { throw InstrumentError.storage("Deleted measurement files couldn't be cleared.") }
+        try outcome.get()
+    }
+
+    func syncRecords(keys: Set<String>? = nil) throws -> [LibraryRecord] {
+        let index = try loadIndex()
+        let payloads = try index.recordPayloads()
+        return try index.versions.keys.filter { keys?.contains($0) ?? true }.sorted().map { key in
+            guard let version = index.versions[key] else { throw InstrumentError.storage("A library revision is missing.") }
+            var record = LibraryRecord(key: key, version: version, payload: version.deleted ? nil : payloads[key])
+            guard let (kind, id) = record.identity else { throw InstrumentError.storage("An unrecognized library item couldn't be synced.") }
+            if !version.deleted {
+                switch kind {
+                case .session:
+                    var session = try loadSession(id)
+                    if session.metadata["installationID"] == nil { session.metadata["installationID"] = "unverified-legacy-source" }
+                    if session.reference?.metadata["installationID"] == nil { session.reference?.metadata["installationID"] = "unverified-legacy-source" }
+                    record.payload = try LibraryCoding.encode(session)
+                case .profile:
+                    var profile = try LibraryCoding.decode(CalibrationProfile.self, from: record)
+                    if profile.metadata["installationID"] == nil { profile.metadata["installationID"] = "unverified-legacy-source" }
+                    record.payload = try LibraryCoding.encode(profile)
+                default: break
+                }
+                guard record.payload != nil else { throw InstrumentError.storage("An item is missing from the local library. Sync paused to keep your iCloud copy safe.") }
+            }
+            return record
+        }
+    }
+
+    @discardableResult
+    func mergeSyncRecord(_ record: LibraryRecord) throws -> Bool {
+        guard record.format == 1, let (kind, id) = record.identity,
+              record.version.sequence > 0, record.version.sequence < Int64.max,
+              UUID(uuidString: record.version.writer) != nil,
+              record.version.deleted == (record.payload == nil) else {
+            throw InstrumentError.storage("An iCloud item couldn't be read. Update MagicCuts and try again; your local library is unchanged.")
+        }
+        // Decode and validate before touching the index or its sample files.
+        let value = try ValidatedLibraryValue(record)
+        let sessionURL = try directory().appendingPathComponent(id.uuidString + ".json")
+        var accepted = false
+        var previousSession: Data?
+        var wroteSession = false
+        var deleteSessionBytes = false
+        _ = try update({ index in
+            index.sequence = max(index.sequence, record.version.sequence)
+            if let current = index.versions[record.key] {
+                if current.deleted && !record.version.deleted { return }
+                if current.deleted == record.version.deleted && current >= record.version { return }
+            }
+            value.apply(to: &index, id: id)
+            index.sequence = max(index.sequence, record.version.sequence)
+            index.versions[record.key] = record.version
+            deleteSessionBytes = kind == .session && record.version.deleted && !index.reports.contains { $0.sessionIDs.contains(id) }
+            accepted = true
+        }, beforeWrite: {
+            guard accepted, kind == .session else { return }
+            if case .session(let session) = value {
+                if FileManager.default.fileExists(atPath: sessionURL.path) { previousSession = try Data(contentsOf: sessionURL) }
+                try Self.write(session, to: sessionURL)
+                wroteSession = true
+            } else if deleteSessionBytes, FileManager.default.fileExists(atPath: sessionURL.path) {
+                previousSession = try Data(contentsOf: sessionURL)
+                try FileManager.default.removeItem(at: sessionURL)
+                wroteSession = true
+            }
+        }, undoWrite: {
+            guard wroteSession else { return }
+            if let previousSession { try previousSession.write(to: sessionURL, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication]) }
+            else { try FileManager.default.removeItem(at: sessionURL) }
+        }, recordsLocalChanges: false)
+        return accepted
+    }
+
+    func loadSyncState() throws -> Data? {
+        let url = try directory().appendingPathComponent("icloud-state.json")
+        return FileManager.default.fileExists(atPath: url.path) ? try Data(contentsOf: url) : nil
+    }
+
+    func saveSyncState(_ data: Data) throws {
+        var url = try directory().appendingPathComponent("icloud-state.json")
+        try data.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        var resources = URLResourceValues()
+        resources.isExcludedFromBackup = true
+        try url.setResourceValues(resources)
+    }
 
     private func directory() throws -> URL {
         guard let root else { throw InstrumentError.storage("The shared library is unavailable. Open MagicCuts to repair access.") }
@@ -139,17 +284,20 @@ actor InstrumentArchive {
 
     private func indexURL() throws -> URL { try directory().appendingPathComponent("index.json") }
 
-    private func update(_ mutation: (inout ProLibraryIndex) throws -> Void, beforeWrite: (() throws -> Void)? = nil, undoWrite: (() throws -> Void)? = nil) throws -> ProLibraryIndex {
+    private func update(_ mutation: (inout ProLibraryIndex) throws -> Void, beforeWrite: (() throws -> Void)? = nil, undoWrite: (() throws -> Void)? = nil, forcedKey: String? = nil, recordsLocalChanges: Bool = true) throws -> ProLibraryIndex {
         let url = try indexURL()
+        let writer = recordsLocalChanges ? try installationID() : ""
         var coordinationError: NSError?
         var outcome: Result<ProLibraryIndex, Error>?
         // Read within the coordinated write: the app and Shortcuts never replace each other's stale index.
         NSFileCoordinator().coordinate(writingItemAt: url, options: .forMerging, error: &coordinationError) { coordinatedURL in
             outcome = Result {
                 var index = try Self.readIndex(coordinatedURL)
+                let previous = index
                 try mutation(&index)
                 do {
                     try beforeWrite?()
+                    if recordsLocalChanges { try index.stampChanges(from: previous, writer: writer, forcedKey: forcedKey) }
                     try Self.write(index, to: coordinatedURL)
                 } catch {
                     let original = error
@@ -187,18 +335,30 @@ final class ProLibrary {
     private(set) var recovered: [RecordedSession] = []
     var error: String?
     @ObservationIgnored let archive: InstrumentArchive
+    let sync: CloudLibrarySync
 
-    init(archive: InstrumentArchive = InstrumentArchive()) { self.archive = archive }
+    init(archive: InstrumentArchive = InstrumentArchive()) {
+        self.archive = archive
+        sync = CloudLibrarySync(archive: archive)
+    }
 
     func reload() async {
         loading = true
         defer { loading = false }
         do {
             index = try await archive.loadIndex()
-            recovered = try await archive.loadDrafts().filter { draft in !index.sessions.contains { $0.id == draft.id } }
+            recovered = try await archive.loadDrafts().filter { draft in
+                !index.sessions.contains { $0.id == draft.id } && index.versions[LibraryRecord.key(.session, draft.id)]?.deleted != true
+            }
             error = nil
+            await cleanDeletedFiles()
         }
         catch { self.error = "Your local library couldn't be opened. \(error.localizedDescription)" }
+    }
+
+    func cleanDeletedFiles() async {
+        do { try await archive.pruneDeletedSessionFiles() }
+        catch { self.error = "Your library is open, but deleted measurement files couldn't be cleared. \(error.localizedDescription)" }
     }
 
     func save(_ session: RecordedSession) async throws {
@@ -230,6 +390,22 @@ final class ProLibrary {
             if let summary = session.summary {
                 try await save(CalibrationProfile(name: "At desk", kind: .bluetooth, sourceID: session.source.id, sourceName: session.source.name, date: session.startedAt, points: session.points, summary: summary, metadata: session.metadata))
             }
+            #if DEBUG
+            if ProcessInfo.processInfo.arguments.contains("--cloud-setup-demo") {
+                let origin = "BBBBBBBB-1111-2222-3333-444444444444"
+                let remote = UUID(uuidString: "CCCCCCCC-1111-2222-3333-444444444444")!
+                let now = Date()
+                let evidence = TestEvidence(startedAt: now.addingTimeInterval(-10), endedAt: now, threshold: -70, position: .nearby, isDraft: false,
+                    samples: [SignalSample(date: now.addingTimeInterval(-5), rssi: -64), SignalSample(date: now, rssi: -63)], failure: nil)
+                let setup = PortableDeviceSetup(id: remote, installationID: origin,
+                    device: DeviceInfo(id: remote.uuidString, name: "Studio sensor · sample", rssi: -70, serviceUUIDs: ["180F"]),
+                    tests: [PortableDeviceTest(id: UUID(), date: now, payload: try LibraryCoding.encode(evidence))])
+                let version = LibraryVersion(sequence: index.sequence + 1, writer: origin, revision: UUID(), deleted: false)
+                try await archive.mergeSyncRecord(LibraryRecord(key: LibraryRecord.key(.deviceSetup, setup.id), version: version, payload: LibraryCoding.encode(setup)))
+                _ = try await archive.saveGroup(DeviceGroup(name: "Studio readiness · sample", deviceIDs: [remote]))
+                index = try await archive.loadIndex()
+            }
+            #endif
         } catch { self.error = error.localizedDescription }
     }
 }

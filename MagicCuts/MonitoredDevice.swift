@@ -9,6 +9,7 @@ final class MonitoredDevice {
     var requiredSignalStrength: Int
     var serviceUUIDs: [String]
     var validationResetAt: Date = Date(timeIntervalSince1970: 0)
+    var portabilityIdentifier: UUID? = nil
     
     var confirmationKey: String { "\(requiredSignalStrength):\(validationResetAt.timeIntervalSince1970)" }
 
@@ -23,5 +24,6 @@ final class MonitoredDevice {
         self.requiredSignalStrength = requiredSignalStrength
         self.serviceUUIDs = serviceUUIDs
         self.validationResetAt = Date()
+        self.portabilityIdentifier = UUID()
     }
 }

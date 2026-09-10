@@ -28,7 +28,9 @@ MagicCuts name. Native iOS interactions remain familiar. Apple Watch face level 
 ## Commercial and Infrastructure Commitments
 One hard Pro paywall covers all working functionality, including existing Bluetooth and Shortcuts actions, Device Groups, and every additional instrument. There is no free legacy or basic sensor tier. Purchase, restore, legal information and purchase recovery remain accessible before unlocking. Use a verified StoreKit entitlement across every entry point; no writable local-flag unlock in production. Final pricing has not been chosen.
 
-No additional owner-operated infrastructure: computation, storage, purchase verification, reports and workflow definitions stay on device. No new backend, hosted database, paid API, cloud inference, managed entitlement service or push provider.
+No additional owner-operated infrastructure. Computation and purchase verification stay on device; storage is local by default. Users may opt into private Apple CloudKit sync for their saved library using their existing Apple Account. Opt-in is separate on each installation, and iCloud failure must not prevent local work. No MagicCuts account, backend, owner-operated database, paid API, cloud inference, managed entitlement service or custom push provider. Apple handles cloud transport; the developer maintains the app, Apple container/schema and user support.
+
+Portability preserves source provenance. Imported Bluetooth references require explicit connection to locally identified hardware; historical calibration and Shortcut confirmation must not become current validation on another device. Pro restoration remains independent through StoreKit. See docs/ICLOUD_PORTABILITY.md for the implemented contract and acceptance evidence.
 
 ## Evidence on Hand
 README.md and Swift sources describe the incumbent implementation. All sample devices and readings in mockups must be labeled as demo data.

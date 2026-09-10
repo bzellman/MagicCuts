@@ -57,7 +57,9 @@ struct CheckMagicCutsGroupIntent: AppIntent {
         guard let saved = try await InstrumentArchive().loadIndex().groups.first(where: { $0.id == group.id }) else {
             throw InstrumentError.unavailable("This group is no longer saved. Choose another device group in Shortcuts.")
         }
-        let outcome = try await WorkflowRunner.evaluate(saved, devices: SharedDeviceStorage.shared.getAllDevices(), radio: BluetoothRadio())
+        let installation = try await InstrumentArchive().installationID()
+        let devices = try CloudDeviceLinks.expand(SharedDeviceStorage.shared.getAllDevices(), installationID: installation)
+        let outcome = try await WorkflowRunner.evaluate(saved, devices: devices, radio: BluetoothRadio())
         guard let value = outcome.passed else { throw InstrumentError.unavailable("Not enough Bluetooth readings were received to determine this group's result. Open MagicCuts and check the group.") }
         return .result(value: value)
     }

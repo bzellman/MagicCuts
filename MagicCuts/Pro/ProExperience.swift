@@ -64,7 +64,7 @@ struct ProPaywallView: View {
                         .buttonStyle(ControlStyle())
                         .disabled(access.product == nil || access.isWorking)
                         .accessibilityIdentifier("pro.purchase")
-                        Text("One-time purchase. No account or subscription.").font(.caption).foregroundStyle(ProTheme.secondary).frame(maxWidth: .infinity)
+                        Text("One-time purchase. No subscription or MagicCuts account.").font(.caption).foregroundStyle(ProTheme.secondary).frame(maxWidth: .infinity)
                         HStack {
                             Button("Restore purchases") { Task { await access.restore() } }.disabled(access.isWorking).frame(minHeight: 44)
                             Spacer()
@@ -105,6 +105,7 @@ struct ProWorkspaceView: View {
     @State private var library: ProLibrary
     @State private var selectedTab = 0
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.modelContext) private var context
 
     init(radio: any RadioScanning, access: ProAccess, guidanceWarning: String?, requestedRecordingID: UUID? = nil) {
         self.radio = radio; self.access = access; self.guidanceWarning = guidanceWarning
@@ -128,12 +129,27 @@ struct ProWorkspaceView: View {
         }
         .task {
             await SessionLiveActivity.endAbandoned()
+            await library.sync.mirrorDevices(in: context)
             await library.reload()
             await library.seedDemoIfNeeded()
+            await library.sync.transport.resume()
         }
         .onChange(of: scenePhase) { _, phase in
             if phase == .background { engine.interruptedByBackground() }
-            else if phase == .active { Task { await library.reload() } }
+            else if phase == .active {
+                Task {
+                    await library.sync.mirrorDevices(in: context)
+                    await library.reload()
+                    await library.sync.transport.resume()
+                }
+            }
+        }
+        .onChange(of: library.index.sequence) { _, _ in
+            Task { await library.cleanDeletedFiles(); await library.sync.transport.localLibraryChanged() }
+        }
+        .onChange(of: library.sync.snapshot.libraryRevision) { _, _ in Task { await library.reload() } }
+        .onReceive(NotificationCenter.default.publisher(for: ModelContext.didSave)) { _ in
+            Task { await library.sync.mirrorDevices(in: context); await library.reload() }
         }
         .onChange(of: selectedTab) { old, new in
             if old == 0, new != 0, !engine.recording { engine.pause() }
@@ -141,7 +157,10 @@ struct ProWorkspaceView: View {
         .onChange(of: requestedRecordingID, initial: true) { _, id in
             if let id { selectedTab = engine.recordingID == id ? 0 : 1 }
         }
-        .onDisappear { engine.stop(reason: "Pro experience closed"); engine.endLiveActivity() }
+        .onDisappear {
+            engine.stop(reason: "Pro experience closed"); engine.endLiveActivity()
+            Task { await library.sync.transport.suspend() }
+        }
     }
 }
 
@@ -463,7 +482,7 @@ struct InstrumentWorkspaceView: View {
                 LabeledContent("Observed path", value: engine.pathDescription)
             }
             LabeledContent("Retained readings", value: "\(engine.points.count)")
-            ForEach(engine.metadata.keys.sorted().filter { !["audioInput", "referenceFrame"].contains($0) }, id: \.self) { key in
+            ForEach(engine.metadata.keys.sorted().filter { !["audioInput", "referenceFrame", "installationID"].contains($0) }, id: \.self) { key in
                 LabeledContent(MeasurementMetadata.label(key), value: engine.metadata[key] ?? "").font(.caption)
             }
             ForEach(engine.events.suffix(10)) { event in

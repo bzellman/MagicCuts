@@ -107,7 +107,7 @@ enum SessionReport {
             text("Method", size: 14, weight: .bold)
             text(session.method)
             text("Ended: \(session.termination). Missing readings are not treated as zero. This report describes the observed session, not a guarantee of future results.")
-            for key in session.metadata.keys.sorted().filter({ !["audioInput", "referenceFrame"].contains($0) }) {
+            for key in session.metadata.keys.sorted().filter({ !["audioInput", "referenceFrame", "installationID"].contains($0) }) {
                 text("\(MeasurementMetadata.label(key)): \(session.metadata[key] ?? "")", size: 9)
             }
             if !session.events.isEmpty {

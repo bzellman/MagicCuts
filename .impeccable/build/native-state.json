@@ -1,6 +1,6 @@
 {
   "platform": "ios",
-  "updatedAt": "2026-09-10T06:03:45.927971+00:00",
+  "updatedAt": "2026-09-10T07:27:17.513462+00:00",
   "webAutomation": "not_applicable: native SwiftUI; no passing CSS/font/raster gate is asserted",
   "stages": {
     "approved_design": {
@@ -64,6 +64,18 @@
         "docs/PRO_VALIDATION.md"
       ],
       "validation": "YAML tokens, JSON schema and seven preview snippets, source/capture references and whitespace verified"
+    }
+  },
+  "followUps": {
+    "icloudPortability": {
+      "scope": "Existing native Settings section, optional account sync and Bluetooth setup references; no new whole-app visual verdict",
+      "design": "Reuses approved native blue controls, system lists, navigation, picker and Dynamic Type",
+      "evidence": "docs/validation/icloud-evidence.json",
+      "screenshots": "docs/screenshots/icloud/",
+      "releaseLimitations": [
+        "Real two-device CloudKit transfer is unverified",
+        "Production schema deployment and public privacy-policy verification remain open"
+      ]
     }
   }
 }

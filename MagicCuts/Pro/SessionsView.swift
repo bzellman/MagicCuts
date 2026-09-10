@@ -200,6 +200,10 @@ struct SessionDetailView: View {
         .background(MC.canvas)
         .navigationTitle(session?.title ?? "Session").navigationBarTitleDisplayMode(.inline)
         .task { await load() }
+        .onChange(of: library.index.versions[LibraryRecord.key(.session, id)]) { _, _ in
+            showExport = false; files = []
+            Task { await load() }
+        }
         .sheet(isPresented: $showExport) {
             NavigationStack {
                 List {
@@ -215,7 +219,12 @@ struct SessionDetailView: View {
         }
     }
     private func load() async {
-        do { session = try await library.archive.loadSession(id); failure = nil }
+        do {
+            guard library.index.versions[LibraryRecord.key(.session, id)]?.deleted != true else {
+                session = nil; failure = "This session was deleted from your library."; return
+            }
+            session = try await library.archive.loadSession(id); failure = nil
+        }
         catch { failure = "This recording couldn't be opened. \(error.localizedDescription)" }
     }
 }

@@ -82,15 +82,13 @@
 		A64CB27F38E7F383DEC4BF69 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		AA81B466D564B81C736264FA /* SessionActivityAttributes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SessionActivityAttributes.swift; path = ../MagicCuts/Instruments/SessionActivityAttributes.swift; sourceTree = "<group>"; };
 		BCC26100B67C2C4B25837934 /* ProximityTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProximityTests.swift; sourceTree = "<group>"; };
-		CAEB019DDABBA6D2A75D7B9C /* MagicCutsPro.storekit */ = {isa = PBXFileReference; includeInIndex = 1; path = MagicCutsPro.storekit; sourceTree = "<group>"; };
+		CAEB019DDABBA6D2A75D7B9C /* MagicCutsPro.storekit */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = MagicCutsPro.storekit; sourceTree = "<group>"; };
 		E43A2BA1A01BEB7037EF2BE7 /* ProExperienceUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProExperienceUITests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		99B2F9B42E926703004ECE09 /* MagicCuts */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = MagicCuts;
 			sourceTree = "<group>";
 		};
@@ -137,7 +135,6 @@
 				284041AEFD13EB191491546B /* MagicCutsLiveSession.swift */,
 				AA81B466D564B81C736264FA /* SessionActivityAttributes.swift */,
 			);
-			name = MagicCutsLiveSession;
 			path = MagicCutsLiveSession;
 			sourceTree = "<group>";
 		};
@@ -147,7 +144,6 @@
 				24F947F8B9BF53D20816B55B /* MagicCutsUITests.swift */,
 				E43A2BA1A01BEB7037EF2BE7 /* ProExperienceUITests.swift */,
 			);
-			name = MagicCutsUITests;
 			path = MagicCutsUITests;
 			sourceTree = "<group>";
 		};
@@ -157,7 +153,6 @@
 				BCC26100B67C2C4B25837934 /* ProximityTests.swift */,
 				9CDB63A07D5BAD3E2522AFFC /* ProInstrumentTests.swift */,
 			);
-			name = MagicCutsTests;
 			path = MagicCutsTests;
 			sourceTree = "<group>";
 		};
@@ -200,7 +195,6 @@
 			children = (
 				CAEB019DDABBA6D2A75D7B9C /* MagicCutsPro.storekit */,
 			);
-			name = Configuration;
 			path = Configuration;
 			sourceTree = "<group>";
 		};
@@ -303,6 +297,11 @@
 				TargetAttributes = {
 					99B2F9B12E926703004ECE09 = {
 						CreatedOnToolsVersion = 26.0.1;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = { enabled = 1; };
+							com.apple.Push = { enabled = 1; };
+							com.apple.iCloud = { enabled = 1; };
+						};
 					};
 				};
 			};

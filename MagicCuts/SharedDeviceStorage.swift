@@ -5,8 +5,11 @@ nonisolated struct DeviceInfo: Codable, Equatable, Sendable {
     let name: String
     let requiredSignalStrength: Int
     let serviceUUIDs: [String]
-    init(id: String, name: String, rssi: Int, serviceUUIDs: [String] = []) {
+    let radioID: String?
+    var radioUUID: UUID? { UUID(uuidString: radioID ?? id) }
+    init(id: String, name: String, rssi: Int, serviceUUIDs: [String] = [], radioID: String? = nil) {
         self.id = id; self.name = name; requiredSignalStrength = rssi; self.serviceUUIDs = serviceUUIDs
+        self.radioID = radioID
     }
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -14,6 +17,7 @@ nonisolated struct DeviceInfo: Codable, Equatable, Sendable {
         name = try c.decode(String.self, forKey: .name)
         requiredSignalStrength = try c.decode(Int.self, forKey: .requiredSignalStrength)
         serviceUUIDs = try c.decodeIfPresent([String].self, forKey: .serviceUUIDs) ?? []
+        radioID = try c.decodeIfPresent(String.self, forKey: .radioID)
     }
 }
 

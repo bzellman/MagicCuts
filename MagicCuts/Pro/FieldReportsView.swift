@@ -49,6 +49,9 @@ struct FieldReportEditorView: View {
     @State private var saving = false
     @State private var failure: String?
     @Environment(\.dismiss) private var dismiss
+    private var unavailableSelections: [UUID] {
+        selected.filter { id in !library.index.sessions.contains { $0.id == id } }.sorted { $0.uuidString < $1.uuidString }
+    }
     var body: some View {
         NavigationStack {
             Form {
@@ -76,6 +79,15 @@ struct FieldReportEditorView: View {
                             }.padding(.vertical, 5)
                         }
                     }
+                    ForEach(Array(unavailableSelections.enumerated()), id: \.element) { offset, id in
+                        Toggle(isOn: Binding(get: { selected.contains(id) }, set: { if !$0 { selected.remove(id) } })) {
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text("Unavailable attachment \(offset + 1)").font(.headline)
+                                Text("This session may still be syncing or may have been deleted. Turn this off to remove it from the report.")
+                                    .font(.caption).foregroundStyle(ProTheme.secondary)
+                            }
+                        }
+                    }
                 }
                 Section("Observations") { TextField("What changed? What did you notice?", text: $notes, axis: .vertical).lineLimit(4 ... 12) }
                 if let failure { InlineFailure(message: failure) }
@@ -95,7 +107,7 @@ struct FieldReportEditorView: View {
         saving = true; defer { saving = false }
         var report = existing ?? FieldReport(title: title)
         report.title = title.trimmingCharacters(in: .whitespacesAndNewlines); report.location = location; report.notes = notes; report.steps = steps
-        report.sessionIDs = library.index.sessions.filter { selected.contains($0.id) }.sorted { $0.startedAt < $1.startedAt }.map(\.id)
+        report.sessionIDs = library.index.sessions.filter { selected.contains($0.id) }.sorted { $0.startedAt < $1.startedAt }.map(\.id) + unavailableSelections
         report.updatedAt = .now
         do { try await library.save(report); dismiss() } catch { failure = error.localizedDescription }
     }
@@ -109,6 +121,9 @@ struct FieldReportDetailView: View {
     @State private var files: [ReportFile] = []
     @State private var failure: String?
     private var report: FieldReport? { library.index.reports.first { $0.id == id } }
+    private var exportRevision: [LibraryVersion?] {
+        [library.index.versions[LibraryRecord.key(.report, id)]] + (report?.sessionIDs.map { library.index.versions[LibraryRecord.key(.session, $0)] } ?? [])
+    }
     var body: some View {
         List {
             if let report {
@@ -141,11 +156,16 @@ struct FieldReportDetailView: View {
                 Section {
                     Button {
                         exporting = true; failure = nil; files = []
+                        let revision = exportRevision
                         Task {
                             defer { exporting = false }
                             do {
                                 var sessions: [RecordedSession] = []
                                 for sessionID in report.sessionIDs { sessions.append(try await library.archive.loadSession(sessionID)) }
+                                guard exportRevision == revision else {
+                                    failure = "This report changed while it was being prepared. Prepare it again to include the latest measurements."
+                                    return
+                                }
                                 files = try FieldReportExport.export(report, sessions: sessions)
                             } catch { failure = "The report couldn't be prepared. \(error.localizedDescription)" }
                         }
@@ -158,6 +178,7 @@ struct FieldReportDetailView: View {
         .navigationTitle(report?.title ?? "Field report").navigationBarTitleDisplayMode(.inline)
         .toolbar { Button("Edit") { editing = true }.disabled(report == nil || exporting) }
         .sheet(isPresented: $editing, onDismiss: { files = [] }) { if let report { FieldReportEditorView(library: library, existing: report) } }
+        .onChange(of: exportRevision) { _, _ in files = [] }
     }
 }
 

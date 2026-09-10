@@ -91,7 +91,7 @@ nonisolated final class ProximityTests: XCTestCase {
     }
 
     @MainActor func testDeletedDeviceCannotReceiveLateHistory() throws {
-        let store = try ModelContainer(for: MonitoredDevice.self, TestRecord.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+        let store = try ModelContainer(for: MonitoredDevice.self, TestRecord.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none))
         let context = store.mainContext
         let repository = DeviceRepository(context: context, shared: SharedDeviceStorage(defaults: UserDefaults(suiteName: "MagicCutsTests.\(UUID())")), refreshShortcuts: {})
         try repository.save(nil, id: DemoRadio.deviceID, name: "Old", threshold: -70, services: [])
@@ -122,7 +122,7 @@ nonisolated final class ProximityTests: XCTestCase {
         XCTAssertThrowsError(try SharedDeviceStorage(defaults: nil).replace([]))
     }
     @MainActor func testPersistenceHistoryAndSyncFailure() throws {
-        let store = try ModelContainer(for: MonitoredDevice.self, TestRecord.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+        let store = try ModelContainer(for: MonitoredDevice.self, TestRecord.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none))
         let context = store.mainContext
         let shared = SharedDeviceStorage(defaults: UserDefaults(suiteName: "MagicCutsTests.\(UUID())"))
         let repo = DeviceRepository(context: context, shared: shared, refreshShortcuts: {})
@@ -152,12 +152,12 @@ nonisolated final class ProximityTests: XCTestCase {
         defer { try? FileManager.default.removeItem(at: folder) }
         let url = folder.appendingPathComponent("legacy.store")
         @MainActor func createLegacy() throws {
-            let old = try ModelContainer(for: Legacy.MonitoredDevice.self, configurations: ModelConfiguration(url: url))
+            let old = try ModelContainer(for: Legacy.MonitoredDevice.self, configurations: ModelConfiguration(url: url, cloudKitDatabase: .none))
             old.mainContext.insert(Legacy.MonitoredDevice(persistentIdentifier: DemoRadio.deviceID, name: "Existing", requiredSignalStrength: -72))
             try old.mainContext.save()
         }
         try createLegacy()
-        let migrated = try ModelContainer(for: MonitoredDevice.self, TestRecord.self, configurations: ModelConfiguration(url: url))
+        let migrated = try ModelContainer(for: MonitoredDevice.self, TestRecord.self, configurations: ModelConfiguration(url: url, cloudKitDatabase: .none))
         let device = try XCTUnwrap(migrated.mainContext.fetch(FetchDescriptor<MonitoredDevice>()).first)
         XCTAssertEqual(device.uuid, DemoRadio.deviceID)
         XCTAssertEqual(device.requiredSignalStrength, -72)

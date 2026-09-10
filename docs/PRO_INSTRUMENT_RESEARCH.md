@@ -105,7 +105,7 @@ Use one non-consumable StoreKit product, verified on-device. Check current entit
 
 There is no free sensor, legacy Bluetooth, group, workflow or recording tier. No account is needed. Price is unresolved: previous $14.99–$24.99 suggestions were hypotheses, not approved live pricing. UI must obtain localized pricing from StoreKit; a missing product must say purchasing is unavailable and offer recovery. Test configurations are development-only, visibly isolated, and cannot ship an entitlement bypass.
 
-No owner-operated server, cloud database, analytics collector, paid entitlement service, cloud inference, or hosted recipe system. Measurements and exports are local; endpoint tests reach only destinations explicitly configured by the user. Apple developer membership, store commission, hardware, and maintenance still exist as ordinary costs; “no extra infrastructure” does not mean the business has no costs.
+No owner-operated server or database, analytics collector, paid entitlement service, cloud inference, or hosted recipe system. Measurements and exports are local; endpoint tests reach only destinations explicitly configured by the user. The September 10 portability follow-up adds optional private Apple CloudKit sync, off by default, without a MagicCuts account or backend. See [iCloud portability](ICLOUD_PORTABILITY.md). Apple developer membership, store commission, hardware, and maintenance still exist as ordinary costs; “no extra infrastructure” does not mean the business has no costs.
 
 ## Verification that earns a Pro claim
 

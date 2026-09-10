@@ -4,7 +4,378 @@ import Network
 import ActivityKit
 import StoreKit
 import StoreKitTest
+import CloudKit
+import Synchronization
+import SwiftData
 @testable import MagicCuts
+
+nonisolated final class ProPortabilityTests: XCTestCase {
+    private func folder() throws -> URL {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("MagicCuts-CloudTests-\(UUID())", isDirectory: true)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        return root
+    }
+
+    private func exchange(_ first: InstrumentArchive, _ second: InstrumentArchive) async throws {
+        let a = try await first.syncRecords(), b = try await second.syncRecords()
+        for record in a.reversed() { try await second.mergeSyncRecord(record) }
+        for record in b { try await first.mergeSyncRecord(record) }
+    }
+
+    func testTwoLibrariesTransferSavedEvidenceAndRemainLocalWithoutAnAccount() async throws {
+        let a = try folder(), b = try folder()
+        defer { try? FileManager.default.removeItem(at: a); try? FileManager.default.removeItem(at: b) }
+        let first = InstrumentArchive(root: a), second = InstrumentArchive(root: b)
+        var session = InstrumentDemo.session(kind: .tilt)
+        session.metadata["installationID"] = try await first.installationID()
+        let profile = CalibrationProfile(name: "Desk reference", kind: .tilt, sourceID: session.source.id, sourceName: session.source.name,
+            date: .now, points: session.points, summary: try XCTUnwrap(session.summary), metadata: session.metadata)
+        let recipe = WorkflowRecipe(name: "Ready", conditions: [WorkflowCondition(kind: .battery, source: .phone, comparison: .atLeast, threshold: 20)])
+        let group = DeviceGroup(name: "Workspace", deviceIDs: [UUID()])
+        var report = FieldReport(title: "Desk report"); report.sessionIDs = [session.id]; report.notes = "Keep the original measurements."
+        _ = try await first.saveSession(session)
+        _ = try await first.saveProfile(profile)
+        _ = try await first.saveWorkflow(recipe)
+        _ = try await first.saveGroup(group)
+        _ = try await first.saveReport(report)
+        try await exchange(first, second)
+        let transferred = try await second.loadSession(session.id)
+        XCTAssertEqual(transferred, session)
+        let index = try await second.loadIndex()
+        XCTAssertEqual(index.workflows, [recipe]); XCTAssertEqual(index.groups, [group]); XCTAssertEqual(index.reports, [report])
+        XCTAssertEqual(index.profiles, [profile])
+        let foreignProfile = try XCTUnwrap(index.profiles.first)
+        let destinationID = try await second.installationID()
+        XCTAssertFalse(foreignProfile.matches(kind: .tilt, source: .phone, metadata: ["installationID": destinationID]))
+        XCTAssertTrue(foreignProfile.matches(kind: .tilt, source: .phone, metadata: session.metadata))
+        let keys = Set(try await first.syncRecords().compactMap { $0.identity?.0 })
+        XCTAssertEqual(keys, Set([.session, .profile, .workflow, .group, .report]))
+    }
+
+    func testReportsKeepDelayedAttachmentsAndRetainDeletedEvidenceUntilDetached() async throws {
+        let a = try folder(), b = try folder()
+        defer { try? FileManager.default.removeItem(at: a); try? FileManager.default.removeItem(at: b) }
+        let first = InstrumentArchive(root: a), second = InstrumentArchive(root: b)
+        let session = InstrumentDemo.session()
+        var report = FieldReport(title: "Original report"); report.sessionIDs = [session.id]
+        _ = try await first.saveSession(session)
+        _ = try await first.saveReport(report)
+        let records = try await first.syncRecords()
+        try await second.mergeSyncRecord(XCTUnwrap(records.first { $0.identity?.0 == .report }))
+        report.title = "Edited while downloading"
+        do { _ = try await second.saveReport(report); XCTFail("Saving must preserve an attachment that has not arrived") } catch { }
+        let waiting = try await second.loadIndex()
+        XCTAssertEqual(waiting.reports.first?.sessionIDs, [session.id])
+        XCTAssertEqual(waiting.reports.first?.title, "Original report")
+        let sessionRecord = try XCTUnwrap(records.first { $0.identity?.0 == .session })
+        try await second.mergeSyncRecord(sessionRecord)
+        _ = try await second.saveReport(report)
+        var deletion = sessionRecord
+        deletion.version.sequence += 10; deletion.version.deleted = true; deletion.payload = nil
+        try await second.mergeSyncRecord(deletion)
+        try await second.pruneDeletedSessionFiles()
+        let retained = try await second.loadSession(session.id)
+        XCTAssertEqual(retained.points, session.points, "An offline report still owns its original measurement bytes")
+        report.sessionIDs = []
+        _ = try await second.saveReport(report)
+        try await second.pruneDeletedSessionFiles()
+        XCTAssertFalse(FileManager.default.fileExists(atPath: b.appendingPathComponent(session.id.uuidString + ".json").path))
+        let final = try await second.loadIndex()
+        XCTAssertEqual(final.versions[deletion.key]?.deleted, true)
+    }
+
+    @MainActor func testRestoredBluetoothModelNeedsFreshValidationAndPreservesItsOriginalReference() async throws {
+        let root = try folder(); defer { try? FileManager.default.removeItem(at: root) }
+        let archive = InstrumentArchive(root: root)
+        let config = ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none)
+        let container = try ModelContainer(for: MonitoredDevice.self, TestRecord.self, configurations: config)
+        let context = container.mainContext
+        let device = MonitoredDevice(persistentIdentifier: UUID(), name: "Restored sensor", requiredSignalStrength: -70)
+        context.insert(device); try context.save()
+        let originalID = try XCTUnwrap(device.portabilityIdentifier)
+        let previous = PortableDeviceSetup(id: originalID, installationID: UUID().uuidString,
+            device: DeviceInfo(id: device.persistentIdentifier, name: device.name, rssi: -70), tests: [])
+        let record = LibraryRecord(key: LibraryRecord.key(.deviceSetup, originalID),
+            version: LibraryVersion(sequence: 1, writer: previous.installationID, revision: UUID(), deleted: false), payload: try LibraryCoding.encode(previous))
+        try await archive.mergeSyncRecord(record)
+        let key = "shortcutVerified.\(device.persistentIdentifier)"
+        UserDefaults.standard.set(true, forKey: key)
+        defer { UserDefaults.standard.removeObject(forKey: key) }
+        let sync = CloudLibrarySync(archive: archive)
+        let before = Date()
+        await sync.mirrorDevices(in: context)
+        XCTAssertNil(sync.localFailure)
+        XCTAssertNotEqual(device.portabilityIdentifier, originalID)
+        XCTAssertGreaterThanOrEqual(try XCTUnwrap(device.validationResetAt), before)
+        XCTAssertFalse(UserDefaults.standard.bool(forKey: key))
+        let index = try await archive.loadIndex()
+        XCTAssertEqual(index.deviceSetups.count, 2)
+        XCTAssertTrue(index.deviceSetups.contains(previous))
+        await sync.mirrorDevices(in: context)
+        let repeated = try await archive.loadIndex()
+        XCTAssertEqual(repeated.deviceSetups.count, 2, "Mirroring the restored model again must not duplicate references")
+    }
+
+    func testOfflineEditsConvergeAndAStaleDeviceCannotResurrectADeletion() async throws {
+        let a = try folder(), b = try folder()
+        defer { try? FileManager.default.removeItem(at: a); try? FileManager.default.removeItem(at: b) }
+        let first = InstrumentArchive(root: a), second = InstrumentArchive(root: b)
+        var recipe = WorkflowRecipe(name: "Initial", conditions: [WorkflowCondition(kind: .battery, source: .phone, comparison: .atLeast, threshold: 20)])
+        _ = try await first.saveWorkflow(recipe)
+        try await exchange(first, second)
+        let staleRecords = try await second.syncRecords()
+        let stale = try XCTUnwrap(staleRecords.first)
+        recipe.name = "Edited on first"; _ = try await first.saveWorkflow(recipe)
+        recipe.name = "Edited on second"; _ = try await second.saveWorkflow(recipe)
+        try await exchange(first, second)
+        let firstResult = try await first.loadIndex(), secondResult = try await second.loadIndex()
+        XCTAssertEqual(firstResult.workflows, secondResult.workflows)
+        _ = try await first.deleteWorkflow(recipe.id)
+        try await exchange(first, second)
+        let accepted = try await second.mergeSyncRecord(stale)
+        XCTAssertFalse(accepted)
+        let final = try await second.loadIndex()
+        XCTAssertTrue(final.workflows.isEmpty)
+        XCTAssertTrue(try XCTUnwrap(final.versions[LibraryRecord.key(.workflow, recipe.id)]).deleted)
+        let restarted = InstrumentArchive(root: b)
+        let afterRestart = try await restarted.syncRecords()
+        XCTAssertTrue(try XCTUnwrap(afterRestart.first).version.deleted, "Deletion receipts survive process restarts and do not include deleted payloads")
+        XCTAssertNil(afterRestart.first?.payload)
+    }
+
+    func testDeletionAlsoWinsAgainstANewerOfflineEdit() async throws {
+        let a = try folder(), b = try folder()
+        defer { try? FileManager.default.removeItem(at: a); try? FileManager.default.removeItem(at: b) }
+        let first = InstrumentArchive(root: a), second = InstrumentArchive(root: b)
+        var group = DeviceGroup(name: "Original", deviceIDs: [UUID()])
+        _ = try await first.saveGroup(group)
+        try await exchange(first, second)
+        _ = try await first.deleteGroup(group.id)
+        for number in 1 ... 4 {
+            group.name = "Offline edit \(number)"
+            _ = try await second.saveGroup(group)
+        }
+        try await exchange(first, second)
+        let aIndex = try await first.loadIndex(), bIndex = try await second.loadIndex()
+        XCTAssertTrue(aIndex.groups.isEmpty); XCTAssertTrue(bIndex.groups.isEmpty)
+        do { _ = try await second.saveGroup(group); XCTFail("A stale editor must create a new item, not revive a deletion") } catch { }
+        let afterAttempt = try await second.loadIndex()
+        XCTAssertTrue(afterAttempt.groups.isEmpty)
+    }
+
+    func testChangingSessionMarksQueuesAnUploadEvenWhenItsSummaryIsUnchanged() async throws {
+        let root = try folder(); defer { try? FileManager.default.removeItem(at: root) }
+        let archive = InstrumentArchive(root: root)
+        var session = InstrumentDemo.session()
+        _ = try await archive.saveSession(session)
+        let beforeRecords = try await archive.syncRecords()
+        let before = try XCTUnwrap(beforeRecords.first)
+        session.events.append(CaptureEvent(elapsed: 14, text: "A new observation"))
+        _ = try await archive.saveSession(session)
+        let afterRecords = try await archive.syncRecords()
+        let after = try XCTUnwrap(afterRecords.first)
+        XCTAssertGreaterThan(after.version, before.version)
+        let decoded = try LibraryCoding.decode(RecordedSession.self, from: after)
+        XCTAssertEqual(decoded.events.last?.text, "A new observation")
+    }
+
+    func testCorruptOrFutureCloudRecordsCannotReplaceLocalEvidence() async throws {
+        let root = try folder(); defer { try? FileManager.default.removeItem(at: root) }
+        let archive = InstrumentArchive(root: root)
+        let group = DeviceGroup(name: "Keep this", deviceIDs: [UUID()])
+        _ = try await archive.saveGroup(group)
+        let before = try Data(contentsOf: root.appendingPathComponent("index.json"))
+        let records = try await archive.syncRecords()
+        var record = try XCTUnwrap(records.first)
+        record.version.sequence += 1
+        record.payload = Data("bad payload".utf8)
+        do { try await archive.mergeSyncRecord(record); XCTFail("Corrupt payload must fail before mutation") } catch { }
+        XCTAssertEqual(try Data(contentsOf: root.appendingPathComponent("index.json")), before)
+        record.format = 2
+        do { try await archive.mergeSyncRecord(record); XCTFail("Unknown format must require an update") } catch { }
+        XCTAssertEqual(try Data(contentsOf: root.appendingPathComponent("index.json")), before)
+    }
+
+    func testLegacyLibrariesGainRevisionsWithoutInventingSensorProvenance() async throws {
+        let root = try folder(); defer { try? FileManager.default.removeItem(at: root) }
+        let archive = InstrumentArchive(root: root)
+        let session = InstrumentDemo.session(kind: .tilt)
+        let profile = CalibrationProfile(name: "Old reference", kind: .tilt, sourceID: "this-device", sourceName: "This device",
+            date: .now, points: session.points, summary: try XCTUnwrap(session.summary), metadata: [:])
+        var index = ProLibraryIndex(); index.profiles = [profile]
+        let data = try LibraryCoding.encode(index)
+        var json = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        for key in ["sequence", "versions", "deviceSetups"] { json.removeValue(forKey: key) }
+        try JSONSerialization.data(withJSONObject: json).write(to: root.appendingPathComponent("index.json"))
+        _ = try await archive.prepareSync()
+        let records = try await archive.syncRecords()
+        let record = try XCTUnwrap(records.first)
+        let copied = try LibraryCoding.decode(CalibrationProfile.self, from: record)
+        XCTAssertEqual(copied.points, profile.points)
+        XCTAssertEqual(copied.metadata["installationID"], "unverified-legacy-source")
+        let identity = try await archive.installationID()
+        XCTAssertFalse(copied.matches(kind: .tilt, source: .phone, metadata: ["installationID": identity]))
+        let resource = try root.appendingPathComponent("installation-id.json").resourceValues(forKeys: [.isExcludedFromBackupKey])
+        XCTAssertEqual(resource.isExcludedFromBackup, true, "An installation's consent and hardware provenance must not clone through a device backup")
+    }
+
+    func testBluetoothSetupHistoryTransfersWithoutChangingLocalDeviceConnections() async throws {
+        let a = try folder(), b = try folder()
+        defer { try? FileManager.default.removeItem(at: a); try? FileManager.default.removeItem(at: b) }
+        let first = InstrumentArchive(root: a), second = InstrumentArchive(root: b)
+        let device = DeviceInfo(id: UUID().uuidString, name: "Desk sensor", rssi: -70, serviceUUIDs: ["180F"])
+        let setup = PortableDeviceSetup(id: try XCTUnwrap(UUID(uuidString: device.id)), installationID: try await first.installationID(), device: device,
+            tests: [PortableDeviceTest(id: UUID(), date: .now, payload: Data("historical bytes are retained even when unreadable".utf8))])
+        _ = try await first.mirrorDeviceSetups([setup])
+        try await exchange(first, second)
+        let received = try await second.loadIndex()
+        XCTAssertEqual(received.deviceSetups, [setup])
+        _ = try await second.mirrorDeviceSetups([])
+        let afterEmptyLocalScan = try await second.loadIndex()
+        XCTAssertEqual(afterEmptyLocalScan.deviceSetups, [setup], "Another device's local empty list must not delete imported setups")
+        _ = try await first.mirrorDeviceSetups([])
+        try await exchange(first, second)
+        let deleted = try await second.loadIndex()
+        XCTAssertTrue(deleted.deviceSetups.isEmpty)
+    }
+
+    @MainActor func testBluetoothReferencesRequireAnExplicitConnectionAndNeverMatchByName() throws {
+        let remote = UUID().uuidString
+        let local = DeviceInfo(id: UUID().uuidString, name: "Same advertised name", rssi: -80)
+        XCTAssertNil(CloudDeviceLinks.resolve(remote, devices: [local], links: []))
+        let link = LocalDeviceLink(sourceID: remote, localDeviceID: local.id, installationID: UUID().uuidString)
+        XCTAssertEqual(CloudDeviceLinks.resolve(remote, devices: [local], links: [link]), local)
+        XCTAssertNil(CloudDeviceLinks.resolve(remote, devices: [], links: [link]), "A deleted local device must remain unavailable")
+    }
+
+    func testOptInIsBoundToBothTheAccountAndTheInstallation() {
+        let consent = CloudSyncConsent(enabled: true, accountID: "account-a", installationID: "device-a")
+        XCTAssertTrue(consent.permits(account: "account-a", installation: "device-a"))
+        XCTAssertFalse(consent.permits(account: "account-b", installation: "device-a"))
+        XCTAssertFalse(consent.permits(account: "account-a", installation: "device-b"))
+        XCTAssertFalse(CloudSyncConsent().permits(account: "account-a", installation: "device-a"))
+    }
+
+    func testDefaultOffAndRestoredPreferencesDoNotEvenCreateACloudClient() async throws {
+        let root = try folder(); defer { try? FileManager.default.removeItem(at: root) }
+        let suite = "MagicCuts.CloudConsentTests.\(UUID())"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite)); defer { defaults.removePersistentDomain(forName: suite) }
+        let archive = InstrumentArchive(root: root)
+        let calls = Mutex(0)
+        let account = PortabilityAccountStub(id: nil)
+        let transport = CloudLibraryTransport(archive: archive, preferencesSuite: suite, accountReader: account, makeContainer: {
+            calls.withLock { $0 += 1 }
+            return CKContainer(identifier: CloudLibraryTransport.containerIdentifier)
+        })
+        await transport.resume()
+        let off = try await transport.currentSettings()
+        XCTAssertFalse(off.enabled)
+        XCTAssertEqual(calls.withLock { $0 }, 0)
+        var restored = CloudLibraryState()
+        restored.consent = CloudSyncConsent(enabled: true, accountID: "previous-account", installationID: UUID().uuidString)
+        try await archive.saveSyncState(LibraryCoding.encode(restored))
+        defaults.set(true, forKey: "icloud.optedIn")
+        defaults.set(restored.consent.installationID, forKey: "icloud.optInInstallation")
+        let afterRestore = CloudLibraryTransport(archive: archive, preferencesSuite: suite, accountReader: account, makeContainer: {
+            calls.withLock { $0 += 1 }
+            return CKContainer(identifier: CloudLibraryTransport.containerIdentifier)
+        })
+        await afterRestore.resume()
+        let restoredSettings = try await afterRestore.currentSettings()
+        XCTAssertFalse(restoredSettings.enabled)
+        XCTAssertEqual(calls.withLock { $0 }, 0)
+        let accountRequests = await account.requests
+        XCTAssertEqual(accountRequests, 0, "Opting out must also avoid Apple Account lookups")
+    }
+
+    func testTurningOffRetainsLocalDataAndPersistsConsentWithoutNetworkAccess() async throws {
+        let root = try folder(); defer { try? FileManager.default.removeItem(at: root) }
+        let suite = "MagicCuts.CloudOffTests.\(UUID())"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite)); defer { defaults.removePersistentDomain(forName: suite) }
+        let archive = InstrumentArchive(root: root)
+        let group = DeviceGroup(name: "Keep offline", deviceIDs: [UUID()])
+        _ = try await archive.saveGroup(group)
+        var saved = CloudLibraryState()
+        saved.consent = CloudSyncConsent(enabled: true, accountID: "account-a", installationID: try await archive.installationID())
+        try await archive.saveSyncState(LibraryCoding.encode(saved))
+        defaults.set(true, forKey: "icloud.optedIn")
+        defaults.set(saved.consent.installationID, forKey: "icloud.optInInstallation")
+        let calls = Mutex(0)
+        let transport = CloudLibraryTransport(archive: archive, preferencesSuite: suite, makeContainer: {
+            calls.withLock { $0 += 1 }
+            return CKContainer(identifier: CloudLibraryTransport.containerIdentifier)
+        })
+        let before = try await transport.currentSettings()
+        XCTAssertTrue(before.enabled)
+        await transport.disable()
+        let index = try await archive.loadIndex()
+        XCTAssertEqual(index.groups, [group])
+        let savedData = try await archive.loadSyncState()
+        let persisted = try JSONDecoder().decode(CloudLibraryState.self, from: XCTUnwrap(savedData))
+        XCTAssertFalse(persisted.consent.enabled)
+        XCTAssertFalse(defaults.bool(forKey: "icloud.optedIn"))
+        XCTAssertEqual(calls.withLock { $0 }, 0)
+    }
+
+    func testAccountSwitchPausesBeforeCreatingAnUploadClient() async throws {
+        let root = try folder(); defer { try? FileManager.default.removeItem(at: root) }
+        let suite = "MagicCuts.CloudSwitchTests.\(UUID())"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite)); defer { defaults.removePersistentDomain(forName: suite) }
+        let archive = InstrumentArchive(root: root)
+        let group = DeviceGroup(name: "Previous local library", deviceIDs: [UUID()])
+        _ = try await archive.saveGroup(group)
+        var saved = CloudLibraryState()
+        saved.consent = CloudSyncConsent(enabled: true, accountID: "account-a", installationID: try await archive.installationID())
+        try await archive.saveSyncState(LibraryCoding.encode(saved))
+        defaults.set(true, forKey: "icloud.optedIn"); defaults.set(saved.consent.installationID, forKey: "icloud.optInInstallation")
+        let calls = Mutex(0)
+        let account = PortabilityAccountStub(id: "account-b")
+        let transport = CloudLibraryTransport(archive: archive, preferencesSuite: suite, accountReader: account, makeContainer: {
+            calls.withLock { $0 += 1 }; return CKContainer(identifier: CloudLibraryTransport.containerIdentifier)
+        })
+        await transport.resume()
+        let snapshot = try await transport.currentSettings()
+        XCTAssertFalse(snapshot.enabled)
+        XCTAssertTrue(snapshot.message.contains("Apple Account changed"))
+        XCTAssertFalse(defaults.bool(forKey: "icloud.optedIn"))
+        XCTAssertEqual(calls.withLock { $0 }, 0)
+        let index = try await archive.loadIndex()
+        XCTAssertEqual(index.groups, [group])
+    }
+
+    func testUnavailableAccountLeavesOptInOffAndLocalDataUsable() async throws {
+        let root = try folder(); defer { try? FileManager.default.removeItem(at: root) }
+        let suite = "MagicCuts.CloudUnavailableTests.\(UUID())"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite)); defer { defaults.removePersistentDomain(forName: suite) }
+        let archive = InstrumentArchive(root: root)
+        let account = PortabilityAccountStub(id: nil)
+        let calls = Mutex(0)
+        let transport = CloudLibraryTransport(archive: archive, preferencesSuite: suite, accountReader: account, makeContainer: {
+            calls.withLock { $0 += 1 }; return CKContainer(identifier: CloudLibraryTransport.containerIdentifier)
+        })
+        await transport.enable()
+        let snapshot = try await transport.currentSettings()
+        XCTAssertFalse(snapshot.enabled)
+        XCTAssertTrue(snapshot.failure)
+        XCTAssertTrue(snapshot.message.contains("iCloud is unavailable"))
+        XCTAssertEqual(calls.withLock { $0 }, 0)
+        let group = DeviceGroup(name: "Still local", deviceIDs: [UUID()])
+        _ = try await archive.saveGroup(group)
+        let index = try await archive.loadIndex()
+        XCTAssertEqual(index.groups, [group])
+    }
+}
+
+private actor PortabilityAccountStub: CloudAccountReading {
+    let id: String?
+    private(set) var requests = 0
+    init(id: String?) { self.id = id }
+    func accountID() async throws -> String {
+        requests += 1
+        guard let id else { throw CloudLibraryError.accountUnavailable }
+        return id
+    }
+}
 
 nonisolated final class ProMeasurementTests: XCTestCase {
     func testRobustStatisticsAndSilenceHaveDefinedUnits() throws {
@@ -228,7 +599,11 @@ nonisolated final class ProCaptureTests: XCTestCase {
     @MainActor func testWorkflowWindowStartsAfterRadioReadiness() async throws {
         let radio = CaptureRadio()
         let source = MeasurementSource(id: radio.id.uuidString, name: "Test sensor", deviceID: radio.id)
-        let task = Task { try await WorkflowRunner.measure(.bluetooth, source: source, seconds: 1, radio: radio) }
+        let suite = "MagicCuts.WorkflowReadiness.\(UUID())"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite)); defer { defaults.removePersistentDomain(forName: suite) }
+        let storage = SharedDeviceStorage(defaults: defaults)
+        try storage.replace([DeviceInfo(id: source.id, name: source.name, rssi: -70)])
+        let task = Task { try await WorkflowRunner.measure(.bluetooth, source: source, seconds: 1, radio: radio, storage: storage) }
         try await Task.sleep(for: .milliseconds(250))
         radio.ready(); radio.send(-60)
         try await Task.sleep(for: .milliseconds(850))

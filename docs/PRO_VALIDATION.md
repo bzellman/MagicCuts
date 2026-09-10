@@ -4,6 +4,8 @@ Validated September 10, 2026 in the isolated `codex/magiccuts-pro-instruments` w
 
 Machine-readable local results and source fingerprints: [pro-evidence.json](validation/pro-evidence.json).
 
+The later [iCloud portability follow-up](ICLOUD_PORTABILITY.md) adds optional Apple Account sync and supersedes local-only storage wording. Its independent [receipt](validation/icloud-evidence.json) records 47 unit tests, the focused UI regressions and CloudKit signing proof. Actual two-device sync and production schema deployment remain open.
+
 ## Results
 
 | Area | Result | Evidence and scope |

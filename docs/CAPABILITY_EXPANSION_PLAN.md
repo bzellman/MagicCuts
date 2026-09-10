@@ -140,7 +140,7 @@ Every observation should retain its source, value, units, observation time, rece
 
 Do not store unlimited high-frequency samples in ordinary preference snapshots. Share only compact, timestamped latest results or configuration with App Intents; use a bounded local store/file for recordings. Existing Boolean actions retain their identities and semantics; add richer actions separately.
 
-No cloud databases, analytics collectors, managed entitlement service, hosted recipe marketplace, remote push provider or paid AI calls. Reports and recipes use Files/share sheets. Peer diagnostics use user-owned devices with an explicitly implemented local protocol. Any future receiver/helper mode must follow the chosen hard-paywall policy; its purchase semantics have not been implemented.
+No owner-operated cloud databases, analytics collectors, managed entitlement service, hosted recipe marketplace, custom remote push provider or paid AI calls. Reports and recipes use Files/share sheets. The September 10 follow-up adds [optional private iCloud portability](ICLOUD_PORTABILITY.md) through Apple CloudKit, off by default on every installation. Peer diagnostics use user-owned devices with an explicitly implemented local protocol. Any future receiver/helper mode must follow the chosen hard-paywall policy; its purchase semantics have not been implemented.
 
 Internet speed tests are excluded from the default design: a public test endpoint is somebody’s infrastructure, and free access is not a durable permission or cost model. Local tests identify their target and path. Any optional user-supplied external target needs clear data limits and permission to use it. Carrier data/accessory purchases may cost users money even when your hosting cost remains zero.
 

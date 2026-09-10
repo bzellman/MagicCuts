@@ -10,10 +10,16 @@ struct WorkflowsView: View {
     @State private var groupEditor = false
     @State private var editingWorkflow: WorkflowRecipe?
     @State private var editingGroup: DeviceGroup?
-    @State private var runner = WorkflowRunner()
+    @State private var runner: WorkflowRunner
     @State private var showResult = false
     @State private var deletingWorkflow: WorkflowRecipe?
     @State private var deletingGroup: DeviceGroup?
+
+    init(library: ProLibrary, radio: any RadioScanning) {
+        self.library = library; self.radio = radio
+        _runner = State(initialValue: WorkflowRunner(archive: library.archive))
+    }
+
     var body: some View {
         List {
             Section {
@@ -283,6 +289,7 @@ struct WorkflowResultView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
+                    if AppRuntime.isUITesting { Text("Sample result").font(.caption).foregroundStyle(ProTheme.secondary) }
                     if runner.running { ProgressView(runner.progress).frame(maxWidth: .infinity).padding(.vertical, 30) }
                     if let outcome = runner.outcome {
                         Text(outcome.passed.map { $0 ? "Conditions met" : "Conditions not met" } ?? "Couldn't determine a result")

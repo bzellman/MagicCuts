@@ -2,7 +2,7 @@
 
 Native iPhone and iPad instruments for measuring a setup, establishing a reference, comparing a change, and using the result in Shortcuts. Every feature requires a one-time Pro purchase, including saved Bluetooth devices and all App Intents.
 
-Requires iOS 26 or later and Xcode 26 or later. Swift 6 with complete strict concurrency. Measurements, baselines, workflows, recordings and reports stay on the device; no account or owner-operated service is required.
+Requires iOS 26 or later and Xcode 26 or later. Swift 6 with complete strict concurrency. The library works locally by default. Users can opt into private iCloud portability with their Apple Account; no MagicCuts account or owner-operated service is required.
 
 ## Instruments and evidence
 
@@ -22,7 +22,7 @@ Threshold edits are drafts until **Apply threshold**. **Test draft** retains a l
 
 Validation observes a full ten-second window after Bluetooth becomes ready. At least two valid readings must all meet the threshold for nearby validation, or all fall below it for away validation. Mixed, sparse, and missing readings are inconclusive. Changing the threshold or service filter invalidates previous evidence and Shortcut confirmation. Tests describe the observed window; they do not guarantee future results.
 
-History is local, per device, and newest first. It includes threshold, position, draft status, timestamps, readings, and errors. Cancelled or interrupted runs are discarded. Individual records can be deleted; clearing history or deleting a device requires confirmation.
+History is per device and newest first. It includes threshold, position, draft status, timestamps, readings, and errors. With optional iCloud sync, another device can inspect this history as an original setup reference. Cancelled or interrupted runs are discarded. Individual records can be deleted; clearing history or deleting a device requires confirmation.
 
 New users can skip the welcome or proceed to discovery. Bluetooth access begins only when scanning starts. Discovery includes named and unnamed advertisements, search, signal/name sorting, last-seen and stale indicators, and identification guidance. Naming requires explicit Save; Cancel leaves no saved device. Existing saved device identities and history remain available.
 
@@ -35,6 +35,14 @@ Add **Check if Bluetooth Device is Nearby**, select a saved device, and use an *
 - Error: Bluetooth unavailable/denied/off/resetting, initialization failure, deleted device, unusable settings, or unreadable shared settings.
 
 This preserves the original action identity and any-sample meaning, which is weaker evidence than the app's repeated validation. Opening Shortcuts does not mark setup complete; confirmation requires the user to test their actual shortcut. Background execution depends on iOS scheduling, permissions, and device advertisements. A device without saved advertised service identifiers may not be discoverable in the background. Test the intended foreground/background use on hardware.
+
+## Optional iCloud portability
+
+Settings → Sync with iCloud is off by default on each installation. Opting in merges saved sessions, baselines, workflows, groups, reports, and Bluetooth setup references through the user's private CloudKit database. Edits and deletions sync. Turning sync off keeps the local and iCloud copies; local instruments remain usable when iCloud is unavailable. Switching Apple Accounts pauses sync and requires another explicit opt-in.
+
+Bluetooth identities and calibration remain specific to their original installation. Open Bluetooth setups from iCloud, identify and save the actual peripheral on this device, explicitly connect the reference, and test the current setup. Imported sensor baselines remain viewable but need a new capture before live comparison. Permissions, Shortcut confirmations, in-progress recordings, purchase access and iCloud consent do not sync.
+
+Apple manages CloudKit transport and scheduling. There is no MagicCuts login, backend, analytics collector, paid sync service or custom push server. Pro purchase restoration uses StoreKit independently of the iCloud library. See [iCloud architecture and acceptance](docs/ICLOUD_PORTABILITY.md) for the schema, account behavior, tested scope and production release requirements.
 
 ## Purchase configuration
 
@@ -49,6 +57,7 @@ Debug-only `--pro-development-access` permits physical instrument QA. `--uitesti
 - `InstrumentEngine` owns sensor sessions, timestamps, segments, bounded display history, checkpointing and Live Activity state.
 - `MeasurementMath` defines robust summaries, angular calculations, level transforms, spectra and calibration suitability.
 - `InstrumentArchive` coordinates local file and index mutations, preserving evidence referenced by reports and recoverable interrupted sessions.
+- `CloudLibraryTransport` uses `CKSyncEngine` with the private `iCloud.com.bradZellman.MagicCuts` container only after opt-in. Library records merge by item revision, retain deletion receipts, and exclude installation-only state.
 - `WorkflowRunner` evaluates observation quality and three-state conditions; Bluetooth groups share one sampling window.
 - `RadioScanning` and `ProximitySampler` retain session-scoped Bluetooth observations and the original action's full window.
 - SwiftData device storage migrates existing identities/history. `DeviceRepository` saves before replacing the app-group snapshot; launch reconciliation repairs stale snapshots.
@@ -72,4 +81,4 @@ See [Pro validation](docs/PRO_VALIDATION.md), [measurement research](docs/PRO_IN
 
 ## Privacy
 
-Permissions are requested when a selected instrument needs them. Audio analysis does not save raw audio. Location is used only by selected location/heading instruments. Endpoint tests reach a URL explicitly entered by the user. Stored sessions include their selected source and measurement metadata; sharing occurs only through the system share sheet. No analytics collector, cloud database or hosted entitlement service is included.
+Permissions are requested when a selected instrument needs them. Audio analysis does not save raw audio. Location is used only by selected location/heading instruments. Endpoint tests reach a URL explicitly entered by the user. Stored sessions include their selected source and measurement metadata. Sharing with others uses the system share sheet; optional iCloud sync transfers the saved library to the user's private Apple Account database. No analytics collector, owner-operated database or hosted entitlement service is included. Support receives only information the user chooses to send. The public privacy policy must describe this opt-in behavior before release.

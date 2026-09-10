@@ -107,6 +107,7 @@ final class InstrumentEngine: NSObject, CLLocationManagerDelegate {
         let token = UUID(); generation = token
         if AppRuntime.isInstrumentDemo { loadDemo(kind: kind); return }
         do {
+            metadata["installationID"] = try await archive.installationID()
             switch kind {
             case .bluetooth:
                 guard let id = source.deviceID else { throw InstrumentError.unavailable("Choose a saved Bluetooth device to measure its signal.") }

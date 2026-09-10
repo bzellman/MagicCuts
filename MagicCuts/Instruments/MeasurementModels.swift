@@ -156,7 +156,7 @@ nonisolated struct MeasurementSource: Codable, Equatable, Sendable {
     var endpoint: String?
     static let phone = MeasurementSource(id: "this-device", name: "This device")
     static func bluetooth(_ device: DeviceInfo) -> Self {
-        MeasurementSource(id: device.id, name: device.name, deviceID: UUID(uuidString: device.id), serviceUUIDs: device.serviceUUIDs, threshold: Double(device.requiredSignalStrength))
+        MeasurementSource(id: device.id, name: device.name, deviceID: device.radioUUID, serviceUUIDs: device.serviceUUIDs, threshold: Double(device.requiredSignalStrength))
     }
     var reportName: String {
         guard let endpoint, let url = URL(string: endpoint), let host = url.host else { return name }
@@ -209,6 +209,7 @@ nonisolated struct CalibrationProfile: Codable, Equatable, Identifiable, Sendabl
     var metadata: [String: String]
     func matches(kind: InstrumentKind, source: MeasurementSource, metadata current: [String: String]) -> Bool {
         guard self.kind == kind, sourceID == source.id else { return false }
+        guard metadata["installationID"] == current["installationID"] else { return false }
         for key in ["audioInput", "audioSampleRate", "referenceFrame"] {
             if metadata[key] != current[key] { return false }
         }
@@ -302,6 +303,9 @@ nonisolated struct ProLibraryIndex: Codable, Sendable {
     var workflows: [WorkflowRecipe] = []
     var groups: [DeviceGroup] = []
     var reports: [FieldReport] = []
+    var deviceSetups: [PortableDeviceSetup] = []
+    var sequence: Int64 = 0
+    var versions: [String: LibraryVersion] = [:]
 
     init() {}
     init(from decoder: Decoder) throws {
@@ -312,6 +316,9 @@ nonisolated struct ProLibraryIndex: Codable, Sendable {
         workflows = try values.decodeIfPresent([WorkflowRecipe].self, forKey: .workflows) ?? []
         groups = try values.decodeIfPresent([DeviceGroup].self, forKey: .groups) ?? []
         reports = try values.decodeIfPresent([FieldReport].self, forKey: .reports) ?? []
+        deviceSetups = try values.decodeIfPresent([PortableDeviceSetup].self, forKey: .deviceSetups) ?? []
+        sequence = try values.decodeIfPresent(Int64.self, forKey: .sequence) ?? 0
+        versions = try values.decodeIfPresent([String: LibraryVersion].self, forKey: .versions) ?? [:]
     }
 }
 

@@ -2,9 +2,18 @@ import XCTest
 
 nonisolated final class ProExperienceUITests: XCTestCase {
     @MainActor private func launch(_ extra: [String] = []) -> XCUIApplication {
+        continueAfterFailure = false
         let app = XCUIApplication()
+        app.terminate()
         app.launchArguments = ["--uitesting", "--pro-demo", "--seed-device", "-showSessionLiveActivity", "NO"] + extra
         app.launch()
+        // Xcode can prelaunch the target without fixture arguments on the first test.
+        // Require the explicit demo marker before any test interacts with account settings.
+        if !app.staticTexts["Sample session"].firstMatch.waitForExistence(timeout: 5) {
+            app.terminate()
+            app.launch()
+        }
+        XCTAssertTrue(app.staticTexts["Sample session"].firstMatch.waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["instrument.choose"].waitForExistence(timeout: 10))
         return app
     }
@@ -95,6 +104,66 @@ nonisolated final class ProExperienceUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Restore purchases"].exists)
         XCTAssertTrue(app.buttons["pro.purchase"].exists)
         capture(app, "pro-paywall")
+    }
+
+    @MainActor func testICloudIsOptionalAndAnUnavailableAccountDoesNotBlockInstruments() {
+        let app = launch()
+        app.buttons["Settings"].tap()
+        let toggle = app.switches["icloud.toggle"]
+        XCTAssertTrue(toggle.waitForExistence(timeout: 5))
+        XCTAssertEqual(toggle.value as? String, "0")
+        capture(app, "icloud-default-off")
+        toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        let status = app.staticTexts["icloud.status"]
+        XCTAssertTrue(status.waitForExistence(timeout: 5))
+        let unavailable = NSPredicate(format: "label CONTAINS %@", "iCloud is unavailable")
+        expectation(for: unavailable, evaluatedWith: status)
+        waitForExpectations(timeout: 10)
+        XCTAssertEqual(toggle.value as? String, "0")
+        capture(app, "icloud-unavailable")
+        app.buttons["Done"].tap()
+        XCTAssertTrue(app.buttons["instrument.record"].waitForExistence(timeout: 5))
+        app.buttons["instrument.record"].tap()
+        XCTAssertTrue(app.buttons["Mark"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor func testICloudBluetoothSetupRequiresAConnectionBeforeTheGroupCanRun() {
+        let app = launch(["--cloud-setup-demo", "--dark-appearance"])
+        app.buttons["Settings"].tap()
+        let setups = app.buttons["icloud.setups"]
+        reveal(setups, in: app); setups.tap()
+        let setup = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Studio sensor · sample")).firstMatch
+        XCTAssertTrue(setup.waitForExistence(timeout: 5)); setup.tap()
+        capture(app, "icloud-setup-reference")
+        let picker = app.buttons["icloud.device-picker"]
+        XCTAssertTrue(picker.waitForExistence(timeout: 5)); picker.tap()
+        let choice = app.buttons.matching(NSPredicate(format: "label == %@", "Desk sensor")).allElementsBoundByIndex.first { $0.isHittable }
+        XCTAssertNotNil(choice); choice?.tap()
+        app.buttons["icloud.connect-setup"].tap()
+        XCTAssertTrue(app.staticTexts["Connected to Desk sensor"].waitForExistence(timeout: 5))
+        capture(app, "icloud-setup-connected")
+        app.navigationBars.buttons["Bluetooth setups"].tap()
+        app.navigationBars["Bluetooth setups"].buttons["Settings"].tap()
+        app.buttons["Done"].tap()
+        app.buttons["Workflows"].firstMatch.tap()
+        let run = app.buttons["Check group"]
+        reveal(run, in: app); run.tap()
+        XCTAssertTrue(app.staticTexts["Conditions met"].waitForExistence(timeout: 8))
+        capture(app, "icloud-connected-group-result")
+    }
+
+    @MainActor func testICloudSettingsRemainReachableAtLargestText() throws {
+        let app = launch(["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
+        app.buttons["Settings"].tap()
+        let toggle = app.switches["icloud.toggle"]
+        reveal(toggle, in: app)
+        XCTAssertEqual(toggle.value as? String, "0")
+        capture(app, "icloud-largest-text")
+        try app.performAccessibilityAudit(for: [.hitRegion, .sufficientElementDescription, .trait])
+        let setups = app.buttons["icloud.setups"]
+        reveal(setups, in: app); setups.tap()
+        XCTAssertTrue(app.staticTexts["No other setups yet"].waitForExistence(timeout: 5))
+        capture(app, "icloud-largest-empty")
     }
 
     @MainActor func testBaselineInspectRecordExportAndFieldReport() {

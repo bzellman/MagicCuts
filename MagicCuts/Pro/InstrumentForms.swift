@@ -206,6 +206,7 @@ struct ProSettingsView: View {
                     Button("Restore purchases") { Task { await access.restore() } }.disabled(access.isWorking)
                     if let message = access.message { Text(message).font(.callout) }
                 }
+                CloudSettingsSection(library: library)
                 Section("Your baselines") {
                     if library.index.profiles.isEmpty { Text("Saved references appear here.").foregroundStyle(ProTheme.secondary) }
                     ForEach(library.index.profiles) { profile in
@@ -213,6 +214,11 @@ struct ProSettingsView: View {
                             Text(profile.name).font(.system(.headline, design: .rounded))
                             Text("\(profile.kind.title) · \(profile.sourceName)").font(.callout).foregroundStyle(ProTheme.secondary)
                             Text(profile.date, format: .dateTime.month().day().year()).font(.caption).foregroundStyle(ProTheme.secondary)
+                            if profile.metadata["fixture"] == nil && (profile.metadata["installationID"] == nil || profile.metadata["installationID"] == "unverified-legacy-source") {
+                                Text("Earlier device reference. Create a new baseline for live comparisons.").font(.caption).foregroundStyle(ProTheme.secondary)
+                            } else if profile.metadata["fixture"] == nil && profile.metadata["installationID"] != library.sync.snapshot.installationID {
+                                Text("Recorded on another device. Create a baseline here for live comparisons.").font(.caption).foregroundStyle(ProTheme.secondary)
+                            }
                         }.padding(.vertical, 4)
                     }.onDelete { offsets in
                         let ids = offsets.map { library.index.profiles[$0].id }
@@ -225,7 +231,7 @@ struct ProSettingsView: View {
                 Section("Measurements and privacy") {
                     Toggle("Show sessions on the Lock Screen", isOn: $showLiveActivity)
                     Text("Applies to your next recording. The Lock Screen shows the latest reading and whether measurement has paused.")
-                    Text("Sessions and baselines stay on this device. Microphone measurements retain numerical levels, not audio recordings. Connection tests contact only the endpoint you enter.")
+                    Text("Your library stays on this device unless you turn on iCloud sync or share an export. Microphone measurements retain numerical levels, not audio recordings. Connection tests contact only the endpoint you enter.")
                     Text("Measurements pause when MagicCuts leaves the foreground. Missing readings remain gaps. A saved session includes its source, method and interruptions.")
                     Link("Privacy policy", destination: URL(string: "https://bradzellman.com/magiccuts-policies.html#privacy")!)
                     NavigationLink("Bluetooth and Shortcuts help") { HelpView() }

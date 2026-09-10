@@ -49,8 +49,8 @@ struct MagicCutsApp: App {
             }
             let persistentTest = AppRuntime.isUITesting && arguments.contains("--persistent-test-store")
             let config = testing
-                ? ModelConfiguration("MagicCutsUITests", schema: schema, isStoredInMemoryOnly: !persistentTest, groupContainer: .none)
-                : ModelConfiguration(schema: schema, groupContainer: .identifier("group.com.bradzellman.magiccuts"))
+                ? ModelConfiguration("MagicCutsUITests", schema: schema, isStoredInMemoryOnly: !persistentTest, groupContainer: .none, cloudKitDatabase: .none)
+                : ModelConfiguration(schema: schema, groupContainer: .identifier("group.com.bradzellman.magiccuts"), cloudKitDatabase: .none)
             let store = try ModelContainer(for: schema, configurations: [config])
             if AppRuntime.isUITesting && arguments.contains("--reset-test-store") {
                 try store.mainContext.delete(model: TestRecord.self)
