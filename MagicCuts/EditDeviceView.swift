@@ -31,7 +31,7 @@ struct EditDeviceView: View {
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { cancel(); dismiss() }.foregroundStyle(.primary) }.sharedBackgroundVisibility(.hidden) }
         }.presentationDetents([.large]).presentationDragIndicator(.visible)
             .onDisappear { cancel() }
-            .onChange(of: phase) { _, value in if value != .active && testing { cancel(); error = "Test interrupted. Try again with MagicCuts open." } }
+            .onChange(of: phase) { _, value in if value == .background && testing { cancel(); error = "Test interrupted. Try again with MagicCuts open." } }
     }
     private func cancel() { task?.cancel(); task = nil; testing = false }
     private func save() {

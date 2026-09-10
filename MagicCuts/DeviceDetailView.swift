@@ -91,7 +91,7 @@ struct DeviceDetailView: View {
             .sheet(isPresented: $edit) { EditDeviceView(device: device, radio: radio) }
             .sheet(isPresented: $rename) { RenameDeviceView(device: device) }
             .onDisappear { cancel() }
-            .onChange(of: phase) { _, value in if value != .active && running != nil { cancel(); error = "Test interrupted. Keep MagicCuts open and try again." } }
+            .onChange(of: phase) { _, value in if value == .background && running != nil { cancel(); error = "Test interrupted. Keep MagicCuts open and try again." } }
     }
     private var testControls: some View {
         let layout = dynamicType.isAccessibilitySize ? AnyLayout(VStackLayout(spacing: 1)) : AnyLayout(HStackLayout(spacing: 1))

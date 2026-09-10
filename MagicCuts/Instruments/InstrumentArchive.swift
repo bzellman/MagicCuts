@@ -73,8 +73,10 @@ actor InstrumentArchive {
             }
             index.sessions.removeAll { $0.id == id }
         }, beforeWrite: {
-            backup = try Data(contentsOf: url)
-            try FileManager.default.removeItem(at: url)
+            if FileManager.default.fileExists(atPath: url.path) {
+                backup = try Data(contentsOf: url)
+                try FileManager.default.removeItem(at: url)
+            }
         }, undoWrite: {
             if let backup { try backup.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication]) }
         })

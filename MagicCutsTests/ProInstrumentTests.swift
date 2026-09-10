@@ -489,9 +489,11 @@ nonisolated final class ProArchiveTests: XCTestCase {
         let retained = try await archive.loadSession(session.id)
         XCTAssertEqual(retained.id, session.id)
         _ = try await archive.deleteReport(report.id)
+        try FileManager.default.removeItem(at: root.appendingPathComponent(session.id.uuidString + ".json"))
         _ = try await archive.deleteSession(session.id)
         let empty = try await archive.loadIndex()
         XCTAssertTrue(empty.sessions.isEmpty)
+        XCTAssertTrue(try XCTUnwrap(empty.versions[LibraryRecord.key(.session, session.id)]).deleted)
     }
 
     func testConcurrentArchiveWritersPreserveEachOthersChanges() async throws {

@@ -57,6 +57,12 @@ nonisolated final class MagicCutsUITests: XCTestCase {
         app.buttons["discovery.start"].tap()
         let unnamed = app.buttons["device.BBBBBBBB-1111-2222-3333-444444444444"]
         XCTAssertTrue(unnamed.waitForExistence(timeout: 5))
+        XCUIDevice.shared.press(.home)
+        app.activate()
+        XCTAssertTrue(app.staticTexts["Scan paused. Tap Start scanning when you’re ready."].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["discovery.start"].isEnabled)
+        app.buttons["discovery.start"].tap()
+        XCTAssertTrue(unnamed.waitForExistence(timeout: 5))
         unnamed.tap()
         capture(app, "discovery-identify")
         app.buttons["device.nameSelected"].tap()
