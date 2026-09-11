@@ -136,6 +136,7 @@ nonisolated struct RoomRevision: Codable, Equatable, Identifiable, Sendable {
     var warnings: [String] = []
     var demonstration = false
     var provenance: RoomCaptureProvenance?
+    var meshTrim: RoomMeshTrim?
     var vertexCount: Int { meshes.reduce(0) { $0 + $1.vertices.count } }
     var triangleCount: Int { meshes.reduce(0) { $0 + $1.triangleIndices.count / 3 } }
     var floorArea: Double? {
@@ -159,7 +160,7 @@ nonisolated struct RoomRevision: Codable, Equatable, Identifiable, Sendable {
             && components.count <= 10_000 && dimensions.count <= 1000 && warnings.count <= 100 && warnings.allSatisfy { $0.count <= 4000 }
             && components.allSatisfy(\.isValid) && dimensions.allSatisfy(\.isValid)
             && (worldMapData?.count ?? 0) <= 128_000_000 && (semanticData?.count ?? 0) <= 32_000_000
-            && (referenceImage?.count ?? 0) <= 16_000_000 && (provenance?.isValid ?? true)
+            && (referenceImage?.count ?? 0) <= 16_000_000 && (provenance?.isValid ?? true) && (meshTrim?.isValid ?? true)
     }
     var bounds: (minimum: SpatialVector, maximum: SpatialVector)? {
         var low = SIMD3<Float>(repeating: .infinity), high = SIMD3<Float>(repeating: -.infinity)
