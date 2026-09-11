@@ -18,7 +18,7 @@ The regression journey covers Outside → Inside → move viewpoint → trim hal
 
 The largest Dynamic Type journey uses native menus and edge steppers, then prepares the preview. Contrast, hit-region, element-description and trait audits run on the relevant visible states. The pre-existing plan, dimension, revision-comparison and archive-export journey is also included.
 
-During verification, screenshot inspection caught a blank mesh when a second viewer was presented. Obscured mesh views now release their camera/renderer, and teardown removes only the owning anchor. Edge controls were changed to vertically stacked labels/values after the largest-text check exposed cramped columns. Test scrolling uses the page margin so it doesn't rotate the mesh or redraw a crop selection.
+During verification, screenshot inspection caught a blank mesh when a second viewer was presented. Obscured mesh views now release their camera/renderer, and teardown removes only the owning anchor. Edge controls were changed to vertically stacked labels/values after the largest-text check exposed cramped columns. Test scrolling explicitly targets the foreground trim sheet and begins on visible text so it doesn't rotate the mesh, redraw a crop selection, or rely on the sheet's empty margin accepting a swipe. The pre-merge rerun exposed that margin-dependent test failure; the final test helper uses the visible-text gesture and keeps the same product assertions.
 
 ## Screenshots
 

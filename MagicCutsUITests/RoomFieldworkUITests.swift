@@ -9,14 +9,31 @@ nonisolated final class RoomFieldworkUITests: XCTestCase {
         if !app.staticTexts["Sample session"].firstMatch.waitForExistence(timeout: 5) { app.terminate(); app.launch() }
         XCTAssertTrue(app.buttons["instrument.choose"].waitForExistence(timeout: 10)); return app
     }
+    @MainActor private func activeScrollView(_ app: XCUIApplication) -> XCUIElement {
+        // A presented sheet can leave the room's underlying scroll view in the tree.
+        let trim = app.scrollViews.containing(.any, identifier: "room.trim.canvas").firstMatch
+        return trim.exists ? trim : app.scrollViews.firstMatch
+    }
     @MainActor private func reveal(_ element: XCUIElement, _ app: XCUIApplication) {
         for _ in 0..<10 {
             if element.exists && element.isHittable { return }
-            let scroll = app.scrollViews.firstMatch
+            let scroll = activeScrollView(app)
             if scroll.exists {
                 let above = element.exists && element.frame.midY < scroll.frame.minY + 60
-                scroll.coordinate(withNormalizedOffset: CGVector(dx: 0.99, dy: above ? 0.25 : 0.8))
-                    .press(forDuration: 0.05, thenDragTo: scroll.coordinate(withNormalizedOffset: CGVector(dx: 0.99, dy: above ? 0.8 : 0.25)))
+                // Start on visible text. A drag over the canvas edits the selection;
+                // the empty page edge isn't a reliable scroll hit target in sheets.
+                let viewport = scroll.frame.intersection(app.frame).insetBy(dx: 24, dy: 70)
+                let textFrames = scroll.staticTexts.allElementsBoundByIndex.map { $0.frame.intersection(viewport) }
+                    .filter { !$0.isNull && $0.width > 40 && $0.height > 20 }
+                if let textFrame = textFrames.sorted(by: { above ? $0.midY < $1.midY : $0.midY > $1.midY }).first {
+                    let origin = app.coordinate(withNormalizedOffset: .zero)
+                    let start = origin.withOffset(CGVector(dx: textFrame.midX, dy: textFrame.midY))
+                    let end = origin.withOffset(CGVector(dx: textFrame.midX, dy: above ? viewport.maxY : viewport.minY))
+                    start.press(forDuration: 0.05, thenDragTo: end)
+                } else {
+                    scroll.coordinate(withNormalizedOffset: CGVector(dx: 0.97, dy: above ? 0.25 : 0.8))
+                        .press(forDuration: 0.05, thenDragTo: scroll.coordinate(withNormalizedOffset: CGVector(dx: 0.97, dy: above ? 0.8 : 0.25)))
+                }
             } else { app.swipeUp() }
         }
         XCTAssertTrue(element.isHittable, element.debugDescription)
@@ -149,7 +166,7 @@ nonisolated final class RoomFieldworkUITests: XCTestCase {
         let edge = app.steppers.matching(NSPredicate(format: "label CONTAINS %@", "Left edge")).firstMatch
         let increment = edge.buttons.matching(NSPredicate(format: "label ENDSWITH %@", "Increment")).firstMatch
         reveal(increment, app); increment.tap()
-        app.scrollViews.firstMatch.swipeUp(velocity: .slow)
+        activeScrollView(app).swipeUp(velocity: .slow)
         screenshot(app, "mesh-trim-largest-text-controls")
         try auditVisible(app)
         app.buttons["room.trim.preview"].tap()
