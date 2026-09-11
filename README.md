@@ -44,6 +44,8 @@ Add **Check if Bluetooth Device is Nearby**, select a saved device, and use an *
 
 This preserves the original action identity and any-sample meaning, which is weaker evidence than the app's repeated validation. Opening Shortcuts does not mark setup complete; confirmation requires the user to test their actual shortcut. Background execution depends on iOS scheduling, permissions, and device advertisements. A device without saved advertised service identifiers may not be discoverable in the background. Test the intended foreground/background use on hardware.
 
+The action returns as soon as a valid reading meets the threshold. It starts with saved service UUIDs and retries without a filter after 1.5 seconds if the target has not been observed. It also attempts a local connection to the saved peripheral for up to five sequential RSSI reads. A failed connection, read error or disconnect leaves advertisement scanning available until the 10-second observation window ends. Completion cancels scanning, pending connections and polling; late callbacks cannot affect another run. See the [Bluetooth Shortcut device validation script](docs/BLUETOOTH_SHORTCUT_VALIDATION.md).
+
 ## Optional iCloud portability
 
 Settings → Sync with iCloud is off by default on each installation. Opting in merges saved sessions, baselines, workflows, groups, reports, room revisions, field captures, and Bluetooth setup references through the user's private CloudKit database. Edits and deletions sync. Turning sync off keeps the local and iCloud copies; local instruments remain usable when iCloud is unavailable. Switching Apple Accounts pauses sync and requires another explicit opt-in.
@@ -69,7 +71,7 @@ Debug-only `--pro-development-access` permits physical instrument QA. `--uitesti
 - `RoomSession` coordinates ARKit/RoomPlan capture, restoration attempts, reliable per-reading poses and recovery snapshots.
 - The `Fieldwork` adapters retain source-specific NFC, network, cellular, depth and participating-device evidence.
 - `WorkflowRunner` evaluates observation quality and three-state conditions; Bluetooth groups share one sampling window.
-- `RadioScanning` and `ProximitySampler` retain session-scoped Bluetooth observations and the original action's full window.
+- `RadioScanning` and `ProximitySampler` retain session-scoped Bluetooth observations. In-app tests retain their full passive scan window; the original Shortcut uses targeted fallback/connection attempts and completes on threshold success. `BluetoothTransport` isolates CoreBluetooth callbacks for focused lifecycle regression tests.
 - SwiftData device storage migrates existing identities/history. `DeviceRepository` saves before replacing the app-group snapshot; launch reconciliation repairs stale snapshots.
 - App-group identifier: `group.com.bradzellman.magiccuts`.
 
