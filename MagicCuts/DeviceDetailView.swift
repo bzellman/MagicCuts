@@ -54,7 +54,9 @@ struct DeviceDetailView: View {
                     VStack(alignment: .leading, spacing: 6) {
                         Text(latest.summary).font(.headline)
                         if latest.isDraft { Text("Draft test · not saved validation").font(.caption) }
-                        if latest.threshold != device.requiredSignalStrength { Label("Threshold changed. Test again.", systemImage: "arrow.clockwise").font(.callout) }
+                        if latest.threshold != device.requiredSignalStrength || latest.startedAt < device.validationResetAt {
+                            Label("Setup changed. Test again.", systemImage: "arrow.clockwise").font(.callout)
+                        }
                         if technical {
                             Text("\(latest.samples.count) samples · \(latest.endedAt.timeIntervalSince(latest.startedAt), specifier: "%.1f") s · tested at \(latest.threshold) dBm").font(.caption).monospacedDigit()
                             Text(latest.endedAt, style: .date).font(.caption)
@@ -89,7 +91,7 @@ struct DeviceDetailView: View {
             .sheet(isPresented: $edit) { EditDeviceView(device: device, radio: radio) }
             .sheet(isPresented: $rename) { RenameDeviceView(device: device) }
             .onDisappear { cancel() }
-            .onChange(of: phase) { _, value in if value != .active && running != nil { cancel(); error = "Test interrupted. Keep MagicCuts open and try again." } }
+            .onChange(of: phase) { _, value in if value == .background && running != nil { cancel(); error = "Test interrupted. Keep MagicCuts open and try again." } }
     }
     private var testControls: some View {
         let layout = dynamicType.isAccessibilitySize ? AnyLayout(VStackLayout(spacing: 1)) : AnyLayout(HStackLayout(spacing: 1))

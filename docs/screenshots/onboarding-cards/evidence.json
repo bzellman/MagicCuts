@@ -1,0 +1,78 @@
+{
+  "captured_utc": "2026-09-10T09:56:42.528758+00:00",
+  "scope": "Standalone native SwiftUI review prototype; all readings and purchase outcomes are synthetic.",
+  "source_sha256": {
+    "prototypes/onboarding/OnboardingPreview.swift": "9b0f4aa3c43ae1237fdaea7b183ba16133c27cf03d4801be05b6f3aad98ab44f",
+    "prototypes/onboarding/InstrumentTiles.swift": "18617ee63daee524db12b224b38b2993210167480fa5c687141c19e035faea23",
+    "prototypes/onboarding/build.sh": "dfc2d3613c724480dce559a1b0ba1e5cfa45aae573149a3bdada7da487e9d69d"
+  },
+  "build_command": "bash prototypes/onboarding/build.sh",
+  "build_policy": "Swift compilation with -warnings-as-errors; successful",
+  "binary_sha256": "fcaac922fd743c4ee49e286eaec921e175e3c65572dc060b18cc155ac07237de",
+  "devices": {
+    "phone": {
+      "udid": "29E307AD-9D74-43B5-BA98-EDED5FD4CC3D",
+      "model": "iPhone 17 Pro",
+      "runtime": "iOS 26.5",
+      "portrait_pixels": [
+        1206,
+        2622
+      ]
+    },
+    "tablet": {
+      "udid": "4B683049-3398-4177-99A7-8A009924C75B",
+      "model": "iPad Air 11-inch M3",
+      "runtime": "iOS 26.5",
+      "wide_window_note": "Landscape-right geometry request produces a wide native app window inside a portrait iPad display. The file is labeled wide-window, not full landscape display."
+    }
+  },
+  "reference": "https://60fps.design/shots/shuteye-patent-award-graph-animation",
+  "limitations": [
+    "No hardware or sensor validation",
+    "No StoreKit purchase, restore or localized price validation",
+    "Full spoken VoiceOver traversal not tested",
+    "No third-party video redistributed",
+    "No performance claim for physical hardware"
+  ],
+  "films": {
+    "magiccuts-onboarding-cards.mp4": {
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 1206,
+            "height": 2622,
+            "avg_frame_rate": "60/1",
+            "nb_frames": "1313"
+          }
+        ],
+        "format": {
+          "duration": "21.883333"
+        }
+      },
+      "sha256": "58bf79a22443793777af09f1d242b16b27476667f8f84907ed42e28437a70498",
+      "full_decode": "passed, no warnings or errors"
+    },
+    "magiccuts-onboarding-cards-reduced-motion.mp4": {
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 1206,
+            "height": 2622,
+            "avg_frame_rate": "60/1",
+            "nb_frames": "487"
+          }
+        ],
+        "format": {
+          "duration": "8.116667"
+        }
+      },
+      "sha256": "2406fbcbb79ceeb619425375f1c18d22215081e553e2709541052df9bace83c9",
+      "full_decode": "passed, no warnings or errors"
+    }
+  },
+  "film_timing": "Native presentation timestamps resampled with trim,setpts,fps=60 and an explicit 1:60 encoder time base. Removed only simulator launch prefix (1.5s ordinary tour, 2s reduced sample). The tour uses ordinary automatic progression and a native manual Explore Pro tap. No synthesized frames, artwork, music or third-party media; held frames repeat for 60fps compatibility."
+}

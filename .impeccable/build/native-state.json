@@ -1,57 +1,80 @@
 {
   "platform": "ios",
-  "updatedAt": "2026-09-10T01:01:56.678416+00:00",
-  "webAutomation": "not_applicable: native equivalence does not assert passing CSS/font/raster comp gates",
+  "updatedAt": "2026-09-10T07:27:17.513462+00:00",
+  "webAutomation": "not_applicable: native SwiftUI; no passing CSS/font/raster gate is asserted",
   "stages": {
     "approved_design": {
       "status": "complete",
       "evidence": [
-        ".impeccable/design-system/control-surfaces-v2.json",
-        ".impeccable/mocks/onboarding-discovery.json"
+        ".impeccable/mocks/pro/field-dial.json",
+        ".impeccable/mocks/pro/signal-studio.json",
+        ".impeccable/mocks/pro/comparison-bench.json"
       ]
     },
     "specification": {
       "status": "complete",
       "evidence": [
+        ".impeccable/review/pro/direction-contract.md",
         ".impeccable/build/native-spec.md"
       ]
     },
     "assets": {
       "status": "complete",
-      "evidence": "Shipping Assets.xcassets scan: 0 raster files, 0 missing provenance. SF Symbols and live SwiftUI controls."
+      "evidence": "Live SwiftUI geometry and SF Symbols; no generated UI raster ships"
     },
     "controls_and_journey": {
       "status": "complete",
+      "scope": "Implemented software journeys; physical acceptance and live App Store release are separate gates",
       "evidence": [
-        ".impeccable/review/phone-current/manifest.json",
-        ".impeccable/review/fresh-logic-review.md"
-      ]
+        ".review/pro/unit-final.log",
+        ".review/pro/storekit-final-summary.json",
+        ".review/pro/fix-validation.log",
+        ".review/pro/a11y-final.log",
+        ".review/pro/device-a11y-final.log",
+        ".review/pro/activity-report-final.log",
+        ".review/pro/unit-delivery.log"
+      ],
+      "portableEvidence": "docs/validation/pro-evidence.json"
     },
     "motion": {
       "status": "complete",
-      "evidence": "OS ReduceMotionEnabled + UIKit runtime isReduceMotionEnabled verified; modes/draft/history UI journey passed in /tmp/MagicCuts-b54f-reduced-motion.log. All custom animation sites check accessibilityReduceMotion."
+      "evidence": ".review/pro/reduced-motion-final.log",
+      "scope": "OS Reduce Motion enabled; Pro three-mode navigation and retained device journey passed on iPad"
     },
     "responsive": {
       "status": "complete",
       "evidence": [
-        ".impeccable/review/ipad-final/manifest.json",
-        ".impeccable/review/phone-ax-final/manifest.json"
+        "docs/screenshots/pro/",
+        ".review/pro/a11y-final.log",
+        ".review/pro/device-a11y-final.log"
       ],
-      "note": "Latest phone capture follows stacked accessibility-size mode correction."
+      "scope": "Phone and tablet normal/dark/largest; visible-content audits repeat after scrolling past native chrome"
     },
     "finish_review": {
       "status": "complete",
       "disposition": "ship",
-      "scope": "Both findings resolved in verdict pass",
-      "evidence": [
-        ".impeccable/review/native-finish-review.md"
-      ]
+      "scope": "Bounded verdict resolved all three scored findings",
+      "evidence": ".impeccable/review/pro/finish-review.md"
     },
     "documentation": {
       "status": "complete",
       "evidence": [
         "DESIGN.md",
-        ".impeccable/design.json"
+        ".impeccable/design.json",
+        "docs/PRO_VALIDATION.md"
+      ],
+      "validation": "YAML tokens, JSON schema and seven preview snippets, source/capture references and whitespace verified"
+    }
+  },
+  "followUps": {
+    "icloudPortability": {
+      "scope": "Existing native Settings section, optional account sync and Bluetooth setup references; no new whole-app visual verdict",
+      "design": "Reuses approved native blue controls, system lists, navigation, picker and Dynamic Type",
+      "evidence": "docs/validation/icloud-evidence.json",
+      "screenshots": "docs/screenshots/icloud/",
+      "releaseLimitations": [
+        "Real two-device CloudKit transfer is unverified",
+        "Production schema deployment and public privacy-policy verification remain open"
       ]
     }
   }

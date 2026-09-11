@@ -42,7 +42,13 @@ final class BluetoothRadio: NSObject, RadioScanning, CBCentralManagerDelegate {
             // Lazy creation prevents a permission prompt during welcome or launch.
             central = CBCentralManager(delegate: self, queue: nil, options: [CBCentralManagerOptionShowPowerAlertKey: false])
             initialization = Task { [weak self] in
-                do { try await Task.sleep(for: .seconds(5)) } catch { return }
+                do {
+                    while CBManager.authorization == .notDetermined {
+                        guard self?.sessionID == id else { return }
+                        try await Task.sleep(for: .milliseconds(100))
+                    }
+                    try await Task.sleep(for: .seconds(5))
+                } catch { return }
                 guard self?.sessionID == id, self?.scanning == false else { return }
                 self?.finish(BluetoothError.initialization)
             }

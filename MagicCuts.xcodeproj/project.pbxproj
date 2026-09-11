@@ -7,10 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		91A800555555555555555555 /* RoomFieldworkUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91A800666666666666666666 /* RoomFieldworkUITests.swift */; };
+		91A800333333333333333333 /* FieldNetworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91A800444444444444444444 /* FieldNetworkTests.swift */; };
+		91A800111111111111111111 /* RoomInstrumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91A800222222222222222222 /* RoomInstrumentTests.swift */; };
+		19CEACCFB2C002E085182EF2 /* MagicCutsLiveSession.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 49B42E8A2E1C2EAA99C8B7BA /* MagicCutsLiveSession.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		211596AB5B1D875B1CC18EAD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A64CB27F38E7F383DEC4BF69 /* Foundation.framework */; };
 		28FF0614335CDC3A2BB88C35 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A64CB27F38E7F383DEC4BF69 /* Foundation.framework */; };
+		3D6207A0F387F3221615701F /* ProExperienceUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43A2BA1A01BEB7037EF2BE7 /* ProExperienceUITests.swift */; };
+		470D4FD046314ED5C03B31C8 /* ProInstrumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CDB63A07D5BAD3E2522AFFC /* ProInstrumentTests.swift */; };
+		6130B58615C1673639DF9645 /* MagicCutsLiveSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284041AEFD13EB191491546B /* MagicCutsLiveSession.swift */; };
 		69759A9301CA218C57AEC7C2 /* MagicCutsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F947F8B9BF53D20816B55B /* MagicCutsUITests.swift */; };
 		994BBB512E9388A00083267A /* MagicCuts.icon in Resources */ = {isa = PBXBuildFile; fileRef = 994BBB402E9388A00083267A /* MagicCuts.icon */; };
+		B0B1A73D7EAAD48DADC46B62 /* MagicCutsPro.storekit in Resources */ = {isa = PBXBuildFile; fileRef = CAEB019DDABBA6D2A75D7B9C /* MagicCutsPro.storekit */; };
+		BB461288DE0D420D8B4668F0 /* SessionActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA81B466D564B81C736264FA /* SessionActivityAttributes.swift */; };
+		C2C4774A14AE9409722FC491 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A64CB27F38E7F383DEC4BF69 /* Foundation.framework */; };
 		E3C047C450AF1CDC1FED6D0D /* ProximityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC26100B67C2C4B25837934 /* ProximityTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -29,9 +39,27 @@
 			remoteGlobalIDString = 99B2F9B12E926703004ECE09;
 			remoteInfo = MagicCuts;
 		};
+		EE5BF7A5B525AED2241B3417 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 99B2F9AA2E926703004ECE09 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DA8C1FCFAC07B81F55364CF4;
+			remoteInfo = MagicCutsLiveSession;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		70C35DD28C28699180A2B8B4 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				19CEACCFB2C002E085182EF2 /* MagicCutsLiveSession.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		99B2F9EA2E934B50004ECE09 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -45,21 +73,28 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		91A800666666666666666666 /* RoomFieldworkUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomFieldworkUITests.swift; sourceTree = "<group>"; };
+		91A800444444444444444444 /* FieldNetworkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldNetworkTests.swift; sourceTree = "<group>"; };
+		91A800222222222222222222 /* RoomInstrumentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomInstrumentTests.swift; sourceTree = "<group>"; };
 		24F947F8B9BF53D20816B55B /* MagicCutsUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MagicCutsUITests.swift; sourceTree = "<group>"; };
+		284041AEFD13EB191491546B /* MagicCutsLiveSession.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MagicCutsLiveSession.swift; sourceTree = "<group>"; };
+		49B42E8A2E1C2EAA99C8B7BA /* MagicCutsLiveSession.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MagicCutsLiveSession.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		5665DAF179DDE97F927F8CE8 /* MagicCutsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MagicCutsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A040DD8A64473E3C73F1669 /* MagicCutsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MagicCutsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		994BBB402E9388A00083267A /* MagicCuts.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = MagicCuts.icon; sourceTree = "<group>"; };
 		99B2F9B22E926703004ECE09 /* MagicCuts.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MagicCuts.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		99B2F9DD2E934B50004ECE09 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
+		9CDB63A07D5BAD3E2522AFFC /* ProInstrumentTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProInstrumentTests.swift; sourceTree = "<group>"; };
 		A64CB27F38E7F383DEC4BF69 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		AA81B466D564B81C736264FA /* SessionActivityAttributes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SessionActivityAttributes.swift; path = ../MagicCuts/Instruments/SessionActivityAttributes.swift; sourceTree = "<group>"; };
 		BCC26100B67C2C4B25837934 /* ProximityTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProximityTests.swift; sourceTree = "<group>"; };
+		CAEB019DDABBA6D2A75D7B9C /* MagicCutsPro.storekit */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = MagicCutsPro.storekit; sourceTree = "<group>"; };
+		E43A2BA1A01BEB7037EF2BE7 /* ProExperienceUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProExperienceUITests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		99B2F9B42E926703004ECE09 /* MagicCuts */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = MagicCuts;
 			sourceTree = "<group>";
 		};
@@ -71,6 +106,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				28FF0614335CDC3A2BB88C35 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1112B3CE9D310390685F2B84 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C2C4774A14AE9409722FC491 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,12 +135,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3F2975F955E249301116D55E /* MagicCutsLiveSession */ = {
+			isa = PBXGroup;
+			children = (
+				284041AEFD13EB191491546B /* MagicCutsLiveSession.swift */,
+				AA81B466D564B81C736264FA /* SessionActivityAttributes.swift */,
+			);
+			path = MagicCutsLiveSession;
+			sourceTree = "<group>";
+		};
 		68892D83A800CBE0A6A5FF2A /* MagicCutsUITests */ = {
 			isa = PBXGroup;
 			children = (
 				24F947F8B9BF53D20816B55B /* MagicCutsUITests.swift */,
+				E43A2BA1A01BEB7037EF2BE7 /* ProExperienceUITests.swift */,
+				91A800666666666666666666 /* RoomFieldworkUITests.swift */,
 			);
-			name = MagicCutsUITests;
 			path = MagicCutsUITests;
 			sourceTree = "<group>";
 		};
@@ -105,8 +158,10 @@
 			isa = PBXGroup;
 			children = (
 				BCC26100B67C2C4B25837934 /* ProximityTests.swift */,
+				9CDB63A07D5BAD3E2522AFFC /* ProInstrumentTests.swift */,
+				91A800222222222222222222 /* RoomInstrumentTests.swift */,
+				91A800444444444444444444 /* FieldNetworkTests.swift */,
 			);
-			name = MagicCutsTests;
 			path = MagicCutsTests;
 			sourceTree = "<group>";
 		};
@@ -119,6 +174,8 @@
 				994BBB402E9388A00083267A /* MagicCuts.icon */,
 				7368DEAC3967622D7FAE83C5 /* MagicCutsTests */,
 				68892D83A800CBE0A6A5FF2A /* MagicCutsUITests */,
+				3F2975F955E249301116D55E /* MagicCutsLiveSession */,
+				CEA6231BE1E4B82B56073C9F /* Configuration */,
 			);
 			sourceTree = "<group>";
 		};
@@ -128,6 +185,7 @@
 				99B2F9B22E926703004ECE09 /* MagicCuts.app */,
 				6A040DD8A64473E3C73F1669 /* MagicCutsTests.xctest */,
 				5665DAF179DDE97F927F8CE8 /* MagicCutsUITests.xctest */,
+				49B42E8A2E1C2EAA99C8B7BA /* MagicCutsLiveSession.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -139,6 +197,14 @@
 				D424C8E4E7CA1B3A725E69BD /* iOS */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		CEA6231BE1E4B82B56073C9F /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				CAEB019DDABBA6D2A75D7B9C /* MagicCutsPro.storekit */,
+			);
+			path = Configuration;
 			sourceTree = "<group>";
 		};
 		D424C8E4E7CA1B3A725E69BD /* iOS */ = {
@@ -178,10 +244,12 @@
 				99B2F9AF2E926703004ECE09 /* Frameworks */,
 				99B2F9B02E926703004ECE09 /* Resources */,
 				99B2F9EA2E934B50004ECE09 /* Embed Foundation Extensions */,
+				70C35DD28C28699180A2B8B4 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				19B481246566E41035CAA893 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				99B2F9B42E926703004ECE09 /* MagicCuts */,
@@ -209,6 +277,23 @@
 			productReference = 6A040DD8A64473E3C73F1669 /* MagicCutsTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		DA8C1FCFAC07B81F55364CF4 /* MagicCutsLiveSession */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0F6117514E5531D6479FCCE4 /* Build configuration list for PBXNativeTarget "MagicCutsLiveSession" */;
+			buildPhases = (
+				9981A7A15E5E7583113AD23A /* Sources */,
+				1112B3CE9D310390685F2B84 /* Frameworks */,
+				9D7A0031E492DC7E5DAC9AA5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MagicCutsLiveSession;
+			productName = MagicCutsLiveSession;
+			productReference = 49B42E8A2E1C2EAA99C8B7BA /* MagicCutsLiveSession.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -221,6 +306,11 @@
 				TargetAttributes = {
 					99B2F9B12E926703004ECE09 = {
 						CreatedOnToolsVersion = 26.0.1;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = { enabled = 1; };
+							com.apple.Push = { enabled = 1; };
+							com.apple.iCloud = { enabled = 1; };
+						};
 					};
 				};
 			};
@@ -241,6 +331,7 @@
 				99B2F9B12E926703004ECE09 /* MagicCuts */,
 				C5639992CCC492248EB4E021 /* MagicCutsTests */,
 				67CD5972C76D24B75BAFDE86 /* MagicCutsUITests */,
+				DA8C1FCFAC07B81F55364CF4 /* MagicCutsLiveSession */,
 			);
 		};
 /* End PBXProject section */
@@ -250,6 +341,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B0B1A73D7EAAD48DADC46B62 /* MagicCutsPro.storekit in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,6 +350,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				994BBB512E9388A00083267A /* MagicCuts.icon in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9D7A0031E492DC7E5DAC9AA5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -276,6 +375,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				E3C047C450AF1CDC1FED6D0D /* ProximityTests.swift in Sources */,
+				470D4FD046314ED5C03B31C8 /* ProInstrumentTests.swift in Sources */,
+				91A800111111111111111111 /* RoomInstrumentTests.swift in Sources */,
+				91A800333333333333333333 /* FieldNetworkTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9981A7A15E5E7583113AD23A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6130B58615C1673639DF9645 /* MagicCutsLiveSession.swift in Sources */,
+				BB461288DE0D420D8B4668F0 /* SessionActivityAttributes.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -291,6 +402,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				69759A9301CA218C57AEC7C2 /* MagicCutsUITests.swift in Sources */,
+				3D6207A0F387F3221615701F /* ProExperienceUITests.swift in Sources */,
+				91A800555555555555555555 /* RoomFieldworkUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -303,6 +416,12 @@
 			target = 99B2F9B12E926703004ECE09 /* MagicCuts */;
 			targetProxy = 5A8FB22A82B9D77BC38809EC /* PBXContainerItemProxy */;
 		};
+		19B481246566E41035CAA893 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MagicCutsLiveSession;
+			target = DA8C1FCFAC07B81F55364CF4 /* MagicCutsLiveSession */;
+			targetProxy = EE5BF7A5B525AED2241B3417 /* PBXContainerItemProxy */;
+		};
 		F9B02379561A70C2535361E4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = MagicCuts;
@@ -312,6 +431,38 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		149EE5B0ACD903BD18748509 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2ZRX2278BV;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Configuration/LiveSession-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "MagicCuts Session";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.bradZellman.MagicCuts.LiveSession;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		696A561EEDA1EFDDE2F3C432 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -371,6 +522,37 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
+		};
+		96FB00B9A175CD30122526A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2ZRX2278BV;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Configuration/LiveSession-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "MagicCuts Session";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.bradZellman.MagicCuts.LiveSession;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 		99B2F9BD2E926703004ECE09 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -506,10 +688,15 @@
 				DEVELOPMENT_TEAM = 2ZRX2278BV;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Configuration/App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = MagicCuts;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Find Bluetooth devices you choose and check their signal strength for Shortcuts.";
-				INFOPLIST_KEY_NSSiriUsageDescription = "Checks if a device is near by";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Measure response time to a local endpoint you choose.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Read magnetic heading and location-based speed when you choose those instruments.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Measure digital sound levels when you choose Sound Level. Audio recordings are not retained.";
+				INFOPLIST_KEY_NSMotionUsageDescription = "Measure level, movement, magnetic field, pressure and elevation changes when you choose an instrument.";
+				INFOPLIST_KEY_NSSiriUsageDescription = "Use your measured conditions and device checks in Shortcuts.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -551,10 +738,15 @@
 				DEVELOPMENT_TEAM = 2ZRX2278BV;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Configuration/App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = MagicCuts;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Find Bluetooth devices you choose and check their signal strength for Shortcuts.";
-				INFOPLIST_KEY_NSSiriUsageDescription = "Checks if a device is near by";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Measure response time to a local endpoint you choose.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Read magnetic heading and location-based speed when you choose those instruments.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Measure digital sound levels when you choose Sound Level. Audio recordings are not retained.";
+				INFOPLIST_KEY_NSMotionUsageDescription = "Measure level, movement, magnetic field, pressure and elevation changes when you choose an instrument.";
+				INFOPLIST_KEY_NSSiriUsageDescription = "Use your measured conditions and device checks in Shortcuts.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -606,6 +798,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		0F6117514E5531D6479FCCE4 /* Build configuration list for PBXNativeTarget "MagicCutsLiveSession" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				149EE5B0ACD903BD18748509 /* Release */,
+				96FB00B9A175CD30122526A8 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		99B2F9AD2E926703004ECE09 /* Build configuration list for PBXProject "MagicCuts" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

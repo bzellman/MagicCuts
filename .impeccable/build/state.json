@@ -1,10 +1,10 @@
 {
   "tool": "build-phase",
   "version": 2,
-  "startedAt": "2026-09-10T00:39:16.282Z",
-  "comp": ".impeccable/design-system/control-surfaces-v2.png",
+  "startedAt": "2026-09-10T03:20:04.253Z",
+  "comp": ".impeccable/mocks/pro/field-dial.png",
   "direction": null,
-  "breakpoint": "1536x1024",
+  "breakpoint": "853x1844",
   "artifact": null,
   "phase": "spec",
   "phases": {
@@ -15,7 +15,7 @@
       "attempts": 0,
       "notes": [
         {
-          "at": "2026-09-10T00:39:16.282Z",
+          "at": "2026-09-10T03:20:04.253Z",
           "text": "started with an approved comp; the comp round happened before this state (surface round or manual)"
         }
       ],
@@ -24,22 +24,11 @@
     },
     "spec": {
       "status": "open",
-      "openedAt": "2026-09-10T00:39:16.282Z",
+      "openedAt": "2026-09-10T03:20:04.253Z",
       "closedAt": null,
-      "attempts": 1,
-      "notes": [
-        {
-          "at": "2026-09-10T00:43:19.489Z",
-          "text": "Approved native component boards are mapped in .impeccable/build/native-spec.md. SwiftUI/SF/Dynamic Type and live controls replace web font-catalog and raster-plate implementation; native screenshots and independent review will provide fidelity evidence."
-        }
-      ],
-      "gate": {
-        "ok": false,
-        "reasons": [
-          "no spec at .impeccable/build/spec.json: run comp-spec.mjs --comp .impeccable/design-system/control-surfaces-v2.png --grid, name the regions, then --regions regions.json"
-        ],
-        "at": "2026-09-10T01:01:08.166Z"
-      },
+      "attempts": 0,
+      "notes": [],
+      "gate": null,
       "forced": null
     },
     "plates": {
@@ -98,8 +87,6 @@
     }
   },
   "finish": null,
-  "nativeEquivalentState": ".impeccable/build/native-state.json",
-  "platform": "ios",
-  "webGatesApplicable": false,
-  "nativeAdaptation": "Approved component boards are implemented as adaptive native SwiftUI controls. Web CSS plates and whole-board pixel gates are not claimed as passed. Native evidence and reviewer verdict are tracked separately."
+  "applicability": "CSS-oriented helper scaffold; native workflow completed in native-state.json. No passing CSS or raster-plate gate is asserted.",
+  "nativeState": ".impeccable/build/native-state.json"
 }

@@ -1,186 +1,207 @@
 ---
-name: MagicCuts
-description: Native iOS calibration workbench for Bluetooth proximity setup
+name: "MagicCuts Pro"
+description: "A native field chronograph for deliberate, truthful measurements."
 colors:
-  canvas: "#F2F5F7"
-  canvas-dark: "#0F141A"
-  instrument: "#122438"
-  instrument-dark: "#172B40"
   action: "#0052C7"
-  action-dark: "#1F66D9"
+  signal: "#0052C7"
+  signal-contrast: "#61B8FF"
+  interval: "#1F6E61"
+  secondary-label: "#59636E"
+  canvas: "#F2F5F7"
+  instrument: "#122438"
 typography:
   display:
-    fontFamily: "SF Pro via SwiftUI .largeTitle"
-    fontSize: "34pt Dynamic Type baseline"
-    fontWeight: 700
-  title:
-    fontFamily: "SF Pro via SwiftUI .title2/.title3"
-    fontSize: "22pt / 20pt Dynamic Type baselines"
-    fontWeight: 700
-  body:
-    fontFamily: "SF Pro via SwiftUI .body/.callout"
-    fontSize: "17pt / 16pt Dynamic Type baselines"
-  label:
-    fontFamily: "SF Pro via SwiftUI .caption/.subheadline"
-    fontSize: "12pt / 15pt Dynamic Type baselines"
-  measurement:
-    fontFamily: "SF Pro Rounded for the threshold; SF Pro monospaced digits for measurements"
-    fontSize: "42pt scalable threshold readout"
+    fontFamily: "SF Pro Rounded, SF Pro, system-ui"
+    fontSize: "@ScaledMetric 66pt relative to Large Title"
     fontWeight: 600
+    lineHeight: "native"
+    fontFeature: "monospacedDigit"
+  title:
+    fontFamily: "SF Pro Rounded, SF Pro, system-ui"
+    fontSize: "SwiftUI headline"
+    fontWeight: 600
+    lineHeight: "native"
+  body:
+    fontFamily: "SF Pro, system-ui"
+    fontSize: "SwiftUI body and callout"
+    lineHeight: "native"
+  label:
+    fontFamily: "SF Pro, system-ui"
+    fontSize: "SwiftUI caption and subheadline"
+    lineHeight: "native"
 rounded:
-  control: "12pt"
+  tick-marker: "3pt"
+  control: "10pt"
+  action-control: "12pt"
+  segment-well: "14pt"
   surface: "16pt"
-  gauge-cursor: "3pt"
 spacing:
-  content-inset: "20pt"
-  standard-gap: "16pt"
-  control-horizontal: "16pt"
-  control-vertical: "14pt"
+  compact: "8pt"
+  control: "10pt"
+  normal: "16pt"
+  content: "22pt"
 components:
   action-button:
     backgroundColor: "{colors.action}"
     textColor: "#FFFFFF"
     typography: "{typography.title}"
-    rounded: "{rounded.control}"
+    rounded: "{rounded.action-control}"
     padding: "14pt 16pt"
     height: "52pt minimum"
-  quiet-button:
+  quiet-action:
     backgroundColor: "system primary at 7% opacity"
     textColor: "system primary"
     typography: "{typography.title}"
-    rounded: "{rounded.control}"
+    rounded: "{rounded.action-control}"
     padding: "14pt 16pt"
     height: "52pt minimum"
-  mode-tab:
-    backgroundColor: "transparent"
-    textColor: "system primary or secondary"
-    typography: "{typography.body}"
-    height: "44pt minimum"
-  signal-gauge:
-    backgroundColor: "{colors.instrument}"
-    textColor: "#FFFFFF"
+  mode-segments:
+    backgroundColor: "system primary at 5.5% opacity"
+    textColor: "system primary"
+    typography: "{typography.title}"
+    rounded: "{rounded.segment-well}"
+    padding: "4pt"
+    height: "46pt minimum"
+  instrument-face:
+    backgroundColor: "system secondary grouped background"
+    textColor: "system primary"
     rounded: "{rounded.surface}"
-    padding: "20pt"
+    padding: "native layout"
 ---
 
-# Design System: MagicCuts
+# Design System: MagicCuts Pro
 
 ## Overview
 
-**Creative North Star: "The native calibration workbench"**
+**Creative North Star: "The grounded field chronograph"**
 
-MagicCuts makes a Bluetooth signal setting legible as an instrument instead of a generic form. A cool system-aware canvas recedes behind one matte-navy gauge, where a large threshold, tick scale, observed range, and restrained cyan cursor give the product its recognizable working surface. Strong cobalt is reserved for the immediate action, selection underline, and discovery emphasis.
+MagicCuts Pro turns a live reading into an instrument page: choose a source, make a measurement, inspect the evidence, set a baseline, record a session, and use it in a report or workflow. Matte ink fields, precise rulers, quiet history, and rounded measurement values establish the working character. A pin in the chart changes the related reading; returning to live is explicit.
 
-The system stays native on purpose: navigation stacks, sheets, search, forms, SF Symbols, SwiftUI text styles, Dynamic Type, and system semantic colors do the platform work. The approved boards in `.impeccable/design-system/control-surfaces-v2.png` and `.impeccable/mocks/onboarding-discovery.png` set the product character; the real SwiftUI implementation and simulator captures are the source for the values and states recorded here.
+The implementation is native SwiftUI for iOS and iPadOS. Native navigation, sheets, safe areas, `TabView` chrome, SF Symbols, Swift Charts, and semantic system materials carry structure and interaction. The Pro pages use custom Canvas instruments only for data geometry. They do not use generated image plates or web controls.
 
 **Key Characteristics:**
 
-- One dark instrument surface carries measurement and adjustment context.
-- Cobalt marks an action, current setting, or selected state rather than decorating every control.
-- Simple and Technical are one stored configuration with different information density.
-- Everyday language accompanies every measurement and test state.
-- Familiar iOS navigation and accessibility semantics take priority over imitating a web design system.
+- A dominant live instrument is followed by a quieter evidence chart and recoverable recording actions.
+- Existing Action blue signals selection and action; cyan and teal are measurement inks with constrained jobs.
+- SF Rounded, tabular measurement figures make numbers stable and legible; body copy remains native SF.
+- Live, Inspect, and Compare are related evidence views, never three unrelated dashboards.
+- Large text changes the native layout rather than shrinking essential controls or chart content.
 
 ## Colors
 
-The palette pairs a cool, low-noise canvas with deep navy instrument surfaces and a limited cobalt action color; all three named colors are asset-backed and provide light and dark appearances.
+The palette uses adaptive asset colors and semantic iOS colors so both light and dark appearance remain intentional.
 
 ### Primary
 
-- **Calibration Cobalt** (`#0052C7` light, `#1F66D9` dark): the `Action` asset used for primary actions, the selected mode underline, and discovery emphasis.
-- **Signal Cyan** (`Color.cyan`, system-supplied): used only for the gauge cursor and observed-band mark inside the dark instrument.
+- **Action Blue:** the `Action` asset drives primary actions and the selected Live, Inspect, or Compare segment. Its light appearance is the normative `action` frontmatter token; its dark appearance is `#1F66D9`.
+- **Signal Blue:** `ProTheme.signal` follows Action blue in light appearance and becomes the higher-contrast `signal-contrast` token in dark appearance. It marks a live needle, selected chart series, source affordance, or selected reading.
+
+### Secondary
+
+- **Interval Teal:** `ProTheme.band` identifies an interquartile band and qualified interpretive state. It adapts to a lighter teal in dark appearance.
 
 ### Neutral
 
-- **Cool Canvas** (`#F2F5F7` light, `#0F141A` dark): the `Canvas` asset behind scrolling content.
-- **Matte Instrument** (`#122438` light, `#172B40` dark): the `Instrument` asset for the signal gauge and welcome signal panel.
-- **System Ink** (`Color.primary` / `Color.secondary`): platform-adaptive labels, dividers, and quiet controls. Its exact rendered value belongs to iOS appearance and accessibility settings.
+- **Canvas:** the `Canvas` asset provides the page ground and becomes `#0F141A` in dark appearance.
+- **Matte Instrument:** the `Instrument` asset is retained for the existing calibration surface; Pro live instrument faces use system secondary grouped background so they follow the platform appearance.
+- **Pro Secondary Label:** `ProTheme.secondary` is opaque `#59636E` in light appearance and `#A8B3BD` in dark appearance. It owns Pro units, state, interpretation, chart axes, and quiet evidence labels where generic `Color.secondary` did not provide the required contrast.
+- **System Ink:** `Color.primary` and native grouped/background materials own ordinary platform text, grids, dividers, bars, and quiet controls. Individual data geometry may use its observed system-secondary stroke values.
 
-**The Signal-Only Accent Rule.** Cyan is a measurement cursor, not a general interactive color. Cobalt identifies the action or selected state that needs attention; other controls stay system ink or a low-opacity system surface.
+**The Blue Has Meaning Rule.** Action blue indicates a current action, selected instrument state, or observed reading. Cyan signal ink and interval teal identify data only; neither becomes general decoration.
+
+**The Opaque Secondary Label Rule.** In Pro instrument pages, use `ProTheme.secondary` for quiet readable text rather than reducing generic secondary text until it fails contrast.
 
 ## Typography
 
-**Display Font:** SF Pro through SwiftUI `.largeTitle` (34pt Dynamic Type baseline, bold).
+**Display Font:** SF Rounded through SwiftUI's rounded design, with `@ScaledMetric` relative to `.largeTitle` for the 66pt live measurement baseline.
 
-**Body Font:** SF Pro through SwiftUI semantic styles. `.headline` supplies a 17pt semibold baseline; `.body` and `.callout` supply 17pt and 16pt readable explanations; `.subheadline` and `.caption` supply 15pt and 12pt supporting labels.
+**Body Font:** SF Pro through native SwiftUI semantic styles.
 
-**Measurement Font:** the threshold number uses a 42pt `@ScaledMetric` relative to `.largeTitle`, semibold `Font.Design.rounded`; measured values use `.monospacedDigit()` so RSSI, counts, and timing do not jump as they change.
-
-**Character:** Text is native, direct, and scalable. A large title establishes the task, semantic styles explain it, and tabular figures make radio measurements scan as stable values rather than decorative display type.
+**Character:** Values, segment labels, headings, and statistics use SF Rounded with semibold emphasis where the hierarchy needs a reading-like character. Body, callouts, captions, menus, labels, and navigation stay on the system face. Changing figures use `.monospacedDigit()`.
 
 ### Hierarchy
 
-- **Task title** (`.largeTitle.bold()`, 34pt baseline): “Proximity” and the welcome proposition.
-- **Section/action title** (`.headline`, 17pt semibold baseline): setup steps, test summaries, and primary controls.
-- **Supporting copy** (`.callout`, 16pt baseline): signal caveats and next-step explanations.
-- **Instrument label** (`.subheadline` / `.caption`, 15pt / 12pt baselines): gauge labels, ranges, sample counts, and demo markers.
-- **Measurement** (42pt scalable rounded numeral plus `.title3` unit): the active nearby threshold.
+- **Navigation title** (`.inline` Instruments): restores the native context before source and mode controls.
+- **Live measurement** (66pt scalable rounded semibold baseline): the primary result; it may compact for comparison while retaining tabular digits.
+- **Instrument title and segment label** (`.headline`, rounded, semibold): sources, modes, method headings, and recording labels.
+- **Supporting explanation** (`.callout`): interpretation, truth constraints, baseline difference, and recovery guidance.
+- **Evidence label** (`.caption` / `.subheadline`, monospaced where numeric): elapsed time, chart axes, units, state, and method detail.
 
-**The Semantic Type Rule.** Use SwiftUI text styles for every ordinary label. Only live data gets rounded or monospaced treatment, and those treatments never replace the explanatory sentence beside it.
+**The Measurement Family Rule.** Apply rounded, semibold, monospaced treatment to readings and measurement-adjacent labels. Do not turn explanatory body copy or platform chrome into display typography.
 
 ## Layout
 
-Scrolling screens use a 20pt content inset and a 16pt normal vertical rhythm. The normal reading column caps at 640pt, centered on iPad; the threshold sheet caps at 600pt. This preserves a phone-like line length inside the iPad capture instead of stretching calibration language and controls across the device.
+`InstrumentWorkspaceView` is a scrollable, centered reading column with 22pt horizontal inset, 16pt vertical rhythm, an 8pt top inset, and 28pt bottom clearance. The column caps at 680pt; the bottom recording bar caps at 720pt. The native navigation title is “Instruments,” then source control, mode control, status, instrument, history, statistics, baseline, and recording actions follow the measurement story.
 
-Full-width actions sit inside that reading column. The discovery scan control is a bottom safe-area inset; the welcome, detail, discovery, threshold sheet, and Shortcuts screens all use native `NavigationStack` titles and system bars. At accessibility Dynamic Type sizes, the paired nearby/away controls switch from an HStack to a VStack so each remains legible and operable.
+On ordinary text sizes, recording controls sit in a bottom safe-area inset above the native three-section tab bar. At accessibility text sizes they move into the scroll view, use vertical action layout, and remain reachable. Source controls and comparison rows switch from horizontal to vertical layouts. The mode selector becomes a compact native `Menu` offering Live, Inspect, and Compare; it does not squeeze three segment labels into an accessibility width.
+
+Live places the arc, level, or compass above its dominant reading, then a short interpretation and history. Inspect leads with a reading, ruler, and 260pt chart. Compare aligns two ruler readings to the same range and supplies a dashed-versus-solid explanation. Charts are 120pt live, 190pt compare, and 260pt Inspect at regular sizes; at accessibility sizes, a chart is at least 240pt high and both axes scale up to 22pt.
+
+**The Evidence Order Rule.** Keep source and view controls directly under Instruments, then show the measurement before its interpretation, history, summary, and recording action. Let safe areas and Dynamic Type supersede any capture-specific geometry.
 
 ## Elevation & Depth
 
-MagicCuts is flat by default. Separation comes from canvas-to-instrument contrast, system grouped backgrounds, 1pt dividers, and low-opacity fills, not custom shadows. The opaque `.bar` used for scan and warning insets is a system material decision owned by iOS.
+MagicCuts Pro is flat and material-led. The instrument face earns attention through ruler geometry, signal ink, and system surface contrast. Native `.bar` material separates recording controls from scroll content. There are no authored shadows, gradients, glow, faux glass, or decorative raster surfaces.
 
-**The Instrument-First Depth Rule.** The dark gauge earns visual weight because it contains live calibration data. Quiet buttons, discovery rows, and handoff rows do not compete through added shadow or glow.
+**The Instrument-Not-Poster Rule.** Depth may clarify an active native surface; it must not make a measurement page resemble a marketing card or an image plate.
 
 ## Shapes
 
-The primary surface radius is 16pt; standard buttons, joined test controls, and failure messages use 12pt; gauge step buttons use 10pt. The threshold cursor has a 3pt rounded end and uses a narrow 6pt by 30pt marker. Discovery identity icons live in circles, while list rows and instrument surfaces remain softly rounded rectangles.
+Live measurement faces use circles, arcs, ticks, needles, and rulers that describe their data. Standard mode wells use a 14pt rounded rectangle with 10pt selected segments. Existing instrument surfaces retain the 16pt radius. Step buttons use 10pt corners; a selected ruler marker uses a 3pt rounded end.
 
-Joined nearby/away actions are clipped as one 12pt assembly with a 1pt internal gap. In accessibility layouts they stack within the same clipped assembly rather than becoming unrelated cards.
+The mode segments are full-width, equal-width native buttons at least 46pt tall. Other tappable source, return-to-live, menu, and recording controls keep at least 44pt height; `ControlStyle` primary and quiet actions are at least 52pt.
 
 ## Components
 
-### Primary and quiet actions
+The component previews in `.impeccable/design.json` are self-contained HTML/CSS documentation approximations for the Impeccable panel. They demonstrate observed tokens and states but are never MagicCuts app code or a web implementation requirement; the native SwiftUI symbols named alongside each preview remain authoritative.
 
-`ControlStyle` is the reusable action treatment. Primary actions use `Action`, white text, `.headline`, 16pt horizontal and 14pt vertical padding, and a 52pt minimum height. Quiet actions use `Color.primary` at 7% opacity with system-primary text. Pressing lowers opacity to 0.75; there is no custom hover state because the shipped interaction is touch-native.
+### Instrument source controls
 
-### Mode tabs
+The source row sits below the Instruments title. The selected instrument has its SF Symbol, rounded headline, chevron, and a 44pt target. Bluetooth sources use a native menu; network sources use a native button. At accessibility sizes the source row stacks.
 
-Simple and Technical are two equal-width plain buttons above a 1pt secondary baseline. Each has a 44pt minimum height. The active mode is semibold, adds the selected accessibility trait, and moves a 3pt cobalt capsule underline; Technical adds the `slider.horizontal.3` SF Symbol at normal content sizes. At accessibility Dynamic Type sizes, the tabs stack vertically and that decorative icon is omitted so the label remains clear. The setting persists in `@AppStorage`.
+### Live, Inspect, and Compare selector
 
-### Signal gauge and threshold editor
+At regular Dynamic Type sizes, `InstrumentSegments` renders three 46pt minimum rounded segments. Selection fills the current segment with Action blue, uses white rounded semibold text, supplies the selected accessibility trait, selection haptics, and a `.snappy(duration: 0.2)` movement unless Reduce Motion is enabled. At accessibility sizes it becomes the compact native mode menu with all three choices and the current selection checkmark.
 
-`SignalGauge` is the signature component. It uses the 16pt matte-navy surface and 20pt inset, a live -100 to 0 dBm ruler, a cyan selected cursor, and an optional cyan observed band. In the edit sheet, 48pt minus and plus controls and direct drag/tap scale adjustment change the valid -100 through -1 dBm threshold. Its visual scale is represented to accessibility as a real SwiftUI `Slider`, labeled “Nearby threshold” with a live dBm value; the displayed ruler is hidden from accessibility when it is read-only.
+### Measurement face and value
 
-### Joined test controls
+The signature face is a Canvas arc, a level target, a compass, or a linear ruler according to the instrument's data type. Major/minor tick weights and readable labels communicate scale. The live value is an accessible `MeasurementValue`; its visual Canvas geometry is hidden from assistive technology. The reading uses the instrument's truthful unit and uses an em dash when no reading exists.
 
-The detail screen pairs “Test nearby” and “Test away” in one clipped 12pt well. Nearby is cobalt and away is a quiet system surface. While a test runs, the active region shows a tinted `ProgressView` and the sibling action becomes an explicit Stop control. At accessibility sizes the well becomes vertical while preserving both actions.
+### History chart
 
-### Discovery rows
+`InstrumentHistoryChart` uses Swift Charts: Action/signal blue for current readings, dashed secondary ink for a baseline, and a selected rule and point for the pinned sample. The selected time is shared with the value above; “Return to live” clears it. It labels elapsed seconds and states that gaps are unobserved. It supports accessibility adjustment through actual retained readings. Its Dynamic Type layout retains scrollable recording controls, vertical statistics, and enlarged chart axes.
 
-Device observations use 16pt cards with a 52pt minimum row. An expanded row changes to an 8%-opacity cobalt fill with a cobalt 1pt outline, reveals an identification instruction, then exposes the appropriate saved-device or naming action. Search, sort, empty, stale, denied, and interrupted states use native controls and `ContentUnavailableView`/inline failure treatment.
+### Baseline and recording controls
 
-### Welcome and Shortcuts handoff
+The baseline selector is a 44pt native menu that only lists compatible profiles. Record session, finish recording, Set baseline, Mark, Pause or Resume, and Start measuring retain native controls and their explicit state. Recording is a recoverable local session flow; controls are scrollable at accessibility sizes rather than fixed over the content.
 
-The welcome sheet leads with a dark instrument explainer and three 48pt circular SF Symbol step icons, then offers a primary “Find a device” action and Skip. The handoff rows remain plain 48pt minimum text rows with an SF Symbol/arrow rather than filled calls to action. Shortcuts setup keeps numbered, plain-language guidance and a user-confirmed verification action.
+### Native navigation
 
-### Motion and accessibility
+The app uses the native Instruments, Sessions, and Workflows `TabView`, navigation titles, toolbars, sheets, and safe areas. The iOS/iPadOS 26 system tab presentation supplies the floating chrome; the Pro design does not replace it with a custom tab bar.
 
-Authored motion is deliberately limited: mode underline selection uses `.snappy(duration: 0.22)`, threshold numerals use `.easeOut(duration: 0.18)`, discovery-row expansion uses `.snappy(duration: 0.22)`, and the welcome chart symbol can use a variable-color effect. Each checks `accessibilityReduceMotion` and removes the authored animation/effect when enabled. Selection also has native selection feedback. There is no parallax, custom navigation animation, or continuous scanning decoration.
+### Optional iCloud settings
+
+The existing native Settings list adds a “Your library, across devices” section. A system toggle defaults off, followed by readable status, progress/error recovery, manual sync when enabled and Bluetooth setup references. The footer explains what moves, that edits and deletions sync, and that disabling keeps both copies. Purchase restoration remains a separate StoreKit action.
+
+Other-device Bluetooth references use a native list, navigation, picker and history disclosure. A reference never looks connected until the user chooses a locally identified saved device. Original evidence and the next local test remain clearly distinguished. Text wraps at accessibility sizes; the section reuses Action blue, rounded headings and existing quiet text tokens without new motion or custom chrome.
 
 ## Do's and Don'ts
 
 ### Do:
 
-- **Do** use the Canvas, Instrument, and Action asset colors for branded surfaces; let system semantic colors adapt ordinary text and chrome.
-- **Do** keep the gauge live and readable: threshold, ticks, cursor, observed values, and editing affordances must describe the current model state.
-- **Do** preserve 44pt minimum targets, 48pt gauge steppers and handoff rows, and 52pt primary actions.
-- **Do** use `.monospacedDigit()` for changing RSSI, count, duration, and threshold-adjacent figures.
-- **Do** honor Reduce Motion and retain the Slider accessibility representation whenever the gauge is editable.
-- **Do** keep the iPad content column capped at 640pt (600pt in the threshold sheet), and stack mode tabs and test actions at accessibility sizes.
+- **Do** use existing Action blue for selection and primary action, reserve signal and interval inks for measured information, and use opaque `ProTheme.secondary` labels for quiet Pro evidence.
+- **Do** show truthful unit labels and retain “Sample session” for demonstration data.
+- **Do** keep rounded tabular figures for live values, comparisons, statistics, segment labels, and chart-adjacent readings.
+- **Do** keep Instruments visible as the native navigation title and place source controls immediately beneath it.
+- **Do** provide Live, Inspect, and Compare in the native segment control or the accessibility menu, with the same three choices.
+- **Do** preserve the 44pt control floor, 46pt segments, 52pt action controls, system safe areas, Reduce Motion behavior, and accessibility-adjustable history.
+- **Do** use a 240pt minimum chart height and axis text that can scale to 22pt at accessibility sizes.
 
 ### Don't:
 
-- **Don't** turn the signal gauge into a static image, a generic slider, or a distance promise.
-- **Don't** spread cyan through general navigation, buttons, or decorative effects.
-- **Don't** add web hover, CSS, custom shadows, glass, gradients, or raster control plates to this native SwiftUI system.
-- **Don't** remove plain-language caveats about walls, movement, advertising, and the limits of a missing Bluetooth reading.
-- **Don't** label simulator sample readings as real-world Bluetooth proof; retain the demo label in UI-test contexts.
+- **Don't** promise measurements that the selected instrument cannot truthfully produce, including distance from Bluetooth signal or dB SPL from dBFS.
+- **Don't** treat gaps in the chart as interpolated measurements, or compare incompatible baselines.
+- **Don't** use blue, cyan, or teal as unconnected decoration.
+- **Don't** replace native navigation, sheets, menus, tabs, materials, or touch controls with web-shaped components.
+- **Don't** ship generated raster control plates or use a generated image as an instrument surface.
+- **Don't** claim simulator captures establish physical sensor, background, StoreKit price, purchase, or hardware acceptance.

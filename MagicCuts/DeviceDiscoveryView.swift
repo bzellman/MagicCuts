@@ -83,7 +83,7 @@ struct DeviceDiscoveryView: View {
         .navigationDestination(item: $added) { device in DeviceDetailView(device: device, radio: bluetoothViewModel.radio) }
         .onDisappear { bluetoothViewModel.stopScanning() }
         .onChange(of: phase) { _, value in
-            if value != .active && bluetoothViewModel.isScanning {
+            if value == .background && bluetoothViewModel.isScanning {
                 bluetoothViewModel.stopScanning()
                 interrupted = true
             }

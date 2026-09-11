@@ -1,0 +1,392 @@
+{
+  "format": 1,
+  "createdAt": "2026-09-10T07:28:28.825871+00:00",
+  "branch": "codex/magiccuts-pro-instruments",
+  "baseCommit": "3b43436c449e858e31b89083e6759f172af9c108",
+  "scope": "Opt-in private CloudKit implementation; local automated verification and Apple development signing. No release or live CloudKit acceptance.",
+  "tests": {
+    "unit-final": {
+      "result": "Passed",
+      "passed": 47,
+      "failed": 0,
+      "skipped": 0,
+      "startedAt": 1789024648.694,
+      "finishedAt": 1789024677.651,
+      "retainedLog": ".review/icloud/unit-final.log",
+      "logSHA256": "6079b1a21b2141d765c90d9caa2654eb1a034d27826b1183d6d01209e7b16ded",
+      "resultBundle": ".review/icloud/DerivedData/Logs/Test/Test-MagicCuts-2026.09.10_02-17-28--0500.xcresult",
+      "tests": [
+        {
+          "name": "MagicCutsTests.ProArchiveTests testArchivesRoundTripAndReferencedSessionsCannotDisappear",
+          "seconds": 0.032
+        },
+        {
+          "name": "MagicCutsTests.ProArchiveTests testConcurrentArchiveWritersPreserveEachOthersChanges",
+          "seconds": 0.009
+        },
+        {
+          "name": "MagicCutsTests.ProArchiveTests testMalformedIndexIsNotOverwrittenByASave",
+          "seconds": 0.005
+        },
+        {
+          "name": "MagicCutsTests.ProArchiveTests testOlderProIndexLoadsAdditiveReportField",
+          "seconds": 0.0
+        },
+        {
+          "name": "MagicCutsTests.ProArchiveTests testRecoveryDraftDoesNotBecomeACompletedSessionUntilSaved",
+          "seconds": 0.01
+        },
+        {
+          "name": "MagicCutsTests.ProCaptureTests testConnectionProbeUsesRealHTTPAndStopsAtItsRequestLimit",
+          "seconds": 14.645
+        },
+        {
+          "name": "MagicCutsTests.ProCaptureTests testGroupCancellationNeverReturnsAPartialSuccess",
+          "seconds": 0.025
+        },
+        {
+          "name": "MagicCutsTests.ProCaptureTests testGroupUsesOneWindowAndMissingMembersStayUnknown",
+          "seconds": 0.121
+        },
+        {
+          "name": "MagicCutsTests.ProCaptureTests testLiveActivityPublishesPausesAndEndsThroughActivityKit",
+          "seconds": 0.348
+        },
+        {
+          "name": "MagicCutsTests.ProCaptureTests testPauseResumeAndCancelledCallbacksKeepDistinctSegments",
+          "seconds": 0.129
+        },
+        {
+          "name": "MagicCutsTests.ProCaptureTests testWorkflowWindowStartsAfterRadioReadiness",
+          "seconds": 1.323
+        },
+        {
+          "name": "MagicCutsTests.ProMeasurementTests testBaselineCompatibilityIncludesAudioInputAndReferenceFrame",
+          "seconds": 0.002
+        },
+        {
+          "name": "MagicCutsTests.ProMeasurementTests testCalibrationRequiresSeparationAndEnoughFreshSamples",
+          "seconds": 0.002
+        },
+        {
+          "name": "MagicCutsTests.ProMeasurementTests testDisplayedRangeRetainsTheContractAndChartReductionPreservesGaps",
+          "seconds": 0.001
+        },
+        {
+          "name": "MagicCutsTests.ProMeasurementTests testNorthWrapAndTiltReferencesDoNotUseOrdinarySubtraction",
+          "seconds": 0.0
+        },
+        {
+          "name": "MagicCutsTests.ProMeasurementTests testRobustStatisticsAndSilenceHaveDefinedUnits",
+          "seconds": 0.0
+        },
+        {
+          "name": "MagicCutsTests.ProMeasurementTests testSpectrumUsesMeasuredCadenceAndRejectsGaps",
+          "seconds": 0.001
+        },
+        {
+          "name": "MagicCutsTests.ProMeasurementTests testUnknownLogicForAllAnyAndMinimumCounts",
+          "seconds": 0.0
+        },
+        {
+          "name": "MagicCutsTests.ProPortabilityTests testAccountSwitchPausesBeforeCreatingAnUploadClient",
+          "seconds": 0.019
+        },
+        {
+          "name": "MagicCutsTests.ProPortabilityTests testBluetoothReferencesRequireAnExplicitConnectionAndNeverMatchByName",
+          "seconds": 0.0
+        },
+        {
+          "name": "MagicCutsTests.ProPortabilityTests testBluetoothSetupHistoryTransfersWithoutChangingLocalDeviceConnections",
+          "seconds": 0.033
+        },
+        {
+          "name": "MagicCutsTests.ProPortabilityTests testChangingSessionMarksQueuesAnUploadEvenWhenItsSummaryIsUnchanged",
+          "seconds": 0.013
+        },
+        {
+          "name": "MagicCutsTests.ProPortabilityTests testCorruptOrFutureCloudRecordsCannotReplaceLocalEvidence",
+          "seconds": 0.006
+        },
+        {
+          "name": "MagicCutsTests.ProPortabilityTests testDefaultOffAndRestoredPreferencesDoNotEvenCreateACloudClient",
+          "seconds": 0.006
+        },
+        {
+          "name": "MagicCutsTests.ProPortabilityTests testDeletionAlsoWinsAgainstANewerOfflineEdit",
+          "seconds": 0.032
+        },
+        {
+          "name": "MagicCutsTests.ProPortabilityTests testLegacyLibrariesGainRevisionsWithoutInventingSensorProvenance",
+          "seconds": 0.014
+        },
+        {
+          "name": "MagicCutsTests.ProPortabilityTests testOfflineEditsConvergeAndAStaleDeviceCannotResurrectADeletion",
+          "seconds": 0.036
+        },
+        {
+          "name": "MagicCutsTests.ProPortabilityTests testOptInIsBoundToBothTheAccountAndTheInstallation",
+          "seconds": 0.0
+        },
+        {
+          "name": "MagicCutsTests.ProPortabilityTests testReportsKeepDelayedAttachmentsAndRetainDeletedEvidenceUntilDetached",
+          "seconds": 0.031
+        },
+        {
+          "name": "MagicCutsTests.ProPortabilityTests testRestoredBluetoothModelNeedsFreshValidationAndPreservesItsOriginalReference",
+          "seconds": 0.049
+        },
+        {
+          "name": "MagicCutsTests.ProPortabilityTests testTurningOffRetainsLocalDataAndPersistsConsentWithoutNetworkAccess",
+          "seconds": 0.042
+        },
+        {
+          "name": "MagicCutsTests.ProPortabilityTests testTwoLibrariesTransferSavedEvidenceAndRemainLocalWithoutAnAccount",
+          "seconds": 0.06
+        },
+        {
+          "name": "MagicCutsTests.ProPortabilityTests testUnavailableAccountLeavesOptInOffAndLocalDataUsable",
+          "seconds": 0.009
+        },
+        {
+          "name": "MagicCutsTests.ProReportTests testExportsContainAllReadingsAndPaginatedNotesWithoutEndpointQueries",
+          "seconds": 0.081
+        },
+        {
+          "name": "MagicCutsTests.ProximityTests testAdditiveStoreMigrationRetainsIdentifier",
+          "seconds": 0.859
+        },
+        {
+          "name": "MagicCutsTests.ProximityTests testCancellationDiscardsRunAndStopsSession",
+          "seconds": 0.001
+        },
+        {
+          "name": "MagicCutsTests.ProximityTests testCancelledBeforeStartDoesNotOpenSession",
+          "seconds": 0.001
+        },
+        {
+          "name": "MagicCutsTests.ProximityTests testClassificationAndBoundary",
+          "seconds": 0.001
+        },
+        {
+          "name": "MagicCutsTests.ProximityTests testCorruptServiceFilterFailsBeforeRadioStarts",
+          "seconds": 0.001
+        },
+        {
+          "name": "MagicCutsTests.ProximityTests testDeletedDeviceCannotReceiveLateHistory",
+          "seconds": 0.012
+        },
+        {
+          "name": "MagicCutsTests.ProximityTests testDiscoveryStopDoesNotStopReplacementSession",
+          "seconds": 0.002
+        },
+        {
+          "name": "MagicCutsTests.ProximityTests testFullWindowFiltersInvalidAndOtherDevices",
+          "seconds": 0.106
+        },
+        {
+          "name": "MagicCutsTests.ProximityTests testIntentUsesLatestThresholdAndPropagatesFailures",
+          "seconds": 0.05
+        },
+        {
+          "name": "MagicCutsTests.ProximityTests testOldSessionCleanupCannotStopReplacement",
+          "seconds": 0.001
+        },
+        {
+          "name": "MagicCutsTests.ProximityTests testPersistenceHistoryAndSyncFailure",
+          "seconds": 0.025
+        },
+        {
+          "name": "MagicCutsTests.ProximityTests testPrematureEndThrows",
+          "seconds": 0.001
+        },
+        {
+          "name": "MagicCutsTests.ProximityTests testSnapshotReplacementAndLegacyDecoding",
+          "seconds": 0.004
+        }
+      ]
+    },
+    "ui-delivery": {
+      "result": "Passed",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "startedAt": 1789025054.248,
+      "finishedAt": 1789025178.791,
+      "retainedLog": ".review/icloud/ui-delivery.log",
+      "logSHA256": "ee682337dc31dfb30437bfaa966d29a3b911d4655438f27af1ffbdff01b94d20",
+      "resultBundle": ".review/icloud/UIDerivedData/Logs/Test/Test-MagicCuts-2026.09.10_02-24-14--0500.xcresult",
+      "tests": [
+        {
+          "name": "MagicCutsUITests.ProExperienceUITests testBaselineInspectRecordExportAndFieldReport",
+          "seconds": 43.296
+        },
+        {
+          "name": "MagicCutsUITests.ProExperienceUITests testICloudBluetoothSetupRequiresAConnectionBeforeTheGroupCanRun",
+          "seconds": 24.512
+        },
+        {
+          "name": "MagicCutsUITests.ProExperienceUITests testICloudIsOptionalAndAnUnavailableAccountDoesNotBlockInstruments",
+          "seconds": 16.954
+        },
+        {
+          "name": "MagicCutsUITests.ProExperienceUITests testICloudSettingsRemainReachableAtLargestText",
+          "seconds": 16.285
+        },
+        {
+          "name": "MagicCutsUITests.ProExperienceUITests testWorkflowCreationAndMeasuredResult",
+          "seconds": 18.474
+        }
+      ]
+    },
+    "ipad-final": {
+      "result": "Passed",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "startedAt": 1789024860.372,
+      "finishedAt": 1789024919.393,
+      "retainedLog": ".review/icloud/ipad-final.log",
+      "logSHA256": "ca4b55b81b5e63b110ce6832b615536032224208d7c2ae57894404b3da19c8bb",
+      "resultBundle": ".review/icloud/IPadDerivedData/Logs/Test/Test-MagicCuts-2026.09.10_02-21-00--0500.xcresult",
+      "tests": [
+        {
+          "name": "MagicCutsUITests.MagicCutsUITests testSavedDeviceModesThresholdAndHistory",
+          "seconds": 23.9
+        },
+        {
+          "name": "MagicCutsUITests.ProExperienceUITests testICloudSettingsRemainReachableAtLargestText",
+          "seconds": 14.987
+        }
+      ]
+    },
+    "settings-delivery": {
+      "result": "Passed",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "startedAt": 1789025221.077,
+      "finishedAt": 1789025258.388,
+      "retainedLog": ".review/icloud/settings-delivery.log",
+      "logSHA256": "f507e59289dd70721cffa90c1995bc6ee2e30e8f6212069a70d352fe7bb189fe",
+      "resultBundle": ".review/icloud/UIDerivedData/Logs/Test/Test-MagicCuts-2026.09.10_02-27-01--0500.xcresult",
+      "tests": [
+        {
+          "name": "MagicCutsUITests.ProExperienceUITests testICloudIsOptionalAndAnUnavailableAccountDoesNotBlockInstruments",
+          "seconds": 16.408
+        },
+        {
+          "name": "MagicCutsUITests.ProExperienceUITests testICloudSettingsRemainReachableAtLargestText",
+          "seconds": 16.319
+        }
+      ]
+    }
+  },
+  "builds": {
+    "release-delivery": {
+      "result": "Passed",
+      "log": ".review/icloud/release-delivery.log",
+      "logSHA256": "ac3087e53c4bc759b3f63089e60c602a173e3c8b0890cdaeaac19fa7b33f4ad7",
+      "applicationWarnings": 0
+    },
+    "signing-delivery": {
+      "result": "Passed",
+      "log": ".review/icloud/signing-delivery.log",
+      "logSHA256": "19a61d60e119bbdc1cad0da0bc9ffa17716505ca11f6641218c1e735069c6d06",
+      "applicationWarnings": 0
+    }
+  },
+  "signing": {
+    "profile": {
+      "com.apple.developer.icloud-container-identifiers": [
+        "iCloud.com.bradZellman.MagicCuts"
+      ],
+      "com.apple.developer.icloud-services": "*",
+      "aps-environment": "development"
+    },
+    "profileExpires": "2027-09-10T06:32:45",
+    "signedApp": {
+      "com.apple.developer.icloud-container-identifiers": [
+        "iCloud.com.bradZellman.MagicCuts"
+      ],
+      "com.apple.developer.icloud-services": [
+        "CloudKit"
+      ],
+      "aps-environment": "development"
+    },
+    "signatureValid": true
+  },
+  "liveCloudKitVerified": false,
+  "openAcceptance": [
+    "Two authorized devices with the same test Apple Account: upload/download, conflicts, deletion, relaunch, account switch and recipient bytes",
+    "Deploy and verify CloudKit Production schema; verify TestFlight runtime",
+    "Update and verify public privacy policy and store privacy answers"
+  ],
+  "notes": [
+    "StoreKit lifecycle was unchanged and not rerun; prior verified local result is separately recorded in docs/PRO_VALIDATION.md",
+    "Clean iPad test compilation emitted a deprecation in the Apple StoreKitTest SDK header, not application source; warnings were not suppressed",
+    "UI fixtures are verified before account interaction; earlier failing runs are excluded from success counts",
+    "ui-delivery exercised the final application code; settings-delivery also compiled and exercised the final fail-fast UI fixture harness",
+    "iPad run preceded the final footer clarification naming groups; phone delivery runs include that copy"
+  ],
+  "sourceSHA256": {
+    "MagicCuts/AppRuntime.swift": "d634c906b4f424e96eca34561173f0b21a831de91cae3a1eec186c209c0cf370",
+    "MagicCuts/AppShortcuts.swift": "5763cd42e78725996f7bc6084ae5e9d4d6a54f3ad0090dd7ef86c285964f053f",
+    "MagicCuts/BluetoothScanner.swift": "c0959996d08683dce8b1a84f855d0a8a03d7bde3b890a6987baf88d97bc01f43",
+    "MagicCuts/BluetoothViewModel.swift": "8f4dcea24d7cd5110b54be5f363691453887b745a550ae256b808f8da6297b51",
+    "MagicCuts/ContentView.swift": "564365d00558ba5bc5051f151d0ce5c792aff9ff60bdfd1ea3bafa00c950b914",
+    "MagicCuts/DesignSystem.swift": "52bb91bfa67d407f92c1aa220ba00790b8f79816d4f3c1730fe61917f0af7a06",
+    "MagicCuts/DeviceDetailView.swift": "d5861103dbcbde4a674b6d9c325b9607b7bc30f9f2e162752a8d8c1cb071650f",
+    "MagicCuts/DeviceDiscoveryView.swift": "9e569a52494a901e6c40cf1ef1e33691aa161b7302050ae307178574445b9f06",
+    "MagicCuts/DeviceRepository.swift": "a1a8b87fdc37c3c542b3ee00aca446b711e4f62d62e48bbfa2e7113fdbfac006",
+    "MagicCuts/EditDeviceView.swift": "61caf2d298f7836e8606c79e56c4e6da94125eda208b47c97cca9329586526d4",
+    "MagicCuts/Guidance.swift": "11760a03f34b29f7bf68196be24965cc6f5f1dd1fecf481e52a91c8f86a1909e",
+    "MagicCuts/Instruments/InstrumentArchive.swift": "f0a3ef294e011ad95f59b1d6ced9b379161b50bd8b5d00c8ea1cd48831334e3e",
+    "MagicCuts/Instruments/InstrumentEngine.swift": "0a9bf7e9b679a804ec9aba8ac3ccd1e1c31e6f7f6bb2033eb9b09a6703505a31",
+    "MagicCuts/Instruments/MeasurementMath.swift": "e99706c120729d704753805282db05bd94a2bf875cd42236c9aee9cfd7692877",
+    "MagicCuts/Instruments/MeasurementModels.swift": "ac9e3869bcae0539667cf8e8b3fc375e7d948e293bde4c11458fc4b9d027ab50",
+    "MagicCuts/Instruments/SessionActivityAttributes.swift": "538ebd69fa4ae0c5236258e9a755fef87a41e5daf4f15b0c4abc95926bf47daa",
+    "MagicCuts/Instruments/SessionLiveActivity.swift": "1157fc3ee4214bc1aebd90a4289b3467e4e4966c1402406a2c1a1294e64c4673",
+    "MagicCuts/Instruments/SessionReport.swift": "dbde68f10f32cf353a6a8d9c255d6ab6e5f3eef818b0bf12e4ce8f2e4cbe2988",
+    "MagicCuts/Instruments/WorkflowRunner.swift": "751f0a9c512c864ff48be1eb36b6bdb036b84aa2330046bbd9b2ebce7b74c5e8",
+    "MagicCuts/IsDeviceNearbyIntent.swift": "5fe51e0a339b4aba2114f6223746ca5e96bfecd487e31509ba3a0250e5911ac5",
+    "MagicCuts/MagicCuts.entitlements": "e8c5e1622adf879f378c0c76e1e9e77da210dfe08e58318536fda264237346b0",
+    "MagicCuts/MagicCutsApp.swift": "511e9e23e858cb78cec85568e5aabd77352ff1268c22d6d4d9dd2c91722a825e",
+    "MagicCuts/MonitoredDevice.swift": "b98365db9c8b49c160ecf4b7ea7fe95189bd4534afe8f44db12a46c18e780723",
+    "MagicCuts/MonitoredDevicesView.swift": "51260b83d3b14480bb0308086b1279126efc24ea61e5c9c5fb896cddf45ae6d0",
+    "MagicCuts/Portability/CloudLibrarySync.swift": "b506aaf02bacca3c762707d3f68f3948bf77fa3b67dff3f7dfdcf4585eaf61b1",
+    "MagicCuts/Portability/CloudLibraryTransport.swift": "1609e3bc3b4160989f8647eab5dc91fc25bc4f0dc5ef28e579794ac452f0b7f1",
+    "MagicCuts/Portability/CloudSettingsView.swift": "aeda3b4f8c73706f35490b503d0b4f1624ecc75edc13705f5498fd7eb4ebfb19",
+    "MagicCuts/Portability/LibraryRecords.swift": "1bddf7b340d69af3dc637ca137dc5b998743d91c8b54f96ed20b6515f6a1a5ba",
+    "MagicCuts/Pro/FieldReportsView.swift": "b1eb127dbbeb95ce4aedee4e282de3052868e09e2737c9ad8fba96161d0e13a1",
+    "MagicCuts/Pro/InstrumentComponents.swift": "2855cda34b863239b642975b2390e8790f965006a88a4451dce594930af7ed94",
+    "MagicCuts/Pro/InstrumentForms.swift": "eed2c7a5bd4225b18dae4f014a6da5687060316a1e1386288038f76b2ea6a3f5",
+    "MagicCuts/Pro/ProAccess.swift": "09efdb33d694b44de787db0f2bd6619143b45822914d4e24a2ded545469a9f66",
+    "MagicCuts/Pro/ProExperience.swift": "0f5206ba7b866684b967d99bdf9bee598f7a7db03093ef8538276c3b87c0b292",
+    "MagicCuts/Pro/ProIntents.swift": "55797ce0f5ddd6340139a3bdf16fcb0832f7996c0869b9ea41f5ef84b7471cbd",
+    "MagicCuts/Pro/SessionsView.swift": "7c3d0058f288e4209f064d6ee55aadf145b9aceb572ebf9fbb90b3a752c6735d",
+    "MagicCuts/Pro/WorkflowsView.swift": "013d03b0f052f2b036e0c24ae416938654e54408cded8b978bb9ee3aaba45d36",
+    "MagicCuts/Proximity.swift": "0079d0a340f797cb89a4fc28d95f7a81cca4e3c3aa151288195eb341f213c385",
+    "MagicCuts/SharedDeviceStorage.swift": "6197c288350f4b5a5ad9775471615649b878830a2a394a9e5ecb1d939aa778a8",
+    "MagicCutsLiveSession/MagicCutsLiveSession.swift": "1ae1ab8a7244f3ba190399480e6ab78e6f293ceedea5adb96e1b8d302a0ee4b9",
+    "Configuration/App-Info.plist": "1cca4cfb8954303a303ca2954e0ee4887c568af88a67b1c42613386628f2a529",
+    "Configuration/LiveSession-Info.plist": "567714e28ae489b0ac30b44b10e76d6a347bc7547f80811535e4fec28f2ad9cf",
+    "Configuration/MagicCutsPro.storekit": "094f4f8281b779734040d39f6aad100add6944e07c46f8a152e3c27a4f238ca7",
+    "MagicCutsTests/ProInstrumentTests.swift": "8393e9f3adb239fd511143cab17d0d9ba178c89c90ef0986960a12dd237d77a5",
+    "MagicCutsTests/ProximityTests.swift": "cc69801c9fe2c298a0d117e579f66312b386bbfb221ca7de66eca9f4afb4309f",
+    "MagicCutsUITests/MagicCutsUITests.swift": "4b7973d24bc32c232640676b0120ef9b0ef54849620b22f05a55ef7adc4c9cd5",
+    "MagicCutsUITests/ProExperienceUITests.swift": "3c4f51cbe6614c183e9d69d8e54750fb7ec4ec3da66c7a5cbbab2397433c17fa",
+    "MagicCuts.xcodeproj/project.pbxproj": "98e977743157a30955f5e91c2a372da51932331687f8b53509b74dfaf005bbfe"
+  },
+  "captureSHA256": {
+    "docs/screenshots/icloud/icloud-connected-group-result.png": "e10dd23ca9645fbee820c9dc7e44b1782743bbeefa2e85719ae3962f943b82ad",
+    "docs/screenshots/icloud/icloud-default-off.png": "f9d72d7b2b024792d3f5b398e718c99569df91023051a3a665b45f1e7b4a20dc",
+    "docs/screenshots/icloud/icloud-largest-empty-ipad.png": "65d2456655f3bfb4f164ec07dfb9b69b5f7a03cb1ea601eecddbda0959102a08",
+    "docs/screenshots/icloud/icloud-largest-empty.png": "875f2403c8f95bb202dc33a7f32ecd791fb751fd39d35de70ea1fed49cea814c",
+    "docs/screenshots/icloud/icloud-largest-text-ipad.png": "aca1b6ce7e3e700570794237ddbd55a23f55d02ad3679bbcbbd6626d6b6f45a2",
+    "docs/screenshots/icloud/icloud-largest-text.png": "fb050b72ebf52b62f3b0b1af51561f512120ccf62b0c03676b7b7f302a8f2739",
+    "docs/screenshots/icloud/icloud-setup-connected.png": "ae27b7697225ceb5bc748cc2f29b927e42ee63012fd9d3c325e2ca9e629acb25",
+    "docs/screenshots/icloud/icloud-setup-reference.png": "625196c4b161acc760616e71a24018519704fc89a3deb0e0e564548e8d9a4c6a",
+    "docs/screenshots/icloud/icloud-unavailable.png": "3ef0e448af6efb49ef4b001a8ccb1eedb9958b1452e2d944f4eee663688de86f"
+  }
+}
