@@ -1,0 +1,37 @@
+[
+  {
+    "file": "mesh-trim-saved-revision.png",
+    "test": "RoomFieldworkUITests/testInsideOutsideAndReversibleHallwayTrim()",
+    "device": "iPhone 17 Pro",
+    "timestamp": 1789112951.092,
+    "sha256": "da1a82fdc845f2d5f45198e8756b849557bfc5ea44fb7f8e60889826ecdd5ba6"
+  },
+  {
+    "file": "mesh-trim-hallway-preview.png",
+    "test": "RoomFieldworkUITests/testInsideOutsideAndReversibleHallwayTrim()",
+    "device": "iPhone 17 Pro",
+    "timestamp": 1789112936.378,
+    "sha256": "cc71eeed52b72a3fc1dc57536f889fc0671d36142105f8e07a038e0eaa5fcc13"
+  },
+  {
+    "file": "mesh-enclosed-inside.png",
+    "test": "RoomFieldworkUITests/testInsideOutsideAndReversibleHallwayTrim()",
+    "device": "iPhone 17 Pro",
+    "timestamp": 1789112918.039,
+    "sha256": "768a8a160adeff28fa0f561b9d4432d066410ea98bbad1257361cca156bb28cf"
+  },
+  {
+    "file": "mesh-enclosed-outside.png",
+    "test": "RoomFieldworkUITests/testInsideOutsideAndReversibleHallwayTrim()",
+    "device": "iPhone 17 Pro",
+    "timestamp": 1789112913.962,
+    "sha256": "884afbde25f13c8679c00cb0a4371433984a8774c169aaeb46e7584348eb0b90"
+  },
+  {
+    "file": "mesh-trim-largest-text-controls.png",
+    "test": "RoomFieldworkUITests/testTrimControlsAtLargestText()",
+    "device": "iPhone 17 Pro",
+    "timestamp": 1789113286.626,
+    "sha256": "47c14e4e09fc48d95939e662cbad95228a121bea8ef6e9caba7922abced89476"
+  }
+]

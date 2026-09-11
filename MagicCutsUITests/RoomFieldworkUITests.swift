@@ -10,7 +10,15 @@ nonisolated final class RoomFieldworkUITests: XCTestCase {
         XCTAssertTrue(app.buttons["instrument.choose"].waitForExistence(timeout: 10)); return app
     }
     @MainActor private func reveal(_ element: XCUIElement, _ app: XCUIApplication) {
-        for _ in 0..<10 { if element.isHittable { return }; app.swipeUp() }
+        for _ in 0..<10 {
+            if element.exists && element.isHittable { return }
+            let scroll = app.scrollViews.firstMatch
+            if scroll.exists {
+                let above = element.exists && element.frame.midY < scroll.frame.minY + 60
+                scroll.coordinate(withNormalizedOffset: CGVector(dx: 0.99, dy: above ? 0.25 : 0.8))
+                    .press(forDuration: 0.05, thenDragTo: scroll.coordinate(withNormalizedOffset: CGVector(dx: 0.99, dy: above ? 0.8 : 0.25)))
+            } else { app.swipeUp() }
+        }
         XCTAssertTrue(element.isHittable, element.debugDescription)
     }
     @MainActor private func screenshot(_ app: XCUIApplication, _ name: String) {
@@ -42,6 +50,111 @@ nonisolated final class RoomFieldworkUITests: XCTestCase {
             print("Room accessibility issue: \(issue.compactDescription); \(issue.element?.debugDescription ?? "unknown")")
             return false
         }
+    }
+    @MainActor private func waitForMesh(_ app: XCUIApplication) {
+        let mesh = app.descendants(matching: .any)["room.mesh.scene"].firstMatch
+        XCTAssertTrue(mesh.waitForExistence(timeout: 10))
+        let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "Ready"), object: mesh)
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 20), .completed)
+        let rendered = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            MainActor.assumeIsolated { Self.hasRenderedMesh(mesh) }
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [rendered], timeout: 10), .completed, "The mesh must render visible surfaces, not just finish building entities.")
+    }
+    @MainActor private static func hasRenderedMesh(_ element: XCUIElement) -> Bool {
+        guard let image = element.screenshot().image.cgImage else { return false }
+        let side = 40
+        var pixels = [UInt8](repeating: 0, count: side * side * 4)
+        let sampled = pixels.withUnsafeMutableBytes { bytes -> Bool in
+            guard let context = CGContext(data: bytes.baseAddress, width: side, height: side, bitsPerComponent: 8,
+                                          bytesPerRow: side * 4, space: CGColorSpaceCreateDeviceRGB(),
+                                          bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return false }
+            context.draw(image, in: CGRect(x: 0, y: 0, width: side, height: side))
+            return true
+        }
+        guard sampled else { return false }
+        var surfacePixels = 0
+        for i in stride(from: 0, to: pixels.count, by: 4) {
+            let red = Int(pixels[i]), green = Int(pixels[i + 1]), blue = Int(pixels[i + 2])
+            if blue - red > 15 && green - red > 10 { surfacePixels += 1 }
+        }
+        return surfacePixels > side * side / 20
+    }
+    @MainActor func testInsideOutsideAndReversibleHallwayTrim() throws {
+        let fixture = UUID().uuidString
+        let app = launch(["--room-fixture-id", fixture, "--room-enclosed-demo", "--dark-appearance"])
+        openRoom(app); waitForMesh(app)
+        screenshot(app, "mesh-enclosed-outside")
+        app.segmentedControls.buttons["Inside"].tap()
+        XCTAssertTrue(app.buttons["Look up"].waitForExistence(timeout: 5))
+        app.buttons["Rotate right"].tap(); app.buttons["Look down"].tap()
+        app.buttons["Reset view"].tap()
+        screenshot(app, "mesh-enclosed-inside")
+        try auditVisible(app)
+        app.buttons["Move viewpoint"].tap()
+        let position = app.steppers.matching(NSPredicate(format: "label CONTAINS %@", "Left / right")).firstMatch
+        reveal(position.buttons["Increment"], app)
+        position.buttons["Increment"].tap()
+        screenshot(app, "mesh-interior-position")
+        app.navigationBars.buttons["Room actions"].tap(); app.buttons["room.trim.menu"].tap()
+        let canvas = app.descendants(matching: .any)["room.trim.canvas"].firstMatch
+        XCTAssertTrue(canvas.waitForExistence(timeout: 10))
+        // The fixture's hallway sits to the right in the top-down projection. Drag
+        // within the identified canvas, as a user would select the unwanted section.
+        canvas.coordinate(withNormalizedOffset: CGVector(dx: 0.675, dy: 0.05))
+            .press(forDuration: 0.1, thenDragTo: canvas.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.95)))
+        screenshot(app, "mesh-trim-hallway-selection")
+        try auditVisible(app)
+        app.buttons["room.trim.preview"].tap()
+        XCTAssertTrue(app.buttons["room.trim.save"].waitForExistence(timeout: 20))
+        waitForMesh(app); screenshot(app, "mesh-trim-hallway-preview")
+        app.buttons["room.trim.adjust"].tap()
+        app.buttons["Undo selection"].tap()
+        XCTAssertFalse(app.buttons["Undo selection"].isEnabled)
+        // Cancel must leave the saved revision alone.
+        app.navigationBars.buttons["Cancel"].tap()
+        XCTAssertTrue(app.navigationBars.buttons["Room actions"].waitForExistence(timeout: 5))
+        app.navigationBars.buttons["Room actions"].tap(); app.buttons["room.trim.menu"].tap()
+        XCTAssertTrue(canvas.waitForExistence(timeout: 10))
+        canvas.coordinate(withNormalizedOffset: CGVector(dx: 0.675, dy: 0.05))
+            .press(forDuration: 0.1, thenDragTo: canvas.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.95)))
+        app.buttons["room.trim.preview"].tap()
+        XCTAssertTrue(app.buttons["room.trim.save"].waitForExistence(timeout: 20))
+        app.buttons["room.trim.save"].tap()
+        XCTAssertTrue(app.navigationBars.buttons["Room actions"].waitForExistence(timeout: 10))
+        let count = app.staticTexts["room.mesh.triangles"]
+        reveal(count, app)
+        let savedCount = count.label
+        screenshot(app, "mesh-trim-saved-revision")
+        app.terminate(); app.launch()
+        XCTAssertTrue(app.buttons["instrument.choose"].waitForExistence(timeout: 15))
+        openRoom(app); reveal(count, app)
+        XCTAssertEqual(count.label, savedCount)
+        app.navigationBars.buttons["Room actions"].tap(); app.buttons["Export room"].tap()
+        app.buttons["room.export.prepare"].tap()
+        XCTAssertTrue(app.buttons["room.export.share"].waitForExistence(timeout: 10))
+        screenshot(app, "mesh-trim-reopened-export")
+    }
+    @MainActor func testTrimControlsAtLargestText() throws {
+        let app = launch(["--room-fixture-id", UUID().uuidString, "--room-enclosed-demo", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
+        openRoom(app)
+        app.buttons["room.mesh.viewpoint"].tap(); app.buttons["Inside"].tap()
+        screenshot(app, "mesh-inside-largest-text")
+        try auditVisible(app)
+        app.navigationBars.buttons["Room actions"].tap(); app.buttons["room.trim.menu"].tap()
+        XCTAssertTrue(app.buttons["room.trim.operation"].waitForExistence(timeout: 10))
+        app.buttons["room.trim.operation"].tap(); app.buttons["Keep selection"].tap()
+        let controls = app.buttons["room.trim.edges"]
+        reveal(controls, app); controls.tap()
+        let edge = app.steppers.matching(NSPredicate(format: "label CONTAINS %@", "Left edge")).firstMatch
+        let increment = edge.buttons.matching(NSPredicate(format: "label ENDSWITH %@", "Increment")).firstMatch
+        reveal(increment, app); increment.tap()
+        app.scrollViews.firstMatch.swipeUp(velocity: .slow)
+        screenshot(app, "mesh-trim-largest-text-controls")
+        try auditVisible(app)
+        app.buttons["room.trim.preview"].tap()
+        XCTAssertTrue(app.buttons["room.trim.save"].waitForExistence(timeout: 20))
+        screenshot(app, "mesh-trim-largest-text-preview")
     }
     @MainActor func testRoomViewsRevisionComparisonAndArchiveExport() throws {
         let app = launch(); openRoom(app)
