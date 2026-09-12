@@ -16,15 +16,14 @@ nonisolated final class RoomFieldworkUITests: XCTestCase {
     @MainActor private func screenshot(_ app: XCUIApplication, _ name: String) {
         let image = XCTAttachment(screenshot: app.screenshot()); image.name = name; image.lifetime = .keepAlways; add(image)
     }
-    @MainActor private func selectTab(_ title: String, in app: XCUIApplication) {
-        let tab = app.tabBars.buttons[title]
-        if tab.exists { tab.tap(); return }
-        let symbols = ["Rooms": "square.3.layers.3d", "Sessions": "doc.text", "Instruments": "waveform.path"]
-        let topTab = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@ AND identifier == %@", title, symbols[title] ?? "")).firstMatch
-        XCTAssertTrue(topTab.waitForExistence(timeout: 5)); topTab.tap()
+    @MainActor private func openSettingsItem(_ identifier: String, in app: XCUIApplication) {
+        app.buttons["Settings"].tap()
+        let item = app.buttons[identifier]
+        if !item.waitForExistence(timeout: 2) { reveal(item, app) }
+        XCTAssertTrue(item.waitForExistence(timeout: 5)); item.tap()
     }
     @MainActor private func openRoom(_ app: XCUIApplication) {
-        selectTab("Rooms", in: app)
+        openSettingsItem("settings.rooms", in: app)
         let room = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Studio · sample")).firstMatch
         if !room.waitForExistence(timeout: 2) { reveal(room, app) }
         XCTAssertTrue(room.exists); room.tap()
@@ -60,7 +59,7 @@ nonisolated final class RoomFieldworkUITests: XCTestCase {
     @MainActor func testManualReadingPositionSurvivesAppRelaunch() throws {
         let id = UUID().uuidString
         let app = launch(["--room-fixture-id", id])
-        let capture = app.buttons["Capture this reading"]; reveal(capture, app); capture.tap()
+        let capture = app.buttons["instrument.log"]; reveal(capture, app); capture.tap()
         let title = app.textFields["capture.title"]; XCTAssertTrue(title.waitForExistence(timeout: 5)); title.tap()
         let old = title.value as? String ?? ""
         title.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: old.count) + "Desk position test")
@@ -72,7 +71,8 @@ nonisolated final class RoomFieldworkUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Placed manually"].waitForExistence(timeout: 5))
         app.buttons["capture.save"].tap()
         app.terminate(); app.launch()
-        XCTAssertTrue(app.tabBars.buttons["Sessions"].waitForExistence(timeout: 10)); selectTab("Sessions", in: app)
+        XCTAssertTrue(app.buttons["Settings"].waitForExistence(timeout: 10))
+        openSettingsItem("settings.sessions", in: app)
         let saved = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Desk position test")).firstMatch
         XCTAssertTrue(saved.waitForExistence(timeout: 10)); saved.tap()
         XCTAssertTrue(app.buttons["View location in room"].waitForExistence(timeout: 5))
@@ -91,13 +91,19 @@ nonisolated final class RoomFieldworkUITests: XCTestCase {
         screenshot(app, "room-unsupported-device")
         app.navigationBars.buttons["Close"].tap()
         XCTAssertTrue(app.buttons["Update room"].exists)
-        selectTab("Instruments", in: app); app.buttons["instruments.field-tools"].tap()
+        app.navigationBars.buttons["Rooms"].tap()
+        app.navigationBars.buttons["Settings"].tap()
+        XCTAssertTrue(app.buttons["instruments.field-tools"].waitForExistence(timeout: 5))
+        app.buttons["instruments.field-tools"].tap()
         let nfc = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "NFC inspector")).firstMatch
         XCTAssertTrue(nfc.waitForExistence(timeout: 5)); nfc.tap(); app.buttons["nfc.read"].tap()
         XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS[c] %@", "unavailable")).firstMatch.waitForExistence(timeout: 5))
         screenshot(app, "nfc-unsupported-device")
         app.buttons["Save scan diagnostics"].tap(); app.buttons["capture.save"].tap()
-        selectTab("Sessions", in: app)
+        app.navigationBars.buttons["Field tools"].tap()
+        app.navigationBars.buttons["Settings"].tap()
+        XCTAssertTrue(app.buttons["settings.sessions"].waitForExistence(timeout: 5))
+        app.buttons["settings.sessions"].tap()
         let attempt = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "NFC scan attempt")).firstMatch
         XCTAssertTrue(attempt.waitForExistence(timeout: 5)); attempt.tap()
         let diagnostics = app.buttons["Capture diagnostics"]; reveal(diagnostics, app); diagnostics.tap()
@@ -113,7 +119,7 @@ nonisolated final class RoomFieldworkUITests: XCTestCase {
         app.launchArguments = ["--uitesting", "--room-fixture-id", UUID().uuidString, "-showSessionLiveActivity", "NO"]
         app.launch()
         defer { app.terminate() }
-        XCTAssertTrue(app.tabBars.buttons["Rooms"].waitForExistence(timeout: 15)); selectTab("Rooms", in: app)
+        XCTAssertTrue(app.buttons["rooms.capture"].waitForExistence(timeout: 15))
         app.buttons["rooms.capture"].tap()
         let cameraAlert = app.alerts.firstMatch
         if cameraAlert.waitForExistence(timeout: 3) {
@@ -129,7 +135,8 @@ nonisolated final class RoomFieldworkUITests: XCTestCase {
         let name = app.textFields["room.name"]; XCTAssertTrue(name.waitForExistence(timeout: 5)); name.tap()
         name.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: (name.value as? String ?? "").count) + "Physical acceptance room")
         app.buttons["room.save"].tap(); app.terminate(); app.launch()
-        XCTAssertTrue(app.tabBars.buttons["Rooms"].waitForExistence(timeout: 15)); selectTab("Rooms", in: app)
+        XCTAssertTrue(app.buttons["Settings"].waitForExistence(timeout: 15))
+        openSettingsItem("settings.rooms", in: app)
         let room = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Physical acceptance room")).firstMatch
         XCTAssertTrue(room.waitForExistence(timeout: 10)); room.tap()
         XCTAssertTrue(app.buttons["Update room"].waitForExistence(timeout: 10)); screenshot(app, "physical-room-reopened-mesh")
@@ -137,7 +144,7 @@ nonisolated final class RoomFieldworkUITests: XCTestCase {
     }
     @MainActor func testFieldToolsReadyStatesAndNativeControls() throws {
         let app = launch()
-        app.buttons["instruments.field-tools"].tap()
+        openSettingsItem("instruments.field-tools", in: app)
         for title in ["NFC inspector", "Network tests", "Cellular", "LiDAR measurements", "Peer instruments"] {
             let tool = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", title)).firstMatch
             reveal(tool, app); tool.tap()

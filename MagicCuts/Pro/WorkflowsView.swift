@@ -75,7 +75,7 @@ struct WorkflowsView: View {
             }
             if let error = library.error { InlineFailure(message: error) }
         }
-        .navigationTitle("Workflows")
+        .navigationTitle("Workflow management")
         .sheet(isPresented: $workflowEditor) { WorkflowEditorView(library: library, recipe: editingWorkflow) }
         .sheet(isPresented: $groupEditor) { GroupEditorView(library: library, group: editingGroup) }
         .sheet(isPresented: $showResult, onDismiss: { runner.cancel() }) { WorkflowResultView(runner: runner) }
@@ -328,5 +328,47 @@ struct WorkflowShortcutsHelp: View {
             Section("Individual readings") { Text("Read MagicCuts Instrument returns a number and lets you choose a measurement window. Its units match the instrument. For Bluetooth, the existing Is Device Nearby action keeps its original any-sample threshold behavior.") }
         }
         .navigationTitle("Use in Shortcuts").navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+struct WorkflowChooseView: View {
+    @Bindable var library: ProLibrary
+    let radio: any RadioScanning
+    @State private var runner: WorkflowRunner
+    @State private var showResult = false
+    @Environment(\.dismiss) private var dismiss
+
+    init(library: ProLibrary, radio: any RadioScanning) {
+        self.library = library
+        self.radio = radio
+        _runner = State(initialValue: WorkflowRunner(archive: library.archive))
+    }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                if library.index.workflows.isEmpty {
+                    Text("Save a workflow in Settings, then start it from here.")
+                        .font(.callout).foregroundStyle(ProTheme.secondary)
+                }
+                ForEach(library.index.workflows) { recipe in
+                    Button {
+                        showResult = true
+                        runner.run(recipe, radio: radio)
+                    } label: {
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text(recipe.name).font(.system(.headline, design: .rounded))
+                            Text("\(recipe.requiresAll ? "All" : "Any") of \(recipe.conditions.count) conditions")
+                                .font(.caption).foregroundStyle(ProTheme.secondary)
+                        }.padding(.vertical, 6)
+                    }
+                    .disabled(runner.running)
+                    .accessibilityIdentifier("flow.pick.\(recipe.id.uuidString)")
+                }
+            }
+            .navigationTitle("Choose Workflow")
+            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
+            .sheet(isPresented: $showResult, onDismiss: { runner.cancel() }) { WorkflowResultView(runner: runner) }
+        }
     }
 }
