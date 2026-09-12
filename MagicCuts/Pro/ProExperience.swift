@@ -105,7 +105,8 @@ struct ProWorkspaceView: View {
     @State private var library: ProLibrary
     @State private var roomSession: RoomSession
     @State private var cellular = CellularInstrument()
-    @State private var selectedTab = 0
+    @State private var settings = false
+    @State private var openSessions = false
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.modelContext) private var context
 
@@ -122,19 +123,24 @@ struct ProWorkspaceView: View {
     }
 
     var body: some View {
-        TabView(selection: $selectedTab) {
-            Tab("Instruments", systemImage: "waveform.path", value: 0) {
-                NavigationStack { InstrumentWorkspaceView(engine: engine, library: library, access: access, radio: radio) }
-            }
-            Tab("Sessions", systemImage: "doc.text", value: 1) {
-                NavigationStack { SessionsView(library: library, activeRecordingID: engine.recordingID) }
-            }
-            Tab("Workflows", systemImage: "arrow.triangle.branch", value: 2) {
-                NavigationStack { WorkflowsView(library: library, radio: AppRuntime.isUITesting ? DemoRadio() : BluetoothRadio()) }
-            }
-            Tab("Rooms", systemImage: "square.3.layers.3d", value: 3) {
-                NavigationStack { RoomsView(library: library) }
-            }
+        NavigationStack {
+            InstrumentWorkspaceView(engine: engine, library: library, radio: radio, guidanceWarning: guidanceWarning)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button { settings = true } label: { Label("Settings", systemImage: "gearshape") }
+                            .frame(minWidth: 44, minHeight: 44)
+                            .accessibilityIdentifier("settings.open")
+                    }
+                }
+                .sheet(isPresented: $settings) {
+                    ProSettingsView(access: access, library: library, radio: workflowRadio, activeRecordingID: engine.recordingID)
+                }
+                .sheet(isPresented: $openSessions) {
+                    NavigationStack {
+                        SessionsView(library: library, activeRecordingID: engine.recordingID)
+                            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { openSessions = false } } }
+                    }
+                }
         }
         .environment(roomSession)
         .environment(cellular)
@@ -168,11 +174,8 @@ struct ProWorkspaceView: View {
         .onReceive(NotificationCenter.default.publisher(for: ModelContext.didSave)) { _ in
             Task { await library.sync.mirrorDevices(in: context); await library.reload() }
         }
-        .onChange(of: selectedTab) { old, new in
-            if old == 0, new != 0, !engine.recording { engine.pause() }
-        }
         .onChange(of: requestedRecordingID, initial: true) { _, id in
-            if let id { selectedTab = engine.recordingID == id ? 0 : 1 }
+            if id != nil { openSessions = true }
         }
         .onDisappear {
             engine.stop(reason: "Pro experience closed"); engine.endLiveActivity()
@@ -182,13 +185,15 @@ struct ProWorkspaceView: View {
             Task { await library.sync.transport.suspend() }
         }
     }
+
+    private var workflowRadio: any RadioScanning { AppRuntime.isUITesting ? DemoRadio() : BluetoothRadio() }
 }
 
 struct InstrumentWorkspaceView: View {
     @Bindable var engine: InstrumentEngine
     @Bindable var library: ProLibrary
-    @Bindable var access: ProAccess
     let radio: any RadioScanning
+    var guidanceWarning: String?
     @Query(sort: \MonitoredDevice.name) private var devices: [MonitoredDevice]
     @State private var mode: InstrumentViewMode = .live
     @State private var chosenKind: InstrumentKind = .bluetooth
@@ -196,19 +201,22 @@ struct InstrumentWorkspaceView: View {
     @State private var selectedElapsed: Double?
     @State private var baselineID: UUID?
     @State private var picker = false
-    @State private var settings = false
     @State private var baselineSheet = false
     @State private var saveSheet = false
     @State private var devicesSheet = false
     @State private var endpointSheet = false
     @State private var markSheet = false
     @State private var calibrationSheet = false
+    @State private var startFlow = false
+    @State private var chooseWorkflow = false
+    @State private var newWorkflow = false
+    @State private var roomCapture = false
+    @State private var pendingFlow: String?
     @State private var failure: String?
     @State private var endpoint = ""
     @State private var fieldCapture: FieldCapture?
     @Environment(RoomSession.self) private var roomSession
     @Environment(\.dynamicTypeSize) private var dynamicType
-    @Environment(\.horizontalSizeClass) private var horizontalSize
 
     private var source: MeasurementSource {
         if chosenKind == .bluetooth {
@@ -239,7 +247,11 @@ struct InstrumentWorkspaceView: View {
         ScrollView {
             VStack(spacing: 16) {
                 RoomOrientationBanner()
-                sourceControl
+                if let guidanceWarning {
+                    Text(guidanceWarning).font(.footnote).foregroundStyle(ProTheme.secondary)
+                }
+                homeSelector
+                sourceAccessory
                 InstrumentSegments(selection: $mode)
                 statusLine
                 if let message = failure ?? engine.phase.explanation { recovery(message) }
@@ -254,9 +266,6 @@ struct InstrumentWorkspaceView: View {
                         if mode != .inspect { history(height: mode == .compare ? 190 : 120) }
                         if mode != .compare { statistics }
                         baselineControl
-                        Button { if let point = selectedPoint { fieldCapture = .reading(point, kind: chosenKind, source: source) } } label: {
-                            Label("Capture this reading", systemImage: "mappin.and.ellipse")
-                        }.frame(minHeight: 44).disabled(selectedPoint == nil)
                         if chosenKind == .bluetooth {
                             Button("Calibrate nearby and away") { engine.pause(); calibrationSheet = true }
                                 .font(.system(.headline, design: .rounded)).frame(minHeight: 44).disabled(engine.recording)
@@ -273,20 +282,21 @@ struct InstrumentWorkspaceView: View {
                     Button("Retry recovery save") { engine.retryCheckpoint() }.frame(minHeight: 44)
                 }
                 if let warning = engine.liveActivityWarning { Text(warning).font(.caption).foregroundStyle(ProTheme.secondary) }
-                if dynamicType.isAccessibilitySize, source.deviceID != nil || chosenKind != .bluetooth { recordingControls }
+                if dynamicType.isAccessibilitySize, source.deviceID != nil || chosenKind != .bluetooth {
+                    if engine.recording { recordingControls } else { homeActions }
+                }
             }
             .padding(.horizontal, 22).padding(.top, 8).padding(.bottom, 28)
             .frame(maxWidth: 680).frame(maxWidth: .infinity)
         }
         .background(MC.canvas)
-        .navigationTitle("Instruments")
+        .navigationTitle("Home")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) { NavigationLink { FieldToolsView(library: library) } label: { Label("Field tools", systemImage: "square.grid.2x2") }.frame(minWidth: 44, minHeight: 44).accessibilityIdentifier("instruments.field-tools") }
-            ToolbarItem(placement: .topBarTrailing) { Button { settings = true } label: { Label("Settings", systemImage: "gearshape") }.frame(minWidth: 44, minHeight: 44) }
-        }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            if !dynamicType.isAccessibilitySize, source.deviceID != nil || chosenKind != .bluetooth { recordingControls }
+            if !dynamicType.isAccessibilitySize {
+                if engine.recording { recordingControls }
+                else if source.deviceID != nil || chosenKind != .bluetooth { homeActions }
+            }
         }
         .sheet(isPresented: $picker) {
             InstrumentPickerView(selected: chosenKind) { choice in
@@ -295,8 +305,8 @@ struct InstrumentWorkspaceView: View {
                 else if choice == .bluetooth && source.deviceID == nil { devicesSheet = true }
                 else { Task { await start() } }
             }
+            .presentationDetents([.medium, .large])
         }
-        .sheet(isPresented: $settings) { ProSettingsView(access: access, library: library) }
         .sheet(item: $fieldCapture) { FieldCaptureSaveView(capture: $0, library: library) }
         .sheet(isPresented: $devicesSheet, onDismiss: { if chosenKind == .bluetooth { Task { await start() } } }) {
             ContentView(radio: radio)
@@ -314,6 +324,19 @@ struct InstrumentWorkspaceView: View {
         .sheet(isPresented: $calibrationSheet) {
             BluetoothCalibrationView(source: source, radio: radio, library: library)
         }
+        .sheet(isPresented: $startFlow, onDismiss: {
+            if pendingFlow == "choose" { chooseWorkflow = true }
+            if pendingFlow == "create" { newWorkflow = true }
+            pendingFlow = nil
+        }) {
+            StartFlowPrompt(
+                onChoose: { pendingFlow = "choose"; startFlow = false },
+                onCreate: { pendingFlow = "create"; startFlow = false }
+            )
+        }
+        .sheet(isPresented: $chooseWorkflow) { WorkflowChooseView(library: library, radio: radio) }
+        .sheet(isPresented: $newWorkflow) { WorkflowEditorView(library: library, recipe: nil) }
+        .sheet(isPresented: $roomCapture) { RoomCaptureView(library: library, purpose: .newRoom) }
         .task {
             if AppRuntime.isInstrumentDemo {
                 engine.loadDemo(kind: chosenKind)
@@ -323,19 +346,44 @@ struct InstrumentWorkspaceView: View {
         .onChange(of: baselineID) { _, _ in selectedElapsed = nil }
     }
 
-    private var sourceControl: some View {
-        let layout = dynamicType.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8)) : AnyLayout(HStackLayout(spacing: 12))
-        return layout {
-            Button {
-                engine.pause(); picker = true
-            } label: {
-                HStack(spacing: 10) {
-                    Image(systemName: chosenKind.symbol).foregroundStyle(ProTheme.signal)
-                    Text(chosenKind.title).font(.system(.headline, design: .rounded))
-                    Image(systemName: "chevron.down").font(.caption.weight(.semibold)).foregroundStyle(ProTheme.secondary)
-                }.frame(minHeight: 44).contentShape(Rectangle())
-            }.buttonStyle(.plain).disabled(engine.recording).accessibilityIdentifier("instrument.choose")
-            if !dynamicType.isAccessibilitySize { Spacer(minLength: 4) }
+    private var homeSelector: some View {
+        Grid(horizontalSpacing: 10, verticalSpacing: 10) {
+            GridRow {
+                Button {
+                    engine.pause(); picker = true
+                } label: {
+                    HStack(spacing: 10) {
+                        Image(systemName: chosenKind.symbol).foregroundStyle(ProTheme.signal)
+                        Text(chosenKind.title).font(.system(.headline, design: .rounded))
+                        Spacer(minLength: 0)
+                        Image(systemName: "chevron.down").font(.caption.weight(.semibold)).foregroundStyle(ProTheme.secondary)
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 52)
+                    .padding(.horizontal, 14)
+                    .background(.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 14))
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .disabled(engine.recording)
+                .accessibilityIdentifier("instrument.choose")
+                .gridCellColumns(2)
+
+                Button { engine.pause(); roomCapture = true } label: {
+                    Label("New room", systemImage: "viewfinder")
+                        .font(.system(.callout, design: .rounded).weight(.semibold))
+                        .frame(maxWidth: .infinity, minHeight: 52)
+                        .padding(.horizontal, 8)
+                        .background(.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 14))
+                }
+                .buttonStyle(.plain)
+                .disabled(engine.recording)
+                .accessibilityIdentifier("rooms.capture")
+            }
+        }
+    }
+
+    private var sourceAccessory: some View {
+        Group {
             if chosenKind == .bluetooth {
                 Menu {
                     ForEach(devices) { device in
@@ -352,6 +400,36 @@ struct InstrumentWorkspaceView: View {
                 Button(source.name) { engine.pause(); endpointSheet = true }.font(.callout).frame(minHeight: 44).disabled(engine.recording)
             }
         }
+    }
+
+    private var homeActions: some View {
+        VStack(spacing: 10) {
+            if !engine.phase.isActive {
+                Button(engine.phase == .paused ? "Resume measuring" : "Start measuring") { Task { await start() } }
+                    .font(.system(.callout, design: .rounded).weight(.semibold)).frame(minHeight: 44)
+                    .accessibilityIdentifier("instrument.start")
+            }
+            HStack(spacing: 10) {
+                Button {
+                    if let point = selectedPoint { fieldCapture = .reading(point, kind: chosenKind, source: source) }
+                } label: {
+                    Label("Log", systemImage: "plus.viewfinder").font(.system(.callout, design: .rounded).weight(.semibold))
+                }
+                .buttonStyle(ControlStyle())
+                .disabled(selectedPoint == nil)
+                .accessibilityIdentifier("instrument.log")
+                .accessibilityLabel("Log")
+
+                Button { startFlow = true } label: {
+                    Label("Start Flow", systemImage: "arrow.triangle.branch").font(.system(.callout, design: .rounded).weight(.semibold))
+                }
+                .buttonStyle(ControlStyle(primary: false))
+                .accessibilityIdentifier("instrument.start-flow")
+            }
+        }
+        .padding(.horizontal, 20).padding(.vertical, 12)
+        .frame(maxWidth: 720).frame(maxWidth: .infinity)
+        .background(.bar)
     }
 
     private var statusLine: some View {
@@ -486,6 +564,10 @@ struct InstrumentWorkspaceView: View {
                 Text("This baseline doesn't match the current source or input. Capture a new reference.")
                     .font(.callout).foregroundStyle(ProTheme.secondary)
             }
+            Button("Set baseline") { baselineSheet = true }
+                .buttonStyle(ControlStyle(primary: false))
+                .disabled((engine.summary?.count ?? 0) < 3 || engine.recording)
+                .accessibilityIdentifier("instrument.set-baseline")
         }
     }
 
@@ -516,6 +598,19 @@ struct InstrumentWorkspaceView: View {
             ForEach(engine.events.suffix(10)) { event in
                 HStack(alignment: .top) { Text("\(event.elapsed.formatted(.number.precision(.fractionLength(1))))s").monospacedDigit(); Text(event.text) }.font(.caption)
             }
+            if !engine.recording {
+                Button {
+                    Task {
+                        if !engine.phase.isActive { await start() }
+                        guard engine.phase.isActive else { return }
+                        engine.beginRecording()
+                    }
+                } label: {
+                    Label("Record session", systemImage: "record.circle")
+                }
+                .buttonStyle(ControlStyle())
+                .accessibilityIdentifier("instrument.record")
+            }
         }
     }
 
@@ -534,46 +629,23 @@ struct InstrumentWorkspaceView: View {
 
     private var recordingControls: some View {
         VStack(spacing: 10) {
-            if engine.recording {
-                HStack {
-                    Label("\(engine.recordingDuration.formatted(.number.precision(.fractionLength(0))))s · \(engine.recordingCount) readings", systemImage: "record.circle").font(.caption).monospacedDigit()
-                    Spacer()
-                    Button("Mark") { markSheet = true }.font(.callout).frame(minHeight: 44)
-                    Button(engine.phase == .paused ? "Resume" : "Pause") {
-                        if engine.phase == .paused { Task { await engine.resume(radio: radio) } }
-                        else { engine.pause() }
-                    }.font(.callout).frame(minHeight: 44)
-                }
+            HStack {
+                Label("\(engine.recordingDuration.formatted(.number.precision(.fractionLength(0))))s · \(engine.recordingCount) readings", systemImage: "record.circle").font(.caption).monospacedDigit()
+                Spacer()
+                Button("Mark") { markSheet = true }.font(.callout).frame(minHeight: 44)
+                Button(engine.phase == .paused ? "Resume" : "Pause") {
+                    if engine.phase == .paused { Task { await engine.resume(radio: radio) } }
+                    else { engine.pause() }
+                }.font(.callout).frame(minHeight: 44)
             }
-            let layout = dynamicType.isAccessibilitySize ? AnyLayout(VStackLayout(spacing: 10)) : AnyLayout(HStackLayout(spacing: 12))
-            layout {
-                Button {
-                    if engine.recording {
-                        engine.stop(); saveSheet = true
-                    } else {
-                        Task {
-                            if !engine.phase.isActive { await start() }
-                            guard engine.phase.isActive else { return }
-                            engine.beginRecording()
-                        }
-                    }
-                } label: {
-                    Label { Text(engine.recording ? "Finish recording" : "Record session").font(.system(.callout, design: .rounded).weight(.semibold)) }
-                        icon: { Image(systemName: engine.recording ? "stop.fill" : "record.circle") }
-                }.buttonStyle(ControlStyle()).accessibilityIdentifier("instrument.record")
-                if !engine.recording {
-                    Button("Set baseline") { baselineSheet = true }
-                        .buttonStyle(ControlStyle(primary: false))
-                        .frame(maxWidth: dynamicType.isAccessibilitySize || horizontalSize == .regular ? .infinity : 140)
-                        .disabled((engine.summary?.count ?? 0) < 3)
-                        .accessibilityIdentifier("instrument.set-baseline")
-                }
+            Button {
+                engine.stop(); saveSheet = true
+            } label: {
+                Label { Text("Finish recording").font(.system(.callout, design: .rounded).weight(.semibold)) }
+                    icon: { Image(systemName: "stop.fill") }
             }
-            if !engine.phase.isActive && !engine.recording {
-                Button(engine.phase == .paused ? "Resume measuring" : "Start measuring") { Task { await start() } }
-                    .font(.system(.callout, design: .rounded).weight(.semibold)).frame(minHeight: 44)
-                    .accessibilityIdentifier("instrument.start")
-            }
+            .buttonStyle(ControlStyle())
+            .accessibilityIdentifier("instrument.record")
         }
         .padding(.horizontal, 20).padding(.vertical, 12)
         .frame(maxWidth: 720).frame(maxWidth: .infinity)

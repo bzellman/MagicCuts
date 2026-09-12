@@ -122,6 +122,8 @@ nonisolated final class ProExperienceUITests: XCTestCase {
         XCTAssertEqual(toggle.value as? String, "0")
         capture(app, "icloud-unavailable")
         app.buttons["Done"].tap()
+        XCTAssertTrue(app.buttons["instrument.mode.inspect"].waitForExistence(timeout: 5))
+        app.buttons["instrument.mode.inspect"].tap()
         XCTAssertTrue(app.buttons["instrument.record"].waitForExistence(timeout: 5))
         app.buttons["instrument.record"].tap()
         XCTAssertTrue(app.buttons["Mark"].waitForExistence(timeout: 5))
@@ -145,7 +147,9 @@ nonisolated final class ProExperienceUITests: XCTestCase {
         app.navigationBars.buttons["Bluetooth setups"].tap()
         app.navigationBars["Bluetooth setups"].buttons["Settings"].tap()
         app.buttons["Done"].tap()
-        app.buttons["Workflows"].firstMatch.tap()
+        app.buttons["Settings"].tap()
+        XCTAssertTrue(app.buttons["settings.workflows"].waitForExistence(timeout: 5))
+        app.buttons["settings.workflows"].tap()
         let run = app.buttons["Check group"]
         reveal(run, in: app); run.tap()
         XCTAssertTrue(app.staticTexts["Conditions met"].waitForExistence(timeout: 8))
@@ -178,6 +182,8 @@ nonisolated final class ProExperienceUITests: XCTestCase {
         app.buttons["instrument.mode.compare"].tap()
         XCTAssertTrue(app.staticTexts["Quiet desk"].firstMatch.waitForExistence(timeout: 5))
         capture(app, "pro-compare-dark")
+        app.buttons["instrument.mode.inspect"].tap()
+        XCTAssertTrue(app.buttons["instrument.record"].waitForExistence(timeout: 5))
         app.buttons["instrument.record"].tap()
         XCTAssertTrue(app.buttons["Mark"].waitForExistence(timeout: 5))
         app.buttons["Mark"].tap()
@@ -194,7 +200,9 @@ nonisolated final class ProExperienceUITests: XCTestCase {
         let savedName = title.value as? String ?? ""
         XCTAssertTrue(savedName.contains("Window comparison"))
         app.buttons["session.save"].tap()
-        app.buttons["Sessions"].firstMatch.tap()
+        app.buttons["Settings"].tap()
+        XCTAssertTrue(app.buttons["settings.sessions"].waitForExistence(timeout: 5))
+        app.buttons["settings.sessions"].tap()
         let saved = app.staticTexts[savedName].firstMatch
         XCTAssertTrue(saved.waitForExistence(timeout: 5)); saved.tap()
         XCTAssertTrue(app.staticTexts["Window opened"].firstMatch.waitForExistence(timeout: 5))
@@ -214,7 +222,9 @@ nonisolated final class ProExperienceUITests: XCTestCase {
 
     @MainActor func testWorkflowCreationAndMeasuredResult() {
         let app = launch()
-        app.buttons["Workflows"].firstMatch.tap()
+        app.buttons["Settings"].tap()
+        XCTAssertTrue(app.buttons["settings.workflows"].waitForExistence(timeout: 5))
+        app.buttons["settings.workflows"].tap()
         app.buttons["workflow.new"].tap()
         app.textFields["workflow.name"].tap(); app.textFields["workflow.name"].typeText("Ready to work")
         app.buttons["workflow.add-condition"].tap()
@@ -225,6 +235,17 @@ nonisolated final class ProExperienceUITests: XCTestCase {
         app.buttons["Run workflow"].tap()
         XCTAssertTrue(app.staticTexts["Conditions met"].waitForExistence(timeout: 8))
         capture(app, "pro-workflow-result")
+    }
+
+    @MainActor func testStartFlowPromptOpensChooser() {
+        let app = launch()
+        let start = app.buttons["instrument.start-flow"]
+        reveal(start, in: app); start.tap()
+        XCTAssertTrue(app.buttons["flow.choose"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["flow.new"].exists)
+        capture(app, "pro-start-flow")
+        app.buttons["flow.choose"].tap()
+        XCTAssertTrue(app.navigationBars["Choose Workflow"].waitForExistence(timeout: 5))
     }
 
     @MainActor func testInstrumentNavigationAndLargeText() throws {

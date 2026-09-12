@@ -4,32 +4,72 @@ import SwiftData
 struct InstrumentPickerView: View {
     let selected: InstrumentKind
     let choose: (InstrumentKind) -> Void
+    @State private var query = ""
+    @State private var group: String?
     @Environment(\.dismiss) private var dismiss
     private let groups = ["Connectivity", "Motion", "Environment", "Audio", "Device"]
+    private var kinds: [InstrumentKind] {
+        InstrumentKind.allCases.filter { kind in
+            (group == nil || kind.group == group)
+                && (query.isEmpty
+                    || kind.title.localizedCaseInsensitiveContains(query)
+                    || kind.group.localizedCaseInsensitiveContains(query)
+                    || kind.unit.localizedCaseInsensitiveContains(query)
+                    || kind.summary.localizedCaseInsensitiveContains(query))
+        }
+    }
     var body: some View {
         NavigationStack {
             List {
-                ForEach(groups, id: \.self) { group in
-                    Section(group) {
-                        ForEach(InstrumentKind.allCases.filter { $0.group == group }) { kind in
-                            Button { choose(kind) } label: {
-                                HStack(alignment: .top, spacing: 16) {
-                                    Image(systemName: kind.symbol).font(.title3).foregroundStyle(ProTheme.signal).frame(width: 28)
-                                    VStack(alignment: .leading, spacing: 5) {
-                                        Text(kind.title).font(.system(.headline, design: .rounded)).foregroundStyle(.primary)
-                                        Text(kind.summary).font(.callout).foregroundStyle(ProTheme.secondary)
-                                    }
-                                    Spacer(minLength: 0)
-                                    if selected == kind { Image(systemName: "checkmark").foregroundStyle(ProTheme.signal) }
-                                }.padding(.vertical, 8)
-                            }.accessibilityIdentifier("instrument.pick.\(kind.rawValue)")
+                Section {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            filterChip("All", value: nil)
+                            ForEach(groups, id: \.self) { name in filterChip(name, value: name) }
+                        }
+                    }
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                    .listRowBackground(Color.clear)
+                }
+                ForEach(groups.filter { group == nil || $0 == group }, id: \.self) { name in
+                    let section = kinds.filter { $0.group == name }
+                    if !section.isEmpty {
+                        Section(name) {
+                            ForEach(section) { kind in
+                                Button { choose(kind) } label: {
+                                    HStack(alignment: .top, spacing: 16) {
+                                        Image(systemName: kind.symbol).font(.title3).foregroundStyle(ProTheme.signal).frame(width: 28)
+                                        VStack(alignment: .leading, spacing: 5) {
+                                            Text(kind.title).font(.system(.headline, design: .rounded)).foregroundStyle(.primary)
+                                            Text(kind.summary).font(.callout).foregroundStyle(ProTheme.secondary)
+                                        }
+                                        Spacer(minLength: 0)
+                                        if selected == kind { Image(systemName: "checkmark").foregroundStyle(ProTheme.signal) }
+                                    }.padding(.vertical, 8)
+                                }.accessibilityIdentifier("instrument.pick.\(kind.rawValue)")
+                            }
                         }
                     }
                 }
             }
-            .navigationTitle("Choose an instrument")
+            .searchable(text: $query, prompt: "Filter instruments")
+            .navigationTitle("Instruments")
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
         }
+    }
+
+    private func filterChip(_ title: String, value: String?) -> some View {
+        Button {
+            group = value
+        } label: {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .padding(.horizontal, 10).padding(.vertical, 8)
+                .background(group == value ? MC.action : Color.primary.opacity(0.07), in: Capsule())
+                .foregroundStyle(group == value ? Color.white : MC.ink)
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier(value == nil ? "instrument.filter.all" : "instrument.filter.\(title.lowercased())")
     }
 }
 
@@ -196,6 +236,8 @@ struct SaveSessionView: View {
 struct ProSettingsView: View {
     @Bindable var access: ProAccess
     @Bindable var library: ProLibrary
+    let radio: any RadioScanning
+    var activeRecordingID: UUID?
     @Environment(\.dismiss) private var dismiss
     @AppStorage("showSessionLiveActivity") private var showLiveActivity = true
     var body: some View {
@@ -207,6 +249,30 @@ struct ProSettingsView: View {
                     if let message = access.message { Text(message).font(.callout) }
                 }
                 CloudSettingsSection(library: library)
+                Section("Workflow management") {
+                    NavigationLink {
+                        WorkflowsView(library: library, radio: radio)
+                    } label: {
+                        Label("Workflows and groups", systemImage: "arrow.triangle.branch")
+                    }.accessibilityIdentifier("settings.workflows")
+                }
+                Section("Library") {
+                    NavigationLink {
+                        SessionsView(library: library, activeRecordingID: activeRecordingID)
+                    } label: {
+                        Label("Sessions", systemImage: "doc.text")
+                    }.accessibilityIdentifier("settings.sessions")
+                    NavigationLink {
+                        RoomsView(library: library)
+                    } label: {
+                        Label("Rooms", systemImage: "square.3.layers.3d")
+                    }.accessibilityIdentifier("settings.rooms")
+                    NavigationLink {
+                        FieldToolsView(library: library)
+                    } label: {
+                        Label("Field tools", systemImage: "square.grid.2x2")
+                    }.accessibilityIdentifier("instruments.field-tools")
+                }
                 Section("Your baselines") {
                     if library.index.profiles.isEmpty { Text("Saved references appear here.").foregroundStyle(ProTheme.secondary) }
                     ForEach(library.index.profiles) { profile in
@@ -241,6 +307,36 @@ struct ProSettingsView: View {
             .navigationTitle("Settings")
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
         }
+    }
+}
+
+struct StartFlowPrompt: View {
+    let onChoose: () -> Void
+    let onCreate: () -> Void
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 18) {
+                Text("Start a workflow from this instrument, or create a new one.")
+                    .font(.callout).foregroundStyle(ProTheme.secondary)
+                Button(action: onChoose) {
+                    Label("Choose Workflow", systemImage: "list.bullet")
+                }
+                .buttonStyle(ControlStyle())
+                .accessibilityIdentifier("flow.choose")
+                Button(action: onCreate) {
+                    Label("New workflow", systemImage: "plus")
+                }
+                .buttonStyle(ControlStyle(primary: false))
+                .accessibilityIdentifier("flow.new")
+                Spacer()
+            }
+            .padding(24)
+            .navigationTitle("Start Flow")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
+        }
+        .presentationDetents([.medium])
     }
 }
 

@@ -21,8 +21,15 @@ enum ProTheme {
 }
 
 enum InstrumentViewMode: String, CaseIterable, Identifiable {
-    case live = "Live", inspect = "Inspect", compare = "Compare"
+    case live, inspect, compare
     var id: String { rawValue }
+    var title: String {
+        switch self {
+        case .live: "Gauges"
+        case .inspect: "Info"
+        case .compare: "Compare"
+        }
+    }
 }
 
 struct InstrumentSegments: View {
@@ -35,26 +42,26 @@ struct InstrumentSegments: View {
             Menu {
                 ForEach(InstrumentViewMode.allCases) { mode in
                     Button { selection = mode } label: {
-                        if selection == mode { Label(mode.rawValue, systemImage: "checkmark") }
-                        else { Text(mode.rawValue) }
+                        if selection == mode { Label(mode.title, systemImage: "checkmark") }
+                        else { Text(mode.title) }
                     }.accessibilityIdentifier("instrument.mode.\(mode.id.lowercased())")
                 }
             } label: {
                 HStack {
-                    Text(selection.rawValue).font(.system(.headline, design: .rounded))
+                    Text(selection.title).font(.system(.headline, design: .rounded))
                     Spacer()
                     Image(systemName: "chevron.up.chevron.down").font(.body)
                 }.padding(14).frame(maxWidth: .infinity, minHeight: 46)
                     .background(.primary.opacity(0.055), in: RoundedRectangle(cornerRadius: 14))
             }
             .accessibilityLabel("View mode")
-            .accessibilityValue(selection.rawValue)
+            .accessibilityValue(selection.title)
             .accessibilityIdentifier("instrument.mode-menu")
         } else {
             HStack(spacing: 4) {
                 ForEach(InstrumentViewMode.allCases) { mode in
                     Button { selection = mode } label: {
-                        Text(mode.rawValue)
+                        Text(mode.title)
                             .font(.system(.headline, design: .rounded).weight(.semibold))
                             .frame(maxWidth: .infinity, minHeight: 46)
                             .contentShape(Rectangle())
