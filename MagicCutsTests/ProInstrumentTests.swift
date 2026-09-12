@@ -432,6 +432,8 @@ nonisolated final class ProMeasurementTests: XCTestCase {
         XCTAssertEqual(InstrumentKind.bluetooth.displayRange(values: [-66, -60]), -100 ... -40)
         XCTAssertEqual(InstrumentKind.bluetooth.displayRange(values: [-110, -20]), -110 ... -20)
         XCTAssertEqual(MeasurementMath.scaleLabel(0.1, range: 0 ... 0.2), "0.10")
+        XCTAssertEqual(MeasurementMath.scaleLabel(-100, range: -100 ... -40), "\u{2212}100")
+        XCTAssertTrue(MeasurementMath.scaleLabel(-100, range: -100 ... -40).hasPrefix("\u{2212}"))
         let points = (0 ..< 100).map { index in MeasurementPoint(elapsed: Double(index), value: index == 24 ? 100 : 1, segment: index < 50 ? 0 : 1) }
         let reduced = MeasurementMath.plotPoints(points, kind: .vibration, limit: 20)
         XCTAssertTrue(reduced.contains { $0.value == 100 })

@@ -70,9 +70,9 @@ components:
     padding: "14pt"
     height: "52pt minimum"
   instrument-face:
-    backgroundColor: "system secondary grouped background"
+    backgroundColor: "{colors.canvas}"
     textColor: "system primary"
-    rounded: "{rounded.surface}"
+    rounded: "open calibre, no card"
     padding: "native layout"
 ---
 
@@ -110,7 +110,7 @@ The palette uses adaptive asset colors and semantic iOS colors so both light and
 ### Neutral
 
 - **Canvas:** the `Canvas` asset provides the page ground and becomes `#0F141A` in dark appearance.
-- **Matte Instrument:** the `Instrument` asset is retained for the existing calibration surface; Pro live instrument faces use system secondary grouped background so they follow the platform appearance.
+- **Matte Instrument:** the `Instrument` asset is retained for the existing calibration surface; Pro live faces sit directly on Canvas so the reading is the dial, not a grouped-background card.
 - **Pro Secondary Label:** `ProTheme.secondary` is opaque `#59636E` in light appearance and `#A8B3BD` in dark appearance. It owns Pro units, state, interpretation, chart axes, and quiet evidence labels where generic `Color.secondary` did not provide the required contrast.
 - **System Ink:** `Color.primary` and native grouped/background materials own ordinary platform text, grids, dividers, bars, and quiet controls. Individual data geometry may use its observed system-secondary stroke values.
 
@@ -138,11 +138,11 @@ The palette uses adaptive asset colors and semantic iOS colors so both light and
 
 ## Layout
 
-`InstrumentWorkspaceView` is a scrollable, centered reading column with 22pt horizontal inset, 16pt vertical rhythm, an 8pt top inset, and 28pt bottom clearance. The column caps at 680pt; the bottom action bar caps at 720pt. The native navigation title is “Home,” with trailing Settings. Directly beneath the bar, a two-column selector gives the current instrument about two thirds of the width and New room one third. Source accessories, then Gauges / Info / Compare, then status, instrument, history, statistics, baseline, and recording actions follow the measurement story.
+`InstrumentWorkspaceView` is a scrollable, centered reading column with 22pt horizontal inset, 10pt vertical rhythm in the top cluster, an 8pt top inset, and 28pt bottom clearance. The column caps at 680pt; the bottom action bar caps at 720pt. The native navigation title is “Home,” with trailing Settings. Directly beneath the bar, a two-column selector gives the current instrument about two thirds of the width and New room one third. Gauges / Info / Compare follow immediately. The live face is an open calibre on Canvas: the value sits in the dial, and source, phase, and interpretation share one chapter ring. History, baseline, and recording actions stay subordinate.
 
 On ordinary text sizes, Log, Record, and Start Flow sit in a bottom safe-area inset. While a session is recording, that inset shows pause, mark, and finish instead, so Start Flow is not competing with an in-flight capture. At accessibility text sizes those controls move into the scroll view, use vertical action layout, and remain reachable. Source controls and comparison rows switch from horizontal to vertical layouts. The mode selector becomes a compact native `Menu` offering Gauges, Info, and Compare; it does not squeeze three segment labels into an accessibility width.
 
-Gauges places the arc, level, or compass above its dominant reading, then a short interpretation and history. Info leads with a reading, ruler, method, and 260pt chart. Compare aligns two ruler readings to the same range and supplies a dashed-versus-solid explanation. Charts are 120pt live, 190pt compare, and 260pt Info at regular sizes; at accessibility sizes, a chart is at least 240pt high and both axes scale up to 22pt.
+Gauges is one primary reading in the dial, with phase · interpretation as the chapter ring, then quiet history. Bluetooth and network sources sit on a 44pt control under the Home selector, not inside the tick ring. Info scan order is value, source, method, uncertainty, ruler, then a chart that finishes above the action bar. Compare leads with the change in median, then two same-scale rulers; empty Compare is a short filing prompt only. Charts are 120pt live, 120pt Compare (subordinate to the change-in-median dial and the two chapter-ring rulers), and 168pt Info at regular sizes; at accessibility sizes, a chart is at least 240pt high and both axes scale up to 22pt.
 
 Workflow management lives in Settings. Start Flow on Home starts or creates a workflow; it does not replace the Settings library.
 
@@ -156,7 +156,7 @@ MagicCuts Pro is flat and material-led. The instrument face earns attention thro
 
 ## Shapes
 
-Live measurement faces use circles, arcs, ticks, needles, and rulers that describe their data. Standard mode wells use a 14pt rounded rectangle with 10pt selected segments. Existing instrument surfaces retain the 16pt radius. Step buttons use 10pt corners; a selected ruler marker uses a 3pt rounded end.
+Live measurement faces use circles, arcs, ticks, needles, and rulers that describe their data. Standard mode wells use a 14pt rounded rectangle with 10pt selected segments. Step buttons use 10pt corners; a selected ruler marker uses a 3pt rounded end. The live face does not sit in a 16pt grouped card.
 
 The mode segments are full-width, equal-width native buttons at least 46pt tall. Home selector, Log, Record, Start Flow, and other tappable source, return-to-live, menu, and recording controls keep at least 44pt height; `ControlStyle` primary and quiet actions are at least 52pt.
 
@@ -174,7 +174,7 @@ At regular Dynamic Type sizes, `InstrumentSegments` renders three 46pt minimum r
 
 ### Measurement face and value
 
-The signature face is a Canvas arc, a level target, a compass, or a linear ruler according to the instrument's data type. Major/minor tick weights and readable labels communicate scale. The live value is an accessible `MeasurementValue`; its visual Canvas geometry is hidden from assistive technology. The reading uses the instrument's truthful unit and uses an em dash when no reading exists. Units, method, and uncertainty sit under the value, not inside it.
+The signature face is a Canvas arc, a level clinometer, a compass rose, or a linear ruler according to the instrument's data type. Hairline rails, 48-tick (or 5° rose) discipline, and a needle or bubble that reaches the chapter ring communicate scale. Level and Compass keep Roll/Pitch and cardinals on the chapter track, not as competing headlines. The linear ruler uses the same tick math, 3pt interval band, and 3pt value mark as the horseshoe. The live value is an accessible `MeasurementValue` overlaid in the open dial; its visual Canvas geometry is hidden from assistive technology. The reading uses the instrument's truthful unit and uses an em dash when no reading exists. Source, method, and uncertainty follow in a strict scan order and never compete as a second headline.
 
 ### History chart
 

@@ -22,10 +22,16 @@ struct InstrumentPickerView: View {
         NavigationStack {
             List {
                 Section {
-                    ScrollView(.horizontal, showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: 8) {
                         HStack(spacing: 8) {
                             filterChip("All", value: nil)
-                            ForEach(groups, id: \.self) { name in filterChip(name, value: name) }
+                            filterChip("Connectivity", value: "Connectivity")
+                            filterChip("Motion", value: "Motion")
+                        }
+                        HStack(spacing: 8) {
+                            filterChip("Environment", value: "Environment")
+                            filterChip("Audio", value: "Audio")
+                            filterChip("Device", value: "Device")
                         }
                     }
                     .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
@@ -46,16 +52,25 @@ struct InstrumentPickerView: View {
                                         Spacer(minLength: 0)
                                         if selected == kind { Image(systemName: "checkmark").foregroundStyle(ProTheme.signal) }
                                     }.padding(.vertical, 8)
-                                }.accessibilityIdentifier("instrument.pick.\(kind.rawValue)")
+                                }
+                                .buttonStyle(.plain)
+                                .tint(.primary)
+                                .accessibilityIdentifier("instrument.pick.\(kind.rawValue)")
                             }
                         }
                     }
                 }
             }
             .searchable(text: $query, prompt: "Filter instruments")
+            .overlay {
+                if kinds.isEmpty {
+                    ContentUnavailableView("No matching instruments", systemImage: "line.3.horizontal.decrease.circle", description: Text("Try another name, unit, or group."))
+                }
+            }
             .navigationTitle("Instruments")
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
         }
+        .presentationDragIndicator(.visible)
     }
 
     private func filterChip(_ title: String, value: String?) -> some View {
@@ -63,12 +78,16 @@ struct InstrumentPickerView: View {
             group = value
         } label: {
             Text(title)
-                .font(.caption.weight(.semibold))
-                .padding(.horizontal, 10).padding(.vertical, 8)
-                .background(group == value ? MC.action : Color.primary.opacity(0.07), in: Capsule())
+                .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+                .padding(.horizontal, 8)
+                .frame(maxWidth: .infinity, minHeight: 44)
+                .background(group == value ? MC.action : Color.primary.opacity(0.07), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                 .foregroundStyle(group == value ? Color.white : MC.ink)
         }
         .buttonStyle(.plain)
+        .accessibilityAddTraits(group == value ? .isSelected : [])
         .accessibilityIdentifier(value == nil ? "instrument.filter.all" : "instrument.filter.\(title.lowercased())")
     }
 }
@@ -249,14 +268,12 @@ struct ProSettingsView: View {
                     if let message = access.message { Text(message).font(.callout) }
                 }
                 CloudSettingsSection(library: library)
-                Section("Workflow management") {
+                Section("Library") {
                     NavigationLink {
                         WorkflowsView(library: library, radio: radio)
                     } label: {
                         Label("Workflows and groups", systemImage: "arrow.triangle.branch")
                     }.accessibilityIdentifier("settings.workflows")
-                }
-                Section("Library") {
                     NavigationLink {
                         SessionsView(library: library, activeRecordingID: activeRecordingID)
                     } label: {
@@ -316,9 +333,10 @@ struct StartFlowPrompt: View {
     @Environment(\.dismiss) private var dismiss
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: 18) {
-                Text("Start a workflow from this instrument, or create a new one.")
-                    .font(.callout).foregroundStyle(ProTheme.secondary)
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Run a saved workflow, or make one.")
+                    .font(.system(.callout, design: .rounded))
+                    .foregroundStyle(ProTheme.secondary)
                 Button(action: onChoose) {
                     Label("Choose Workflow", systemImage: "list.bullet")
                 }
@@ -329,14 +347,15 @@ struct StartFlowPrompt: View {
                 }
                 .buttonStyle(ControlStyle(primary: false))
                 .accessibilityIdentifier("flow.new")
-                Spacer()
             }
-            .padding(24)
+            .padding(22)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .navigationTitle("Start Flow")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
         }
-        .presentationDetents([.medium])
+        .presentationDetents([.height(320)])
+        .presentationDragIndicator(.visible)
     }
 }
 

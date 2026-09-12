@@ -39,10 +39,14 @@ struct ProPaywallView: View {
                         Text("Local instruments. Meaningful comparisons. Results you can put to work in Shortcuts.")
                             .font(.title3).foregroundStyle(ProTheme.secondary)
                     }
-                    VStack(spacing: 0) {
-                        InstrumentArc(value: -62, range: -100 ... -40, band: -66 ... -60, threshold: -70)
-                        MeasurementValue(value: -62, kind: .bluetooth).padding(.top, -8)
-                        Text("Example · 8 dB above your threshold").font(.callout).foregroundStyle(ProTheme.band).padding(.top, 8)
+                    VStack(spacing: 4) {
+                        ZStack(alignment: .bottom) {
+                            InstrumentArc(value: -62, range: -100 ... -40, band: -66 ... -60, threshold: -70)
+                            VStack(spacing: 4) {
+                                MeasurementValue(value: -62, kind: .bluetooth)
+                                ChapterLine(parts: ["Example", "8 dB above threshold"], tint: ProTheme.band)
+                            }.padding(.bottom, 8)
+                        }
                     }
                     VStack(alignment: .leading, spacing: 18) {
                         feature("Measure", text: "Bluetooth, motion, pressure, sound, location and connection tools.", symbol: "gauge.with.dots.needle.50percent")
@@ -127,11 +131,18 @@ struct ProWorkspaceView: View {
             InstrumentWorkspaceView(engine: engine, library: library, radio: radio, guidanceWarning: guidanceWarning)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
-                        Button { settings = true } label: { Label("Settings", systemImage: "gearshape") }
-                            .frame(minWidth: 44, minHeight: 44)
-                            .accessibilityIdentifier("settings.open")
+                        Button { settings = true } label: {
+                            Image(systemName: "gearshape")
+                                .frame(width: 44, height: 44)
+                                .contentShape(Rectangle())
+                        }
+                        .accessibilityLabel("Settings")
+                        .accessibilityIdentifier("settings.open")
                     }
                 }
+                .toolbarBackground(MC.canvas, for: .navigationBar)
+                .toolbarBackground(.visible, for: .navigationBar)
+                .background(OpaqueNavigationBar())
                 .sheet(isPresented: $settings) {
                     ProSettingsView(access: access, library: library, radio: workflowRadio, activeRecordingID: engine.recordingID)
                 }
@@ -144,6 +155,7 @@ struct ProWorkspaceView: View {
         }
         .environment(roomSession)
         .environment(cellular)
+        .onAppear { ProTheme.applyOpaqueNavigationBar() }
         .onChange(of: roomSession.cameraActive) { _, active in UIApplication.shared.isIdleTimerDisabled = active }
         .task {
             await SessionLiveActivity.endAbandoned()
@@ -201,6 +213,7 @@ struct InstrumentWorkspaceView: View {
     @State private var selectedElapsed: Double?
     @State private var baselineID: UUID?
     @State private var picker = false
+    @State private var pickerDetent: PresentationDetent = .large
     @State private var baselineSheet = false
     @State private var saveSheet = false
     @State private var devicesSheet = false
@@ -217,6 +230,7 @@ struct InstrumentWorkspaceView: View {
     @State private var fieldCapture: FieldCapture?
     @Environment(RoomSession.self) private var roomSession
     @Environment(\.dynamicTypeSize) private var dynamicType
+    @Environment(\.horizontalSizeClass) private var sizeClass
 
     private var source: MeasurementSource {
         if chosenKind == .bluetooth {
@@ -245,15 +259,18 @@ struct InstrumentWorkspaceView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 16) {
+            VStack(spacing: 10) {
                 RoomOrientationBanner()
                 if let guidanceWarning {
                     Text(guidanceWarning).font(.footnote).foregroundStyle(ProTheme.secondary)
                 }
                 homeSelector
-                sourceAccessory
+                if chosenKind == .bluetooth || chosenKind == .network {
+                    sourceChip
+                        .font(.system(.subheadline, design: .rounded).weight(.medium))
+                        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                }
                 InstrumentSegments(selection: $mode)
-                statusLine
                 if let message = failure ?? engine.phase.explanation { recovery(message) }
                 if chosenKind == .bluetooth, source.deviceID == nil {
                     ContentUnavailableView("Choose your first device", systemImage: "wave.3.right", description: Text("Save a Bluetooth device, then find a useful threshold for your setup."))
@@ -262,13 +279,17 @@ struct InstrumentWorkspaceView: View {
                     if mode == .compare { comparison }
                     else if mode == .inspect { inspection }
                     else { liveFace }
-                    if !engine.points.isEmpty {
-                        if mode != .inspect { history(height: mode == .compare ? 190 : 120) }
-                        if mode != .compare { statistics }
-                        baselineControl
-                        if chosenKind == .bluetooth {
-                            Button("Calibrate nearby and away") { engine.pause(); calibrationSheet = true }
-                                .font(.system(.headline, design: .rounded)).frame(minHeight: 44).disabled(engine.recording)
+                    if !engine.points.isEmpty, mode == .live || (mode == .compare && baseline != nil) {
+                        if mode != .inspect { history(height: 120, subordinate: mode == .compare) }
+                        if mode == .live {
+                            baselineControl
+                            if chosenKind == .bluetooth {
+                                Button("Calibrate nearby and away") { engine.pause(); calibrationSheet = true }
+                                    .font(.system(.callout, design: .rounded).weight(.semibold))
+                                    .frame(maxWidth: .infinity, minHeight: 44)
+                                    .contentShape(Rectangle())
+                                    .disabled(engine.recording)
+                            }
                         }
                     }
                     if mode == .inspect {
@@ -286,12 +307,27 @@ struct InstrumentWorkspaceView: View {
                     if engine.recording { recordingControls } else { homeActions }
                 }
             }
-            .padding(.horizontal, 22).padding(.top, 8).padding(.bottom, 28)
+            .padding(.horizontal, 22).padding(.top, 8)
+            .padding(.bottom, dynamicType.isAccessibilitySize ? 64 : 28)
             .frame(maxWidth: 680).frame(maxWidth: .infinity)
         }
         .background(MC.canvas)
+        .scrollEdgeEffectStyle(.hard, for: .top)
         .navigationTitle("Home")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(MC.canvas, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .overlay {
+            GeometryReader { proxy in
+                let cover = proxy.safeAreaInsets.top + 12
+                MC.canvas
+                    .frame(width: proxy.size.width, height: cover)
+                    .position(x: proxy.size.width / 2, y: -proxy.safeAreaInsets.top + cover / 2)
+            }
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
+        }
+        .background(OpaqueNavigationBar())
         .safeAreaInset(edge: .bottom, spacing: 0) {
             if !dynamicType.isAccessibilitySize {
                 if engine.recording { recordingControls }
@@ -305,7 +341,8 @@ struct InstrumentWorkspaceView: View {
                 else if choice == .bluetooth && source.deviceID == nil { devicesSheet = true }
                 else { Task { await start() } }
             }
-            .presentationDetents([.medium, .large])
+            .presentationDetents([.medium, .large], selection: $pickerDetent)
+            .presentationDragIndicator(.visible)
         }
         .sheet(item: $fieldCapture) { FieldCaptureSaveView(capture: $0, library: library) }
         .sheet(isPresented: $devicesSheet, onDismiss: { if chosenKind == .bluetooth { Task { await start() } } }) {
@@ -342,74 +379,86 @@ struct InstrumentWorkspaceView: View {
                 engine.loadDemo(kind: chosenKind)
             }
         }
-        .onChange(of: mode) { _, _ in selectedElapsed = nil }
+        .onChange(of: picker) { _, open in if open { pickerDetent = .large } }
+        .onChange(of: mode) { _, new in
+            selectedElapsed = nil
+            if new == .compare, baselineID == nil, let first = availableProfiles.first {
+                baselineID = first.id
+            }
+        }
         .onChange(of: baselineID) { _, _ in selectedElapsed = nil }
     }
 
-    private var homeSelector: some View {
-        Grid(horizontalSpacing: 10, verticalSpacing: 10) {
-            GridRow {
-                Button {
-                    engine.pause(); picker = true
-                } label: {
-                    HStack(spacing: 10) {
-                        Image(systemName: chosenKind.symbol).foregroundStyle(ProTheme.signal)
-                        Text(chosenKind.title).font(.system(.headline, design: .rounded))
-                        Spacer(minLength: 0)
-                        Image(systemName: "chevron.down").font(.caption.weight(.semibold)).foregroundStyle(ProTheme.secondary)
-                    }
-                    .frame(maxWidth: .infinity, minHeight: 52)
-                    .padding(.horizontal, 14)
-                    .background(.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 14))
-                    .contentShape(Rectangle())
+    @ViewBuilder private var homeSelector: some View {
+        if dynamicType.isAccessibilitySize {
+            VStack(spacing: 10) {
+                instrumentPickerButton
+                newRoomButton
+            }
+        } else {
+            Grid(horizontalSpacing: 10, verticalSpacing: 10) {
+                GridRow {
+                    instrumentPickerButton.gridCellColumns(2)
+                    newRoomButton
                 }
-                .buttonStyle(.plain)
-                .disabled(engine.recording)
-                .accessibilityIdentifier("instrument.choose")
-                .gridCellColumns(2)
-
-                Button { engine.pause(); roomCapture = true } label: {
-                    Label("New room", systemImage: "viewfinder")
-                        .font(.system(.callout, design: .rounded).weight(.semibold))
-                        .frame(maxWidth: .infinity, minHeight: 52)
-                        .padding(.horizontal, 8)
-                        .background(.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 14))
-                }
-                .buttonStyle(.plain)
-                .disabled(engine.recording)
-                .accessibilityIdentifier("rooms.capture")
             }
         }
     }
 
-    private var sourceAccessory: some View {
-        Group {
-            if chosenKind == .bluetooth {
-                Menu {
-                    ForEach(devices) { device in
-                        Button(device.name) {
-                            chosenDeviceID = device.persistentIdentifier; baselineID = nil
-                            Task { await start() }
-                        }
-                    }
-                    Button("Manage devices") { engine.pause(); devicesSheet = true }
-                } label: {
-                    Text(source.name).font(.callout).foregroundStyle(ProTheme.signal).lineLimit(2).frame(minHeight: 44)
-                }.disabled(engine.recording).accessibilityIdentifier("instrument.device-menu")
-            } else if chosenKind == .network {
-                Button(source.name) { engine.pause(); endpointSheet = true }.font(.callout).frame(minHeight: 44).disabled(engine.recording)
+    private var instrumentPickerButton: some View {
+        Button {
+            engine.pause(); picker = true
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: chosenKind.symbol).foregroundStyle(ProTheme.signal).accessibilityHidden(true)
+                Text(chosenKind.title).font(.system(.headline, design: .rounded))
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.down").font(.caption.weight(.semibold)).foregroundStyle(ProTheme.secondary).accessibilityHidden(true)
             }
+            .frame(maxWidth: .infinity, minHeight: 52)
+            .padding(.horizontal, 14)
+            .background(.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
+        .disabled(engine.recording)
+        .accessibilityLabel("Instruments")
+        .accessibilityValue(chosenKind.title)
+        .accessibilityIdentifier("instrument.choose")
+    }
+
+    private var newRoomButton: some View {
+        Button { engine.pause(); roomCapture = true } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "viewfinder")
+                    .font(.body.weight(.semibold))
+                    .accessibilityHidden(true)
+                if dynamicType.isAccessibilitySize || sizeClass == .regular {
+                    Text(dynamicType.isAccessibilitySize ? "New room" : "Room")
+                        .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                        .lineLimit(dynamicType.isAccessibilitySize ? 2 : 1)
+                        .minimumScaleFactor(0.85)
+                }
+            }
+            .frame(maxWidth: .infinity, minHeight: 52)
+            .padding(.horizontal, 6)
+            .background(.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .disabled(engine.recording)
+        .accessibilityLabel("New room")
+        .accessibilityIdentifier("rooms.capture")
     }
 
     private var homeActions: some View {
-        VStack(spacing: 10) {
+        let split = dynamicType.isAccessibilitySize ? AnyLayout(VStackLayout(spacing: 10)) : AnyLayout(HStackLayout(spacing: 10))
+        return VStack(spacing: 10) {
             if !engine.phase.isActive {
                 Button(engine.phase == .paused ? "Resume measuring" : "Start measuring") { Task { await start() } }
                     .font(.system(.callout, design: .rounded).weight(.semibold)).frame(minHeight: 44)
                     .accessibilityIdentifier("instrument.start")
             }
-            HStack(spacing: 10) {
+            split {
                 Button {
                     if let point = selectedPoint { fieldCapture = .reading(point, kind: chosenKind, source: source) }
                 } label: {
@@ -420,57 +469,138 @@ struct InstrumentWorkspaceView: View {
                 .accessibilityIdentifier("instrument.log")
                 .accessibilityLabel("Log")
 
-                Button { startFlow = true } label: {
-                    Label("Start Flow", systemImage: "arrow.triangle.branch").font(.system(.callout, design: .rounded).weight(.semibold))
+                Button { Task { await beginRecording() } } label: {
+                    Label("Record", systemImage: "record.circle").font(.system(.callout, design: .rounded).weight(.semibold))
                 }
                 .buttonStyle(ControlStyle(primary: false))
-                .accessibilityIdentifier("instrument.start-flow")
+                .accessibilityIdentifier("instrument.record")
             }
+            Button { startFlow = true } label: {
+                Label("Start Flow", systemImage: "arrow.triangle.branch").font(.system(.callout, design: .rounded).weight(.semibold))
+            }
+            .buttonStyle(ControlStyle(primary: false))
+            .accessibilityIdentifier("instrument.start-flow")
         }
         .padding(.horizontal, 20).padding(.vertical, 12)
         .frame(maxWidth: 720).frame(maxWidth: .infinity)
-        .background(.bar)
-    }
-
-    private var statusLine: some View {
-        TimelineView(.periodic(from: .now, by: 1)) { context in
-            let stale = engine.latest.map { context.date.timeIntervalSince($0.date) > chosenKind.maximumAge } ?? false
-            HStack(spacing: 8) {
-                if engine.phase == .starting { ProgressView().controlSize(.small) }
-                else { Circle().fill(engine.phase.isActive && !stale ? ProTheme.signal : Color.secondary).frame(width: 5, height: 5).accessibilityHidden(true) }
-                Text(engine.demonstration ? "Sample session" : selectedElapsed != nil ? "Inspecting a reading" : stale && engine.phase == .running ? "Waiting for a fresh reading" : engine.phase.title)
-                    .accessibilityIdentifier("instrument.phase")
-                Spacer()
-                if let point = selectedPoint {
-                    if selectedElapsed != nil { Text("\(point.elapsed.formatted(.number.precision(.fractionLength(1))))s") }
-                    else if !engine.demonstration { Text(point.date, style: .relative) }
-                }
-            }.font(.caption).foregroundStyle(ProTheme.secondary).monospacedDigit()
-        }
+        .background(dynamicType.isAccessibilitySize ? MC.canvas : Color.clear)
+        .background { if !dynamicType.isAccessibilitySize { Rectangle().fill(.bar) } }
     }
 
     private var liveFace: some View {
         VStack(spacing: 8) {
-            if chosenKind == .tilt {
-                LevelInstrument(point: selectedPoint, reference: baseline?.points.last)
-            } else if chosenKind == .heading {
-                CompassInstrument(heading: selectedPoint?.value, baseline: baseline?.summary.median)
+            if dynamicType.isAccessibilitySize {
+                MeasurementValue(value: selectedPoint?.value, kind: chosenKind)
+                readingChapter
+                liveInstrument
             } else {
-                InstrumentArc(value: selectedPoint?.value, range: range, band: observedBand, threshold: source.threshold)
+                ZStack(alignment: chosenKind == .heading ? .center : .bottom) {
+                    liveInstrument
+                    MeasurementValue(value: selectedPoint?.value, kind: chosenKind)
+                        .padding(.bottom, chosenKind == .heading ? 0 : 48)
+                }
+                readingChapter
             }
-            MeasurementValue(value: selectedPoint?.value, kind: chosenKind)
-                .padding(.top, dynamicType.isAccessibilitySize ? 0 : -16)
-            if let baseline, let value = selectedPoint?.value {
-                Text(baselineChange(value: value, baseline: baseline))
-                    .font(.callout).foregroundStyle(ProTheme.signal).multilineTextAlignment(.center)
-            } else if let threshold = source.threshold, let value = selectedPoint?.value {
-                Text("\(abs(value - threshold).formatted(.number.precision(.fractionLength(0)))) dB \(value >= threshold ? "above" : "below") your threshold")
-                    .font(.callout).foregroundStyle(value >= threshold ? ProTheme.band : .secondary)
-            } else {
-                Text(chosenKind == .sound ? "Digital level · not dB SPL" : source.name)
-                    .font(.callout).foregroundStyle(ProTheme.secondary)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    @ViewBuilder private var liveInstrument: some View {
+        if chosenKind == .tilt {
+            LevelInstrument(point: selectedPoint, reference: baseline?.points.last)
+        } else if chosenKind == .heading {
+            CompassInstrument(heading: selectedPoint?.value, baseline: baseline?.summary.median)
+        } else {
+            InstrumentArc(value: selectedPoint?.value, range: range, band: observedBand, threshold: source.threshold)
+        }
+    }
+
+    private var readingChapter: some View {
+        TimelineView(.periodic(from: .now, by: 1)) { context in
+            let stale = engine.latest.map { context.date.timeIntervalSince($0.date) > chosenKind.maximumAge } ?? false
+            let phase = engine.demonstration
+                ? "Sample session"
+                : selectedElapsed != nil ? "Pinned reading"
+                : stale && engine.phase == .running ? "Waiting for a fresh reading"
+                : engine.phase.title
+            Group {
+                if dynamicType.isAccessibilitySize {
+                    VStack(spacing: 4) {
+                        if engine.phase == .starting { ProgressView().controlSize(.mini) }
+                        Text(phase).accessibilityIdentifier("instrument.phase")
+                        if !chapterInterpretation.isEmpty { Text(chapterInterpretation) }
+                    }
+                } else {
+                    HStack(spacing: 5) {
+                        if engine.phase == .starting { ProgressView().controlSize(.mini) }
+                        Text(phase).accessibilityIdentifier("instrument.phase")
+                        if !chapterInterpretation.isEmpty {
+                            Text("·").accessibilityHidden(true)
+                            Text(chapterInterpretation)
+                        }
+                    }
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+                }
             }
-        }.frame(maxWidth: .infinity).padding(.bottom, 4)
+            .font(.system(.caption, design: .rounded).weight(.medium))
+            .foregroundStyle(chapterTint)
+            .multilineTextAlignment(.center)
+            .monospacedDigit()
+            .frame(maxWidth: .infinity)
+        }
+    }
+
+    @ViewBuilder private var sourceChip: some View {
+        if chosenKind == .bluetooth {
+            Menu {
+                ForEach(devices) { device in
+                    Button(device.name) {
+                        chosenDeviceID = device.persistentIdentifier; baselineID = nil
+                        Task { await start() }
+                    }
+                }
+                Button("Manage devices") { engine.pause(); devicesSheet = true }
+            } label: {
+                HStack(spacing: 3) {
+                    Text(source.name)
+                    Image(systemName: "chevron.up.chevron.down").font(.system(size: 8, weight: .semibold)).accessibilityHidden(true)
+                }
+                .foregroundStyle(ProTheme.signal)
+                .frame(minWidth: 44, minHeight: 44)
+                .contentShape(Rectangle())
+            }
+            .disabled(engine.recording)
+            .accessibilityIdentifier("instrument.device-menu")
+        } else if chosenKind == .network {
+            Button(source.name) { engine.pause(); endpointSheet = true }
+                .foregroundStyle(ProTheme.signal)
+                .frame(minHeight: 44)
+                .disabled(engine.recording)
+        } else {
+            Text(source.name)
+        }
+    }
+
+    private var chapterInterpretation: String {
+        if let baseline, let value = selectedPoint?.value { return baselineChange(value: value, baseline: baseline) }
+        if chosenKind == .tilt, let point = selectedPoint {
+            let pitch = point.auxiliary["pitch"] ?? 0
+            let roll = point.auxiliary["roll"] ?? 0
+            if abs(pitch) < 0.5 && abs(roll) < 0.5 { return "Level" }
+            return "R \(roll.formatted(.number.precision(.fractionLength(1))))° · P \(pitch.formatted(.number.precision(.fractionLength(1))))°"
+        }
+        if let threshold = source.threshold, let value = selectedPoint?.value {
+            return "\(abs(value - threshold).formatted(.number.precision(.fractionLength(0)))) dB \(value >= threshold ? "above" : "below")"
+        }
+        if chosenKind == .sound { return "Digital level, not dB SPL" }
+        return ""
+    }
+
+    private var chapterTint: Color {
+        if baseline != nil { return ProTheme.signal }
+        if let threshold = source.threshold, let value = selectedPoint?.value, value >= threshold { return ProTheme.band }
+        return ProTheme.secondary
     }
 
     private func baselineChange(value: Double, baseline: CalibrationProfile) -> String {
@@ -482,78 +612,88 @@ struct InstrumentWorkspaceView: View {
     }
 
     private var inspection: some View {
-        VStack(alignment: .leading, spacing: 22) {
+        VStack(alignment: .leading, spacing: 14) {
             MeasurementValue(value: selectedPoint?.value, kind: chosenKind)
+                .frame(maxWidth: .infinity)
+            Text(chosenKind.method)
+                .font(.system(.caption, design: .rounded).weight(.medium))
+                .foregroundStyle(ProTheme.secondary)
+            if let summary = engine.summary, summary.count >= 3 {
+                ChapterLine(parts: [
+                    "Median \(chosenKind.formatted(summary.median)) \(chosenKind.unit)",
+                    "Middle 50% \(chosenKind.formatted(summary.spread)) \(chosenKind.deltaUnit)"
+                ])
+            }
             LinearInstrumentScale(range: range, value: selectedPoint?.value, band: observedBand, threshold: source.threshold)
-            history(height: 260)
+            history(height: 168)
         }
     }
 
     @ViewBuilder private var comparison: some View {
         if let baseline, let summary = engine.summary {
-            VStack(alignment: .leading, spacing: 24) {
-                comparisonReading(title: baseline.name, summary: baseline.summary)
-                comparisonReading(title: "Current measurement", summary: summary)
+            VStack(alignment: .leading, spacing: 18) {
                 VStack(spacing: 4) {
-                    Text("Change in median").font(.callout).foregroundStyle(ProTheme.secondary)
-                    MeasurementValue(value: MeasurementMath.delta(summary.median, baseline: baseline.summary.median, kind: chosenKind), kind: chosenKind, signed: true)
-                        .foregroundStyle(ProTheme.signal)
-                }.frame(maxWidth: .infinity)
-                Text("Both measurements use the same scale. Dashed line: \(baseline.name). Solid line: current measurement.")
-                    .font(.caption).foregroundStyle(ProTheme.secondary)
+                    MeasurementValue(
+                        value: MeasurementMath.delta(summary.median, baseline: baseline.summary.median, kind: chosenKind),
+                        kind: chosenKind,
+                        signed: true
+                    )
+                    ChapterLine(parts: ["Change in median", baseline.name])
+                }
+                .frame(maxWidth: .infinity)
+                comparisonReading(title: baseline.name, summary: baseline.summary)
+                comparisonReading(title: "Current", summary: summary)
             }
         } else {
-            ContentUnavailableView("Compare with a baseline", systemImage: "slider.horizontal.3", description: Text("Save a reference from a measured setup, then see how your next measurement changes."))
-            if !availableProfiles.isEmpty {
-                profileMenu
-            } else {
-                Button("Set baseline") { baselineSheet = true }.buttonStyle(ControlStyle()).disabled((engine.summary?.count ?? 0) < 3)
+            VStack(alignment: .leading, spacing: 12) {
+                Text("No baseline yet")
+                    .font(.system(.headline, design: .rounded))
+                Text("Save a reference from this setup, then Compare shows the change in median.")
+                    .font(.system(.callout, design: .rounded))
+                    .foregroundStyle(ProTheme.secondary)
+                if !availableProfiles.isEmpty {
+                    profileMenu
+                } else {
+                    Button("Set baseline") { baselineSheet = true }
+                        .buttonStyle(ControlStyle())
+                        .disabled((engine.summary?.count ?? 0) < 3)
+                }
             }
         }
     }
 
     private func comparisonReading(title: String, summary: MeasurementSummary) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            let layout = dynamicType.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8)) : AnyLayout(HStackLayout(alignment: .firstTextBaseline))
-            layout {
-                Text(title).font(.system(.headline, design: .rounded))
-                Spacer()
-                MeasurementValue(value: summary.median, kind: chosenKind, compact: true)
-            }
+        VStack(alignment: .leading, spacing: 6) {
+            ChapterLine(parts: [
+                title,
+                "\(chosenKind.formatted(summary.median)) \(chosenKind.unit)"
+            ])
             LinearInstrumentScale(range: range, value: summary.median, band: summary.q25 ... summary.q75)
         }
     }
 
-    private func history(height: CGFloat) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            let layout = dynamicType.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8)) : AnyLayout(HStackLayout())
-            layout {
-                Text(chosenKind.unit).font(.caption).foregroundStyle(ProTheme.secondary)
-                Spacer()
-                if selectedElapsed != nil {
-                    Button("Return to live") { selectedElapsed = nil }.font(.caption.weight(.semibold)).frame(minHeight: 44)
-                } else {
-                    Text("Touch to inspect").font(.caption).foregroundStyle(ProTheme.secondary)
+    private func history(height: CGFloat, subordinate: Bool = false) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if !subordinate || selectedElapsed != nil {
+                HStack {
+                    if selectedElapsed != nil {
+                        Button("Return to live") { selectedElapsed = nil }
+                            .font(.system(.caption, design: .rounded).weight(.semibold))
+                            .frame(minHeight: 44)
+                    } else {
+                        Text("Touch a reading")
+                            .font(.system(.caption, design: .rounded))
+                            .foregroundStyle(ProTheme.secondary)
+                    }
+                    Spacer()
                 }
             }
             InstrumentHistoryChart(points: engine.points, kind: chosenKind, range: range, baseline: mode == .compare ? baseline?.points ?? [] : [], threshold: source.threshold, events: engine.events, selectedElapsed: $selectedElapsed, height: height)
-            Text("Elapsed seconds · gaps are unobserved").font(.caption).foregroundStyle(ProTheme.secondary)
-        }
-    }
-
-    private var statistics: some View {
-        let layout = dynamicType.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 20)) : AnyLayout(HStackLayout(alignment: .top, spacing: 20))
-        return layout {
-            statistic("Median", value: engine.summary.map { "\(chosenKind.formatted($0.median)) \(chosenKind.unit)" } ?? "—")
-            Spacer()
-            statistic(chosenKind == .network ? "95th percentile" : "Middle 50% spread", value: engine.summary.map { "\(chosenKind.formatted(chosenKind == .network ? $0.p95 : $0.spread)) \(chosenKind == .network ? chosenKind.unit : chosenKind.deltaUnit)" } ?? "—")
-        }.padding(.vertical, 4)
-    }
-
-    private func statistic(_ label: String, value: String) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(label).font(.caption).foregroundStyle(ProTheme.secondary)
-            Text(value).font(.system(.title3, design: .rounded).weight(.semibold)).monospacedDigit()
+            if !subordinate {
+                Text("Elapsed seconds · gaps are unobserved")
+                    .font(.system(.caption, design: .rounded))
+                    .foregroundStyle(ProTheme.secondary)
+            }
         }
     }
 
@@ -577,15 +717,24 @@ struct InstrumentWorkspaceView: View {
             ForEach(availableProfiles) { profile in Button(profile.name) { baselineID = profile.id } }
             Button("Capture another baseline") { baselineSheet = true }
         } label: {
-            HStack { Image(systemName: "slider.horizontal.3"); Text(baseline?.name ?? "Choose baseline"); Spacer(); Image(systemName: "chevron.up.chevron.down").font(.caption) }
-                .font(.callout).frame(minHeight: 44)
+            HStack {
+                Image(systemName: "slider.horizontal.3").accessibilityHidden(true)
+                Text(baseline?.name ?? "Choose baseline")
+                    .lineLimit(1)
+                    .minimumScaleFactor(dynamicType.isAccessibilitySize ? 0.4 : 0.8)
+                Spacer(minLength: 8)
+                Image(systemName: "chevron.up.chevron.down").font(.caption).accessibilityHidden(true)
+            }
+            .font(.callout)
+            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+            .clipped()
+            .contentShape(Rectangle())
         }.accessibilityIdentifier("instrument.baseline")
     }
 
     private var methodDetails: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("How this is measured").font(.system(.headline, design: .rounded))
-            Text(chosenKind.method).font(.callout).foregroundStyle(ProTheme.secondary)
+            Text("Evidence").font(.system(.headline, design: .rounded))
             if chosenKind == .network {
                 LabeledContent("Successful responses", value: "\(engine.completedRequests)")
                 LabeledContent("Failed requests", value: "\(engine.failedRequests)")
@@ -597,19 +746,6 @@ struct InstrumentWorkspaceView: View {
             }
             ForEach(engine.events.suffix(10)) { event in
                 HStack(alignment: .top) { Text("\(event.elapsed.formatted(.number.precision(.fractionLength(1))))s").monospacedDigit(); Text(event.text) }.font(.caption)
-            }
-            if !engine.recording {
-                Button {
-                    Task {
-                        if !engine.phase.isActive { await start() }
-                        guard engine.phase.isActive else { return }
-                        engine.beginRecording()
-                    }
-                } label: {
-                    Label("Record session", systemImage: "record.circle")
-                }
-                .buttonStyle(ControlStyle())
-                .accessibilityIdentifier("instrument.record")
             }
         }
     }
@@ -630,13 +766,14 @@ struct InstrumentWorkspaceView: View {
     private var recordingControls: some View {
         VStack(spacing: 10) {
             HStack {
-                Label("\(engine.recordingDuration.formatted(.number.precision(.fractionLength(0))))s · \(engine.recordingCount) readings", systemImage: "record.circle").font(.caption).monospacedDigit()
+                Label("\(engine.recordingDuration.formatted(.number.precision(.fractionLength(0))))s · \(engine.recordingCount) readings", systemImage: "record.circle")
+                    .font(.caption).monospacedDigit().foregroundStyle(ProTheme.secondary)
                 Spacer()
-                Button("Mark") { markSheet = true }.font(.callout).frame(minHeight: 44)
+                Button("Mark") { markSheet = true }.font(.callout.weight(.semibold)).frame(minHeight: 44)
                 Button(engine.phase == .paused ? "Resume" : "Pause") {
                     if engine.phase == .paused { Task { await engine.resume(radio: radio) } }
                     else { engine.pause() }
-                }.font(.callout).frame(minHeight: 44)
+                }.font(.callout.weight(.semibold)).frame(minHeight: 44)
             }
             Button {
                 engine.stop(); saveSheet = true
@@ -655,5 +792,11 @@ struct InstrumentWorkspaceView: View {
     private func start() async {
         failure = nil; selectedElapsed = nil
         await engine.start(kind: chosenKind, source: source, radio: radio)
+    }
+
+    private func beginRecording() async {
+        if !engine.phase.isActive { await start() }
+        guard engine.phase.isActive else { return }
+        engine.beginRecording()
     }
 }
