@@ -326,6 +326,140 @@ nonisolated final class ProExperienceUITests: XCTestCase {
         }
     }
 
+    @MainActor private func waitForHeader(_ app: XCUIApplication, compact: Bool) {
+        let header = app.otherElements["instrument.header"]
+        let state = compact ? "Compact" : "Expanded"
+        let settled = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", state), object: header)
+        XCTAssertEqual(XCTWaiter.wait(for: [settled], timeout: 5), .completed)
+    }
+
+    @MainActor private func foldHeader(_ app: XCUIApplication) {
+        app.buttons["instrument.mode.inspect"].tap()
+        let scroll = app.scrollViews.firstMatch
+        for _ in 0..<3 where app.otherElements["instrument.header"].value as? String != "Compact" {
+            scroll.swipeUp(velocity: .slow)
+        }
+        waitForHeader(app, compact: true)
+    }
+
+    @MainActor private func unfoldHeader(_ app: XCUIApplication) {
+        let scroll = app.scrollViews.firstMatch
+        for _ in 0..<5 where app.otherElements["instrument.header"].value as? String != "Expanded" {
+            scroll.swipeDown(velocity: .slow)
+        }
+        waitForHeader(app, compact: false)
+    }
+
+    @MainActor func testSourceHeaderFoldsOnScrollWithoutLosingNavigation() throws {
+        defer { XCUIDevice.shared.orientation = .portrait }
+        for dark in [false, true] {
+            let app = launch(dark ? ["--dark-appearance"] : [])
+            if app.frame.width >= 600 { XCUIDevice.shared.orientation = .landscapeLeft }
+            let appearance = dark ? "dark" : "light"
+            let header = app.otherElements["instrument.header"]
+            waitForHeader(app, compact: false)
+            let expandedHeight = header.frame.height
+            capture(app, "motion-expanded-\(appearance)")
+            foldHeader(app)
+            XCTAssertLessThan(header.frame.height, expandedHeight - 32)
+            let controls = ["instrument.choose", "instrument.device-menu", "rooms.capture", "settings.open"]
+            for id in controls {
+                let button = app.buttons[id]
+                XCTAssertTrue(button.isHittable, id)
+                XCTAssertGreaterThanOrEqual(button.frame.width, 44, id)
+                XCTAssertGreaterThanOrEqual(button.frame.height, 44, id)
+            }
+            XCTAssertEqual(app.buttons["instrument.choose"].value as? String, "Bluetooth")
+            XCTAssertEqual(app.buttons["instrument.device-menu"].label, "Desk sensor")
+            for id in ["instrument.device-menu", "rooms.capture", "settings.open"] {
+                XCTAssertEqual(app.buttons[id].frame.midY, app.buttons["instrument.choose"].frame.midY, accuracy: 1, "Compact navigation stays in one row: \(id)")
+            }
+            capture(app, "motion-compact-\(appearance)")
+            try app.performAccessibilityAudit(for: [.hitRegion, .sufficientElementDescription, .trait])
+
+            app.buttons["settings.open"].tap()
+            XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 5))
+            app.buttons["Done"].tap()
+            waitForHeader(app, compact: true)
+            app.buttons["instrument.device-menu"].tap()
+            XCTAssertTrue(app.buttons["Manage devices"].waitForExistence(timeout: 5))
+            app.buttons["Manage devices"].tap()
+            XCTAssertTrue(app.navigationBars["Devices"].waitForExistence(timeout: 5))
+            app.buttons["Done"].tap()
+            waitForHeader(app, compact: true)
+            app.buttons["rooms.capture"].tap()
+            XCTAssertTrue(app.staticTexts["Camera unavailable"].waitForExistence(timeout: 5))
+            app.navigationBars.buttons["Close"].tap()
+            waitForHeader(app, compact: true)
+            app.buttons["instrument.choose"].tap()
+            XCTAssertTrue(app.buttons["instrument.filter.motion"].waitForExistence(timeout: 5))
+            app.buttons["instrument.filter.motion"].tap()
+            let magnetic = app.buttons["instrument.pick.magnetic"]
+            reveal(magnetic, in: app); magnetic.tap()
+            XCTAssertTrue(app.buttons["instrument.filter.motion"].waitForNonExistence(timeout: 5))
+            XCTAssertEqual(app.buttons["instrument.choose"].value as? String, "Magnetic field")
+            XCTAssertLessThan(header.frame.height, expandedHeight - 32, "A long instrument name must retain the compact bar")
+            for id in ["rooms.capture", "settings.open"] {
+                XCTAssertEqual(app.buttons[id].frame.midY, app.buttons["instrument.choose"].frame.midY, accuracy: 1, "Long titles retain one navigation row: \(id)")
+            }
+            capture(app, "motion-long-title-\(appearance)")
+            unfoldHeader(app)
+            capture(app, "motion-restored-\(appearance)")
+            for _ in 0..<2 {
+                foldHeader(app)
+                unfoldHeader(app)
+            }
+        }
+    }
+
+    @MainActor func testSourceHeaderInPortraitTablet() throws {
+        for dark in [false, true] {
+            let app = launch(["--visualization-demo"] + (dark ? ["--dark-appearance"] : []))
+            // Run on a dedicated portrait simulator; iPadOS can retain a
+            // landscape display even when XCTest changes UIDevice orientation.
+            guard app.frame.width >= 600 else { throw XCTSkip("iPad portrait coverage") }
+            guard app.windows.firstMatch.frame.height > app.windows.firstMatch.frame.width else {
+                throw XCTSkip("Requires a portrait iPad display")
+            }
+            let appearance = dark ? "dark" : "light"
+            capture(app, "motion-tablet-portrait-expanded-\(appearance)")
+            app.buttons["instrument.mode.inspect"].tap()
+            app.scrollViews.firstMatch.swipeUp(velocity: .slow)
+            waitForHeader(app, compact: false) // Fitting evidence should not fold on rubber-banding.
+            app.buttons["instrument.choose"].tap()
+            app.buttons["instrument.filter.motion"].tap()
+            let vibration = app.buttons["instrument.pick.vibration"]
+            reveal(vibration, in: app); vibration.tap()
+            XCTAssertTrue(app.buttons["instrument.filter.motion"].waitForNonExistence(timeout: 5))
+            foldHeader(app)
+            capture(app, "motion-tablet-portrait-compact-\(appearance)")
+            for id in ["instrument.choose", "rooms.capture", "settings.open"] {
+                XCTAssertTrue(app.buttons[id].isHittable, id)
+            }
+            unfoldHeader(app)
+        }
+    }
+
+    @MainActor func testSourceHeaderReduceMotionPreservesScrollAndActions() {
+        let app = launch(["--reduce-motion"])
+        foldHeader(app)
+        capture(app, "motion-reduced-compact")
+        XCTAssertTrue(app.buttons["settings.open"].isHittable)
+        XCTAssertTrue(app.buttons["instrument.device-menu"].isHittable)
+        unfoldHeader(app)
+        capture(app, "motion-reduced-expanded")
+    }
+
+    @MainActor func testSourceHeaderLargestStandardText() {
+        let app = launch(["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryXXXL"])
+        foldHeader(app)
+        capture(app, "motion-largest-standard")
+        XCTAssertTrue(app.buttons["instrument.choose"].isHittable)
+        XCTAssertTrue(app.buttons["instrument.device-menu"].isHittable)
+        XCTAssertTrue(app.buttons["rooms.capture"].isHittable)
+        XCTAssertTrue(app.buttons["settings.open"].isHittable)
+    }
+
     @MainActor func testSourceHeaderKeepsContextAndSettingsReachable() throws {
         defer { XCUIDevice.shared.orientation = .portrait }
         for dark in [false, true] {

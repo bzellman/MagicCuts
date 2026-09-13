@@ -1,0 +1,119 @@
+.impeccable/review/header-motion/phone/motion-compact-dark.png
+Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-compact-dark_0_0003DFDA-F5B8-45A7-9255-B0DAE6A83B1D.png.
+
+.impeccable/review/header-motion/phone/motion-compact-light.png
+Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-compact-light_0_6B5248ED-38B7-4C44-840D-4C96CA58317F.png.
+
+.impeccable/review/header-motion/phone/motion-expanded-dark.png
+Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-expanded-dark_0_76DABF85-DAA7-4E37-B4C2-0E9FAC7443F5.png.
+
+.impeccable/review/header-motion/phone/motion-expanded-light.png
+Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-expanded-light_0_17BFCD86-948F-45F1-B1DC-295193B4F223.png.
+
+.impeccable/review/header-motion/phone/motion-in-flight-01.png
+Unedited native iOS Simulator full-display video frame extracted with FFmpeg input seek 107.15 seconds from /tmp/magiccuts-header-motion-phone-verdict3.mp4, recorded during correction 3 XCTest navigation. Seek values are extraction locators, not independently verified presentation timestamps. Explicit sample data; no compositing, masking, cropping, or pixel edits.
+
+.impeccable/review/header-motion/phone/motion-in-flight-02.png
+Unedited native iOS Simulator full-display video frame extracted with FFmpeg input seek 107.30 seconds from /tmp/magiccuts-header-motion-phone-verdict3.mp4, recorded during correction 3 XCTest navigation. Seek values are extraction locators, not independently verified presentation timestamps. Explicit sample data; no compositing, masking, cropping, or pixel edits.
+
+.impeccable/review/header-motion/phone/motion-in-flight-03.png
+Unedited native iOS Simulator full-display video frame extracted with FFmpeg input seek 109.60 seconds from /tmp/magiccuts-header-motion-phone-verdict3.mp4, recorded during correction 3 XCTest navigation. Seek values are extraction locators, not independently verified presentation timestamps. Explicit sample data; no compositing, masking, cropping, or pixel edits.
+
+.impeccable/review/header-motion/phone/motion-in-flight-04.png
+Unedited native iOS Simulator full-display video frame extracted with FFmpeg input seek 109.80 seconds from /tmp/magiccuts-header-motion-phone-verdict3.mp4, recorded during correction 3 XCTest navigation. Seek values are extraction locators, not independently verified presentation timestamps. Explicit sample data; no compositing, masking, cropping, or pixel edits.
+
+.impeccable/review/header-motion/phone/motion-largest-standard.png
+Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testSourceHeaderLargestStandardText(); attachment motion-largest-standard_0_39244E47-C1C8-4CC7-ABEF-F929A7FACACC.png.
+
+.impeccable/review/header-motion/phone/motion-long-title-dark.png
+Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-long-title-dark_0_B49BD830-69DD-4F13-A376-F9071B87B45A.png.
+
+.impeccable/review/header-motion/phone/motion-long-title-light.png
+Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-long-title-light_0_BAA33293-58D4-4646-B0F4-9D793D8A9644.png.
+
+.impeccable/review/header-motion/phone/motion-reduced-compact.png
+Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testSourceHeaderReduceMotionPreservesScrollAndActions(); attachment motion-reduced-compact_0_8CE117BB-D198-42A3-B494-3A3FEA4179C6.png.
+
+.impeccable/review/header-motion/phone/motion-reduced-expanded.png
+Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testSourceHeaderReduceMotionPreservesScrollAndActions(); attachment motion-reduced-expanded_0_A68CD0DF-5303-4318-AED8-65ED60EDEBDE.png.
+
+.impeccable/review/header-motion/phone/motion-restored-dark.png
+Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-restored-dark_0_436B277A-121F-456D-8F84-0BDC1D0B0C59.png.
+
+.impeccable/review/header-motion/phone/motion-restored-light.png
+Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-restored-light_0_BADE32B9-5BFC-44E6-BA81-1BDDD7620267.png.
+
+.impeccable/review/header-motion/phone/pro-largest-controls.png
+Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testLargestTextAndControlsReflow(); attachment pro-largest-controls_0_0BD04E1C-D24D-481A-8344-A991F510E488.png.
+
+.impeccable/review/header-motion/phone/pro-largest-text.png
+Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testLargestTextAndControlsReflow(); attachment pro-largest-text_0_982004E7-8035-4053-B997-1FE0BAA1F9FE.png.
+
+.impeccable/review/header-motion/phone/pro-live-dark.png
+Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testHomeAccessibility(); attachment pro-live-dark_0_59C66030-0C98-4B32-81C5-882D9B1DBF8C.png.
+
+.impeccable/review/header-motion/phone/pro-live-light.png
+Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testHomeAccessibility(); attachment pro-live-light_0_91D9A4BC-B4ED-4476-B435-2C43AC0B4DA3.png.
+
+.impeccable/review/header-motion/request/rejected-compact.png
+User-supplied screenshot on September 13, 2026, explicitly rejected with "This is a no go". Original compact Magnetic field header and underlying partial reading. Pixel content unchanged; design rejection evidence, not an approved comp.
+
+.impeccable/review/header-motion/tablet/motion-compact-dark.png
+Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-compact-dark_0_4D37371D-EEB3-4505-AE51-71DC4B27D01F.png.
+
+.impeccable/review/header-motion/tablet/motion-compact-light.png
+Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-compact-light_0_E38A0070-FBA7-4BAB-85F3-AFDD0702ECAF.png.
+
+.impeccable/review/header-motion/tablet/motion-expanded-dark.png
+Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-expanded-dark_0_C51099DB-E6EA-4694-8CD9-A82F26F9984E.png.
+
+.impeccable/review/header-motion/tablet/motion-expanded-light.png
+Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-expanded-light_0_C2596573-B922-420F-9F3D-2CBA4D71B51C.png.
+
+.impeccable/review/header-motion/tablet/motion-in-flight-01.png
+Unedited native iOS Simulator full-display video frame extracted with FFmpeg input seek 94.50 seconds from /tmp/magiccuts-header-motion-tablet-verdict3.mp4, recorded during correction 3 XCTest navigation. Seek values are extraction locators, not independently verified presentation timestamps. Explicit sample data; no compositing, masking, cropping, or pixel edits.
+
+.impeccable/review/header-motion/tablet/motion-in-flight-02.png
+Unedited native iOS Simulator full-display video frame extracted with FFmpeg input seek 94.60 seconds from /tmp/magiccuts-header-motion-tablet-verdict3.mp4, recorded during correction 3 XCTest navigation. Seek values are extraction locators, not independently verified presentation timestamps. Explicit sample data; no compositing, masking, cropping, or pixel edits.
+
+.impeccable/review/header-motion/tablet/motion-in-flight-03.png
+Unedited native iOS Simulator full-display video frame extracted with FFmpeg input seek 96.70 seconds from /tmp/magiccuts-header-motion-tablet-verdict3.mp4, recorded during correction 3 XCTest navigation. Seek values are extraction locators, not independently verified presentation timestamps. Explicit sample data; no compositing, masking, cropping, or pixel edits.
+
+.impeccable/review/header-motion/tablet/motion-in-flight-04.png
+Unedited native iOS Simulator full-display video frame extracted with FFmpeg input seek 96.80 seconds from /tmp/magiccuts-header-motion-tablet-verdict3.mp4, recorded during correction 3 XCTest navigation. Seek values are extraction locators, not independently verified presentation timestamps. Explicit sample data; no compositing, masking, cropping, or pixel edits.
+
+.impeccable/review/header-motion/tablet/motion-long-title-dark.png
+Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-long-title-dark_0_C2A2F7BA-B60F-4EE7-AC22-E48984C472E9.png.
+
+.impeccable/review/header-motion/tablet/motion-long-title-light.png
+Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-long-title-light_0_C592667D-7CEF-46B0-AACF-05CCB55B59FF.png.
+
+.impeccable/review/header-motion/tablet/motion-restored-dark.png
+Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-restored-dark_0_07204E1F-BC83-4764-BFF5-F106B856B3DF.png.
+
+.impeccable/review/header-motion/tablet/motion-restored-light.png
+Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-restored-light_0_B9AB726A-DBFB-4B91-B8BF-715A317F97BF.png.
+
+.impeccable/review/header-motion/tablet/motion-tablet-portrait-compact-dark.png
+Native XCTest full-display simulator screenshot after correction 3 from /tmp/magiccuts-header-motion-portrait-verdict3.xcresult; ProExperienceUITests/testSourceHeaderInPortraitTablet(); motion-tablet-portrait-compact-dark_0_29EEF32A-BB92-4013-B40E-A217529A4377.png. Explicit sample data; no pixel edits.
+
+.impeccable/review/header-motion/tablet/motion-tablet-portrait-compact-light.png
+Native XCTest full-display simulator screenshot after correction 3 from /tmp/magiccuts-header-motion-portrait-verdict3.xcresult; ProExperienceUITests/testSourceHeaderInPortraitTablet(); motion-tablet-portrait-compact-light_0_92A3542A-3671-4124-AB9D-850500B5BBBD.png. Explicit sample data; no pixel edits.
+
+.impeccable/review/header-motion/tablet/motion-tablet-portrait-expanded-dark.png
+Native XCTest full-display simulator screenshot after correction 3 from /tmp/magiccuts-header-motion-portrait-verdict3.xcresult; ProExperienceUITests/testSourceHeaderInPortraitTablet(); motion-tablet-portrait-expanded-dark_0_36E0F89C-4AA2-4595-A05E-2709B11E2343.png. Explicit sample data; no pixel edits.
+
+.impeccable/review/header-motion/tablet/motion-tablet-portrait-expanded-light.png
+Native XCTest full-display simulator screenshot after correction 3 from /tmp/magiccuts-header-motion-portrait-verdict3.xcresult; ProExperienceUITests/testSourceHeaderInPortraitTablet(); motion-tablet-portrait-expanded-light_0_9D90A83E-BB12-4FAC-ACF8-CD636864DB42.png. Explicit sample data; no pixel edits.
+
+.impeccable/review/header-motion/tablet/pro-largest-controls.png
+Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testLargestTextAndControlsReflow(); attachment pro-largest-controls_0_89E93E1E-0F96-4B0B-8E4E-54115B56CB1C.png.
+
+.impeccable/review/header-motion/tablet/pro-largest-text.png
+Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testLargestTextAndControlsReflow(); attachment pro-largest-text_0_54B7B04A-AD04-4D66-A9DD-ADB0A6B20FC7.png.
+
+.impeccable/review/header-motion/tablet/pro-live-dark.png
+Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testHomeAccessibility(); attachment pro-live-dark_0_D681B0F0-8A95-46D5-9901-5FABF18013FE.png.
+
+.impeccable/review/header-motion/tablet/pro-live-light.png
+Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testHomeAccessibility(); attachment pro-live-light_0_CF472EA8-BC25-484C-BFA9-2D719A0B7355.png.

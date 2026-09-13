@@ -215,9 +215,17 @@ struct InstrumentWorkspaceView: View {
     @State private var failure: String?
     @State private var endpoint = ""
     @State private var fieldCapture: FieldCapture?
+    @State private var headerCollapsed = false
+    @State private var headerLabelsCompact = false
+    @State private var headerMotionRevision = 0
+    @State private var scrolling = false
     @Environment(RoomSession.self) private var roomSession
     @Environment(\.dynamicTypeSize) private var dynamicType
     @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private var compactHeader: Bool { headerCollapsed && !dynamicType.isAccessibilitySize }
+    private var compactHeaderLabels: Bool { headerLabelsCompact && !dynamicType.isAccessibilitySize }
 
     private var source: MeasurementSource {
         if chosenKind == .bluetooth {
@@ -296,6 +304,16 @@ struct InstrumentWorkspaceView: View {
         .background(MC.canvas)
         .scrollEdgeEffectStyle(.hard, for: .top)
         .toolbar(.hidden, for: .navigationBar)
+        .onScrollPhaseChange { _, phase in
+            scrolling = phase == .interacting || phase == .decelerating || phase == .animating
+        }
+        .onScrollGeometryChange(for: InstrumentHeaderScrollRegion.self) { geometry in
+            InstrumentHeaderScrollRegion(geometry)
+        } action: { _, region in
+            guard !dynamicType.isAccessibilitySize else { return }
+            if region == .top { setHeaderCollapsed(false) }
+            else if region == .reading, scrolling { setHeaderCollapsed(true) }
+        }
         .safeAreaInset(edge: .top, spacing: 0) {
             if !dynamicType.isAccessibilitySize {
                 homeSelector
@@ -364,46 +382,94 @@ struct InstrumentWorkspaceView: View {
             }
         }
         .onChange(of: baselineID) { _, _ in selectedElapsed = nil }
+        .onChange(of: dynamicType) { _, _ in
+            headerMotionRevision += 1
+            headerCollapsed = false
+            headerLabelsCompact = false
+        }
     }
 
     private var homeSelector: some View {
-        VStack(spacing: 0) {
-            let layout = dynamicType.isAccessibilitySize ? AnyLayout(VStackLayout(spacing: 0)) : AnyLayout(HStackLayout(spacing: 0))
-            layout {
-                instrumentPickerButton
-                if !dynamicType.isAccessibilitySize { Divider().frame(height: 24).accessibilityHidden(true) }
-                newRoomButton
-            }
-            Divider().padding(.horizontal, 16)
-            layout {
-                if chosenKind == .bluetooth || chosenKind == .network {
-                    sourceChip
-                } else {
-                    Label(source.name, systemImage: "iphone")
-                        .font(.body).foregroundStyle(ProTheme.secondary)
-                        .padding(.horizontal, 16).padding(.vertical, 8)
-                        .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
-                }
-                if !dynamicType.isAccessibilitySize { Divider().frame(height: 24).accessibilityHidden(true) }
-                Button(action: openSettings) {
-                    if dynamicType.isAccessibilitySize {
-                        selectorLabel("Settings", symbol: "gearshape")
-                    } else {
-                        Image(systemName: "gearshape").font(.title3)
-                            .foregroundStyle(MC.action)
-                            .frame(width: 44, height: 44)
-                            .background(Color.primary.opacity(0.045), in: Circle())
-                            .frame(width: 60, height: 56).contentShape(Rectangle())
+        InstrumentHeaderLayout(collapseProgress: compactHeader ? 1 : 0,
+                               stacked: dynamicType.isAccessibilitySize,
+                               maximumCompactWidth: sizeClass == .regular ? 664 : nil) {
+            instrumentPickerButton.accessibilitySortPriority(4)
+            newRoomButton.accessibilitySortPriority(compactHeader ? 2 : 3)
+            Group {
+                if chosenKind == .bluetooth || chosenKind == .network { sourceChip }
+                else {
+                    HStack(spacing: 10) {
+                        if !compactHeaderLabels {
+                            Image(systemName: "iphone").accessibilityHidden(true).transition(.identity)
+                        }
+                        Text(source.name).lineLimit(dynamicType.isAccessibilitySize ? nil : 2)
                     }
+                    .font(compactHeaderLabels ? .footnote : .body).foregroundStyle(ProTheme.secondary)
+                    .padding(.horizontal, compactHeaderLabels ? 8 : 16).padding(.vertical, 8)
+                    .frame(maxWidth: .infinity, minHeight: compactHeaderLabels ? 44 : 56, alignment: .leading)
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Settings")
-                .accessibilityIdentifier("settings.open")
+            }.accessibilitySortPriority(compactHeader ? 3 : 2)
+            Button(action: openSettings) {
+                if dynamicType.isAccessibilitySize { selectorLabel("Settings", symbol: "gearshape") }
+                else { compactHeaderIcon("gearshape") }
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Settings")
+            .accessibilityIdentifier("settings.open")
+            .accessibilitySortPriority(1)
+        }
+        .background(ProTheme.face, in: RoundedRectangle(cornerRadius: compactHeader ? 28 : 24, style: .continuous))
+        .overlay {
+            if !dynamicType.isAccessibilitySize {
+                GeometryReader { geometry in
+                    Path { path in
+                        let middle = geometry.size.height / 2
+                        path.move(to: CGPoint(x: 16, y: middle))
+                        path.addLine(to: CGPoint(x: geometry.size.width - 16, y: middle))
+                        path.move(to: CGPoint(x: geometry.size.width / 2, y: 16))
+                        path.addLine(to: CGPoint(x: geometry.size.width / 2, y: middle - 16))
+                        path.move(to: CGPoint(x: geometry.size.width - 60, y: middle + 16))
+                        path.addLine(to: CGPoint(x: geometry.size.width - 60, y: geometry.size.height - 16))
+                    }.stroke(.primary.opacity(0.14), lineWidth: 0.5)
+                }
+                .opacity(compactHeaderLabels ? 0 : 1)
+                .animation(compactHeaderLabels || reduceMotion || AppRuntime.isReducedMotionTest ? nil : .easeOut(duration: 0.1), value: compactHeaderLabels)
+                .allowsHitTesting(false).accessibilityHidden(true)
             }
         }
-        .background(ProTheme.face, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: compactHeader ? 28 : 24, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("instrument.header")
+        .accessibilityValue(compactHeader ? "Compact" : "Expanded")
+    }
+
+    private func setHeaderCollapsed(_ collapsed: Bool) {
+        guard headerCollapsed != collapsed else { return }
+        headerMotionRevision += 1
+        let revision = headerMotionRevision
+        if reduceMotion || AppRuntime.isReducedMotionTest {
+            withTransaction(Transaction(animation: nil)) {
+                headerLabelsCompact = collapsed
+                headerCollapsed = collapsed
+            }
+            return
+        }
+        // Compact metrics fit every intermediate frame. Reveal expanded labels
+        // only after the surface has room; interrupted folds invalidate the reveal.
+        withTransaction(Transaction(animation: nil)) { headerLabelsCompact = true }
+        withAnimation(.smooth(duration: collapsed ? 0.32 : 0.38, extraBounce: 0), completionCriteria: .removed) {
+            headerCollapsed = collapsed
+        } completion: {
+            guard headerMotionRevision == revision, !headerCollapsed else { return }
+            withTransaction(Transaction(animation: nil)) { headerLabelsCompact = false }
+        }
+    }
+
+    private func compactHeaderIcon(_ symbol: String) -> some View {
+        Image(systemName: symbol).font(.title3).foregroundStyle(MC.action)
+            .frame(width: 44, height: 44)
+            .background(Color.primary.opacity(compactHeaderLabels ? 0 : 0.045), in: Circle())
+            .frame(maxWidth: .infinity, minHeight: compactHeader ? 44 : 56).contentShape(Rectangle())
     }
 
     private var instrumentPickerButton: some View {
@@ -421,7 +487,22 @@ struct InstrumentWorkspaceView: View {
 
     private var newRoomButton: some View {
         Button { engine.pause(); roomCapture = true } label: {
-            selectorLabel("Room", symbol: "house", prominent: true)
+            HStack(spacing: 10) {
+                Image(systemName: "house").font(.title3).foregroundStyle(MC.action)
+                    .frame(width: compactHeaderLabels ? 20 : nil, height: compactHeaderLabels ? 24 : nil)
+                if !compactHeaderLabels {
+                    Text("Room").font(.title3).foregroundStyle(.primary)
+                        .lineLimit(dynamicType.isAccessibilitySize ? nil : 2)
+                        .transition(.identity)
+                    Spacer(minLength: 2)
+                    Image(systemName: "chevron.right").font(.caption.weight(.semibold))
+                        .foregroundStyle(ProTheme.secondary).transition(.identity)
+                }
+            }
+            .padding(.horizontal, compactHeaderLabels ? 12 : 16)
+            .padding(.vertical, 8)
+            .frame(maxWidth: .infinity, minHeight: compactHeaderLabels ? 44 : 56, alignment: .leading)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .disabled(engine.recording)
@@ -432,16 +513,22 @@ struct InstrumentWorkspaceView: View {
     }
 
     private func selectorLabel(_ title: String, symbol: String, prominent: Bool = false) -> some View {
-        HStack(spacing: 10) {
-            Image(systemName: symbol).foregroundStyle(MC.action).accessibilityHidden(true)
-            Text(title).foregroundStyle(.primary).lineLimit(dynamicType.isAccessibilitySize ? nil : prominent ? 2 : 1)
-            Spacer(minLength: 2)
-            Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(ProTheme.secondary).accessibilityHidden(true)
+        HStack(spacing: compactHeaderLabels ? 6 : 10) {
+            if !compactHeaderLabels {
+                Image(systemName: symbol).foregroundStyle(MC.action).accessibilityHidden(true)
+                    .transition(.identity)
+            }
+            Text(title).foregroundStyle(.primary)
+                .lineLimit(dynamicType.isAccessibilitySize ? nil : compactHeaderLabels || prominent ? 2 : 1)
+                .contentTransition(.identity)
+            if !compactHeaderLabels { Spacer(minLength: 2) }
+            Image(systemName: compactHeaderLabels ? "chevron.down" : "chevron.right")
+                .font(.caption.weight(.semibold)).foregroundStyle(ProTheme.secondary).accessibilityHidden(true)
         }
-        .font(prominent ? .title3 : .body)
-        .padding(.horizontal, 16)
+        .font(compactHeaderLabels ? (prominent ? .subheadline.weight(.semibold) : .footnote) : (prominent ? .title3 : .body))
+        .padding(.horizontal, compactHeaderLabels ? 10 : 16)
         .padding(.vertical, 8)
-        .frame(maxWidth: .infinity, minHeight: 56)
+        .frame(maxWidth: .infinity, minHeight: compactHeaderLabels ? 44 : 56, alignment: .leading)
         .contentShape(Rectangle())
     }
 
@@ -746,6 +833,9 @@ struct InstrumentWorkspaceView: View {
             }
             ForEach(engine.events.suffix(10)) { event in
                 HStack(alignment: .top) { Text("\(event.elapsed.formatted(.number.precision(.fractionLength(1))))s").monospacedDigit(); Text(event.text) }.font(.caption)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityAddTraits(.isStaticText)
+                    .accessibilityLabel("At \(event.elapsed.formatted(.number.precision(.fractionLength(1)))) seconds, \(event.text)")
             }
         }
     }

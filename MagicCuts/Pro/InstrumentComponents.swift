@@ -458,6 +458,8 @@ struct InstrumentHistoryChart: View {
     }
     var body: some View {
         plotted
+            // Header layout motion must never interpolate observations or units.
+            .transaction { $0.animation = nil }
             .frame(height: dynamicType.isAccessibilitySize ? max(height, 240) : height)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel("\(kind.title) history")

@@ -50,5 +50,20 @@
     "validation": "docs/HEADER_ACTIONS_VALIDATION.md",
     "receipt": "docs/validation/header-actions-evidence.json",
     "note": "The original native-utility evidence above remains historical; follow-up evidence is separate."
+  },
+  "scrollMotion": {
+    "name": "Source header scroll motion",
+    "stage": "complete",
+    "updatedAt": "2026-09-13T05:53:12.677076+00:00",
+    "authority": "User: do one more pass; latest rejected compact screenshot: This is a no go.",
+    "review": "ship",
+    "correctionRoundsCompleted": 3,
+    "openFindings": [],
+    "documentation": "complete: DESIGN.md, .impeccable/design.json, and final documentation report",
+    "validation": "docs/HEADER_MOTION_VALIDATION.md",
+    "receipt": "docs/validation/header-motion-evidence.json",
+    "nextStep": "Local reviewable handoff; no push or merge requested.",
+    "note": "Original native-utility and source-header follow-up records remain historical; neither closes this motion amendment.",
+    "verdict": ".impeccable/review/header-motion/rejection-verdict.md"
   }
 }

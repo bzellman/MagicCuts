@@ -1,0 +1,998 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-13T05:53:12.677076+00:00",
+  "scope": "Scroll compression and animated expansion of the native source header.",
+  "status": "complete",
+  "baseCommit": "e22b7c7b373e5bef3b5117f2614561299072b6d1",
+  "branch": "codex/native-utility-redesign",
+  "sourceSha256": {
+    "MagicCuts/Pro/ProExperience.swift": "b18e9e2f231f9e373cd2e9e5bf06a6a1def1f730730be347356085712367b816",
+    "MagicCuts/Pro/InstrumentHeaderLayout.swift": "3cddf845582e207133c6fa7b58ec2f4093612ba63e7105095d2fbaa23b8fc47f",
+    "MagicCuts/Pro/InstrumentComponents.swift": "828e4d9601f26a7f85473bc1ef00a88a027a518cc05168281da1b000af4afc93",
+    "MagicCuts/AppRuntime.swift": "9b01f9a229868eec0a7aff985dc246e09136470f57c9c4cc41a6cf3ce9f4be31",
+    "MagicCutsUITests/ProExperienceUITests.swift": "2671c565bb4a5d349996860d01b21fb0acac01777a3b39467a72c8c4d53d850b",
+    "DESIGN.md": "b4658729ba94dc2cd0444fb75f721d74f84518504ddec8aa5a5fed79b5c550b4",
+    ".impeccable/design.json": "d5df21a372cf936c39f0671c7cc82ccd40bafee1d782c58d92c37893c390caf0",
+    "PRODUCT.md": "0a3029d31b3d94b798a1ac5947dd068bdb4224d684584578585967bf59305373",
+    ".impeccable/surfaces/magiccuts-pro-proexperience-swift.md": "1cfac67971aeed8699b6a6586c2854043108128a6728dac81e461aef14709191"
+  },
+  "testExecutions": [
+    {
+      "run": "phone-verdict3",
+      "deviceClass": "phone",
+      "observedOrientation": "portrait",
+      "runtime": {
+        "architecture": "arm64",
+        "deviceId": "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+        "deviceName": "MagicCuts Review iPhone",
+        "modelName": "iPhone 17 Pro",
+        "osBuildNumber": "23F77",
+        "osVersion": "26.5",
+        "platform": "iOS Simulator"
+      },
+      "resultBundle": "/tmp/magiccuts-header-motion-phone-verdict3.xcresult",
+      "summary": ".impeccable/review/header-motion/tests/phone-verdict3-summary.json",
+      "casesEvidence": ".impeccable/review/header-motion/tests/phone-verdict3-tests.json",
+      "attachmentManifest": ".impeccable/review/header-motion/tests/phone-verdict3-attachments.json",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "cases": [
+        {
+          "name": "testHomeAccessibility()",
+          "nodeIdentifier": "ProExperienceUITests/testHomeAccessibility()",
+          "result": "Passed",
+          "durationInSeconds": 18.881419897079468
+        },
+        {
+          "name": "testLargestTextAndControlsReflow()",
+          "nodeIdentifier": "ProExperienceUITests/testLargestTextAndControlsReflow()",
+          "result": "Passed",
+          "durationInSeconds": 25.89039897918701
+        },
+        {
+          "name": "testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+          "nodeIdentifier": "ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+          "result": "Passed",
+          "durationInSeconds": 83.69949495792389
+        },
+        {
+          "name": "testSourceHeaderLargestStandardText()",
+          "nodeIdentifier": "ProExperienceUITests/testSourceHeaderLargestStandardText()",
+          "result": "Passed",
+          "durationInSeconds": 9.201840043067932
+        },
+        {
+          "name": "testSourceHeaderReduceMotionPreservesScrollAndActions()",
+          "nodeIdentifier": "ProExperienceUITests/testSourceHeaderReduceMotionPreservesScrollAndActions()",
+          "result": "Passed",
+          "durationInSeconds": 11.417176008224487
+        }
+      ]
+    },
+    {
+      "run": "tablet-verdict3",
+      "deviceClass": "tablet",
+      "observedOrientation": "landscape",
+      "runtime": {
+        "architecture": "arm64",
+        "deviceId": "EEF203AE-DF4A-4C0B-B6AD-DFE8F4C3E62C",
+        "deviceName": "MagicCuts Review iPad",
+        "modelName": "iPad Air 11-inch (M3)",
+        "osBuildNumber": "23F77",
+        "osVersion": "26.5",
+        "platform": "iOS Simulator"
+      },
+      "resultBundle": "/tmp/magiccuts-header-motion-tablet-verdict3.xcresult",
+      "summary": ".impeccable/review/header-motion/tests/tablet-verdict3-summary.json",
+      "casesEvidence": ".impeccable/review/header-motion/tests/tablet-verdict3-tests.json",
+      "attachmentManifest": ".impeccable/review/header-motion/tests/tablet-verdict3-attachments.json",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "cases": [
+        {
+          "name": "testHomeAccessibility()",
+          "nodeIdentifier": "ProExperienceUITests/testHomeAccessibility()",
+          "result": "Passed",
+          "durationInSeconds": 19.266952991485596
+        },
+        {
+          "name": "testLargestTextAndControlsReflow()",
+          "nodeIdentifier": "ProExperienceUITests/testLargestTextAndControlsReflow()",
+          "result": "Passed",
+          "durationInSeconds": 25.74694001674652
+        },
+        {
+          "name": "testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+          "nodeIdentifier": "ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+          "result": "Passed",
+          "durationInSeconds": 83.71865105628967
+        }
+      ]
+    },
+    {
+      "run": "portrait-verdict3",
+      "deviceClass": "tablet",
+      "observedOrientation": "portrait",
+      "runtime": {
+        "architecture": "arm64",
+        "deviceId": "870AC203-DADE-4F1B-A469-1AFD05F0F254",
+        "deviceName": "MagicCuts Header Motion Portrait",
+        "modelName": "iPad Air 11-inch (M3)",
+        "osBuildNumber": "23F77",
+        "osVersion": "26.5",
+        "platform": "iOS Simulator"
+      },
+      "resultBundle": "/tmp/magiccuts-header-motion-portrait-verdict3.xcresult",
+      "summary": ".impeccable/review/header-motion/tests/portrait-verdict3-summary.json",
+      "casesEvidence": ".impeccable/review/header-motion/tests/portrait-verdict3-tests.json",
+      "attachmentManifest": ".impeccable/review/header-motion/tests/portrait-verdict3-attachments.json",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "cases": [
+        {
+          "name": "testSourceHeaderInPortraitTablet()",
+          "nodeIdentifier": "ProExperienceUITests/testSourceHeaderInPortraitTablet()",
+          "result": "Passed",
+          "durationInSeconds": 33.71975898742676
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "passed": 9,
+    "failed": 0,
+    "skipped": 0
+  },
+  "review": {
+    "disposition": "ship",
+    "correctionRoundsCompleted": 3,
+    "additionalRoundAuthority": "User: do one more pass; latest rejected compact screenshot: This is a no go.",
+    "fullReview": ".impeccable/review/header-motion/rejection-review.md",
+    "verdict": ".impeccable/review/header-motion/rejection-verdict.md",
+    "packet": ".impeccable/review/header-motion/rejection-verdict-packet.md",
+    "history": [
+      ".impeccable/review/header-motion/finish-review.md",
+      ".impeccable/review/header-motion/finish-verdict-1.md",
+      ".impeccable/review/header-motion/finish-verdict-2.md"
+    ],
+    "nextStep": "Local reviewable handoff; no push or merge requested.",
+    "roleSubstitution": "Fresh independent default agent followed the shipped Impeccable fallback reviewer contract.",
+    "documentation": ".impeccable/review/header-motion/documentation.md",
+    "findings": {
+      "compactComposition": "resolved",
+      "transitionBounds": "resolved",
+      "largestAccessibilityRoomSpacing": "resolved",
+      "refreshedEvidence": "resolved"
+    },
+    "introducedRegressions": [],
+    "openFindings": [],
+    "documentationRoleSubstitution": "Fresh default agent followed the shipped Impeccable fallback documenter contract."
+  },
+  "captures": [
+    {
+      "path": ".impeccable/review/header-motion/phone/motion-compact-dark.png",
+      "sha256": "22950c242e04a25af3457066ca1bc697520a3f2028260ab2cdddb0c0fd595f96",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-compact-dark_0_0003DFDA-F5B8-45A7-9255-B0DAE6A83B1D.png.",
+      "openedForCaptureValidity": true,
+      "run": "phone-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+      "originalExport": ".review/header-motion/phone-verdict3-attachments/9F2E6A91-1527-429F-BF39-CBD90B3CA455.png",
+      "attachment": "motion-compact-dark_0_0003DFDA-F5B8-45A7-9255-B0DAE6A83B1D.png",
+      "observedOrientation": "portrait",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/phone/motion-compact-light.png",
+      "sha256": "ddc1b5e403be3833e14c9cf463fa055d97f930ec86e310f391ba53a4d37d9682",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-compact-light_0_6B5248ED-38B7-4C44-840D-4C96CA58317F.png.",
+      "openedForCaptureValidity": true,
+      "run": "phone-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+      "originalExport": ".review/header-motion/phone-verdict3-attachments/68FCE5D0-6D60-4AB8-9FBD-B84107082112.png",
+      "attachment": "motion-compact-light_0_6B5248ED-38B7-4C44-840D-4C96CA58317F.png",
+      "observedOrientation": "portrait",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/phone/motion-expanded-dark.png",
+      "sha256": "50245c29b2c5d684dafd8eb550a46005519e5a24767c58f336ea984f8310ccf6",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-expanded-dark_0_76DABF85-DAA7-4E37-B4C2-0E9FAC7443F5.png.",
+      "openedForCaptureValidity": true,
+      "run": "phone-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+      "originalExport": ".review/header-motion/phone-verdict3-attachments/109AC594-443E-465A-9F7C-53BCA88B66BE.png",
+      "attachment": "motion-expanded-dark_0_76DABF85-DAA7-4E37-B4C2-0E9FAC7443F5.png",
+      "observedOrientation": "portrait",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/phone/motion-expanded-light.png",
+      "sha256": "87580105dc75d7aa65bf1480a513aacb23faa939220fb684834dddd921f7b5c3",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-expanded-light_0_17BFCD86-948F-45F1-B1DC-295193B4F223.png.",
+      "openedForCaptureValidity": true,
+      "run": "phone-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+      "originalExport": ".review/header-motion/phone-verdict3-attachments/7C58EBB7-ECBF-4269-8011-9981F39669A8.png",
+      "attachment": "motion-expanded-light_0_17BFCD86-948F-45F1-B1DC-295193B4F223.png",
+      "observedOrientation": "portrait",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/phone/motion-in-flight-01.png",
+      "sha256": "ec7475460af3c9c8e1a867900eadbda7f7f2a5b636db4192fb87e937411031cd",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Unedited native iOS Simulator full-display video frame extracted with FFmpeg input seek 107.15 seconds from /tmp/magiccuts-header-motion-phone-verdict3.mp4, recorded during correction 3 XCTest navigation. Seek values are extraction locators, not independently verified presentation timestamps. Explicit sample data; no compositing, masking, cropping, or pixel edits.",
+      "openedForCaptureValidity": true,
+      "originalExport": ".review/header-motion/phone-verdict3-video/107.15.png",
+      "rawRecording": "/tmp/magiccuts-header-motion-phone-verdict3.mp4",
+      "captureKind": "native simulator full-display recording frame",
+      "observedOrientation": "portrait",
+      "pixelContentMatchesOriginalExport": true,
+      "requestedInputSeekSecond": 107.15
+    },
+    {
+      "path": ".impeccable/review/header-motion/phone/motion-in-flight-02.png",
+      "sha256": "6ced1325e74e0ea59324d5dd268c975501ace58bc8d84ec59c604b95385c9b40",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Unedited native iOS Simulator full-display video frame extracted with FFmpeg input seek 107.30 seconds from /tmp/magiccuts-header-motion-phone-verdict3.mp4, recorded during correction 3 XCTest navigation. Seek values are extraction locators, not independently verified presentation timestamps. Explicit sample data; no compositing, masking, cropping, or pixel edits.",
+      "openedForCaptureValidity": true,
+      "originalExport": ".review/header-motion/phone-verdict3-video/107.30.png",
+      "rawRecording": "/tmp/magiccuts-header-motion-phone-verdict3.mp4",
+      "captureKind": "native simulator full-display recording frame",
+      "observedOrientation": "portrait",
+      "pixelContentMatchesOriginalExport": true,
+      "requestedInputSeekSecond": 107.3
+    },
+    {
+      "path": ".impeccable/review/header-motion/phone/motion-in-flight-03.png",
+      "sha256": "7448a06fb9c31a01f24cbe4f238bb73214694341d76e52ef600e28ebe05ff911",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Unedited native iOS Simulator full-display video frame extracted with FFmpeg input seek 109.60 seconds from /tmp/magiccuts-header-motion-phone-verdict3.mp4, recorded during correction 3 XCTest navigation. Seek values are extraction locators, not independently verified presentation timestamps. Explicit sample data; no compositing, masking, cropping, or pixel edits.",
+      "openedForCaptureValidity": true,
+      "originalExport": ".review/header-motion/phone-verdict3-video/109.60.png",
+      "rawRecording": "/tmp/magiccuts-header-motion-phone-verdict3.mp4",
+      "captureKind": "native simulator full-display recording frame",
+      "observedOrientation": "portrait",
+      "pixelContentMatchesOriginalExport": true,
+      "requestedInputSeekSecond": 109.6
+    },
+    {
+      "path": ".impeccable/review/header-motion/phone/motion-in-flight-04.png",
+      "sha256": "5f3e3c91d18e5c86dbd4f3767afd705f5deca7a39935ac274f045b66866c4296",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Unedited native iOS Simulator full-display video frame extracted with FFmpeg input seek 109.80 seconds from /tmp/magiccuts-header-motion-phone-verdict3.mp4, recorded during correction 3 XCTest navigation. Seek values are extraction locators, not independently verified presentation timestamps. Explicit sample data; no compositing, masking, cropping, or pixel edits.",
+      "openedForCaptureValidity": true,
+      "originalExport": ".review/header-motion/phone-verdict3-video/109.80.png",
+      "rawRecording": "/tmp/magiccuts-header-motion-phone-verdict3.mp4",
+      "captureKind": "native simulator full-display recording frame",
+      "observedOrientation": "portrait",
+      "pixelContentMatchesOriginalExport": true,
+      "requestedInputSeekSecond": 109.8
+    },
+    {
+      "path": ".impeccable/review/header-motion/phone/motion-largest-standard.png",
+      "sha256": "694477c0b9003b2fd91358d9e97e9c74bdfb5eab0e5db297aae7408b1ed30b3f",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testSourceHeaderLargestStandardText(); attachment motion-largest-standard_0_39244E47-C1C8-4CC7-ABEF-F929A7FACACC.png.",
+      "openedForCaptureValidity": true,
+      "run": "phone-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderLargestStandardText()",
+      "originalExport": ".review/header-motion/phone-verdict3-attachments/E3EB7A99-5E41-41B9-92B2-381770BF697F.png",
+      "attachment": "motion-largest-standard_0_39244E47-C1C8-4CC7-ABEF-F929A7FACACC.png",
+      "observedOrientation": "portrait",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/phone/motion-long-title-dark.png",
+      "sha256": "3d469eef55701bfe49f3e77e1376c330584a7d00ac0e84b5b5f73e146e455a53",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-long-title-dark_0_B49BD830-69DD-4F13-A376-F9071B87B45A.png.",
+      "openedForCaptureValidity": true,
+      "run": "phone-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+      "originalExport": ".review/header-motion/phone-verdict3-attachments/80C96369-4214-44D0-BFA1-984F5129709B.png",
+      "attachment": "motion-long-title-dark_0_B49BD830-69DD-4F13-A376-F9071B87B45A.png",
+      "observedOrientation": "portrait",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/phone/motion-long-title-light.png",
+      "sha256": "b5c2feda8035e1026ed50d4e6f1eee188e07a221d74f937142e4c07cebb51230",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-long-title-light_0_BAA33293-58D4-4646-B0F4-9D793D8A9644.png.",
+      "openedForCaptureValidity": true,
+      "run": "phone-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+      "originalExport": ".review/header-motion/phone-verdict3-attachments/D29E267A-98E2-43BE-BE27-896C81070756.png",
+      "attachment": "motion-long-title-light_0_BAA33293-58D4-4646-B0F4-9D793D8A9644.png",
+      "observedOrientation": "portrait",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/phone/motion-reduced-compact.png",
+      "sha256": "0798292283b8def3c415a96810d1720319fe07e1934f33e7352925cc631fa0f2",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testSourceHeaderReduceMotionPreservesScrollAndActions(); attachment motion-reduced-compact_0_8CE117BB-D198-42A3-B494-3A3FEA4179C6.png.",
+      "openedForCaptureValidity": true,
+      "run": "phone-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderReduceMotionPreservesScrollAndActions()",
+      "originalExport": ".review/header-motion/phone-verdict3-attachments/498AC2CE-58D8-4594-A672-4BCF667DD510.png",
+      "attachment": "motion-reduced-compact_0_8CE117BB-D198-42A3-B494-3A3FEA4179C6.png",
+      "observedOrientation": "portrait",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/phone/motion-reduced-expanded.png",
+      "sha256": "1edb4013c860cd8461f0bd299a1cfe8f2e3d21b860471642b3893f798a98d811",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testSourceHeaderReduceMotionPreservesScrollAndActions(); attachment motion-reduced-expanded_0_A68CD0DF-5303-4318-AED8-65ED60EDEBDE.png.",
+      "openedForCaptureValidity": true,
+      "run": "phone-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderReduceMotionPreservesScrollAndActions()",
+      "originalExport": ".review/header-motion/phone-verdict3-attachments/6277CCDA-8681-4603-A84A-37E3F0E51A93.png",
+      "attachment": "motion-reduced-expanded_0_A68CD0DF-5303-4318-AED8-65ED60EDEBDE.png",
+      "observedOrientation": "portrait",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/phone/motion-restored-dark.png",
+      "sha256": "38da5d6a70b693e6e06cacb8539dd1ab3a02853231734f69326a6246450d47ea",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-restored-dark_0_436B277A-121F-456D-8F84-0BDC1D0B0C59.png.",
+      "openedForCaptureValidity": true,
+      "run": "phone-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+      "originalExport": ".review/header-motion/phone-verdict3-attachments/36F16B0A-D6CD-4CF0-AC70-22884EAD1D45.png",
+      "attachment": "motion-restored-dark_0_436B277A-121F-456D-8F84-0BDC1D0B0C59.png",
+      "observedOrientation": "portrait",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/phone/motion-restored-light.png",
+      "sha256": "714ea2936cf30fbea2de64678c2459692e4ca34ccc7ac75b008c810fe1223a12",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-restored-light_0_BADE32B9-5BFC-44E6-BA81-1BDDD7620267.png.",
+      "openedForCaptureValidity": true,
+      "run": "phone-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+      "originalExport": ".review/header-motion/phone-verdict3-attachments/D747A342-1467-480F-A96B-DBAED9DB841B.png",
+      "attachment": "motion-restored-light_0_BADE32B9-5BFC-44E6-BA81-1BDDD7620267.png",
+      "observedOrientation": "portrait",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/phone/pro-largest-controls.png",
+      "sha256": "bfda22ace3803026257d093b5a41e804e81b89aa81d8d8f799877006e1cf3cb6",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testLargestTextAndControlsReflow(); attachment pro-largest-controls_0_0BD04E1C-D24D-481A-8344-A991F510E488.png.",
+      "openedForCaptureValidity": true,
+      "run": "phone-verdict3",
+      "test": "ProExperienceUITests/testLargestTextAndControlsReflow()",
+      "originalExport": ".review/header-motion/phone-verdict3-attachments/5DBF015B-66E3-4CDB-AA01-3D12B2A3266F.png",
+      "attachment": "pro-largest-controls_0_0BD04E1C-D24D-481A-8344-A991F510E488.png",
+      "observedOrientation": "portrait",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/phone/pro-largest-text.png",
+      "sha256": "a34f5bdf816ae67bc9a4972b43392ffa5689d14ad003d80e8f2db07f60975e47",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testLargestTextAndControlsReflow(); attachment pro-largest-text_0_982004E7-8035-4053-B997-1FE0BAA1F9FE.png.",
+      "openedForCaptureValidity": true,
+      "run": "phone-verdict3",
+      "test": "ProExperienceUITests/testLargestTextAndControlsReflow()",
+      "originalExport": ".review/header-motion/phone-verdict3-attachments/7EAEA90D-C1E8-4DB8-8010-AC64FBB8E221.png",
+      "attachment": "pro-largest-text_0_982004E7-8035-4053-B997-1FE0BAA1F9FE.png",
+      "observedOrientation": "portrait",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/phone/pro-live-dark.png",
+      "sha256": "62f3dc63187965c11ef10544529f865032ed9d757be50ba957dfd40eaa6fe2f7",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testHomeAccessibility(); attachment pro-live-dark_0_59C66030-0C98-4B32-81C5-882D9B1DBF8C.png.",
+      "openedForCaptureValidity": true,
+      "run": "phone-verdict3",
+      "test": "ProExperienceUITests/testHomeAccessibility()",
+      "originalExport": ".review/header-motion/phone-verdict3-attachments/4A1E4496-2A4E-4B92-A0B8-271C47199B04.png",
+      "attachment": "pro-live-dark_0_59C66030-0C98-4B32-81C5-882D9B1DBF8C.png",
+      "observedOrientation": "portrait",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/phone/pro-live-light.png",
+      "sha256": "6d670e4bd2208ad5c742e53f9d0cc426f044efee05af6b9d626c46f67d588acb",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPhone screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-phone-verdict3.xcresult; ProExperienceUITests/testHomeAccessibility(); attachment pro-live-light_0_91D9A4BC-B4ED-4476-B435-2C43AC0B4DA3.png.",
+      "openedForCaptureValidity": true,
+      "run": "phone-verdict3",
+      "test": "ProExperienceUITests/testHomeAccessibility()",
+      "originalExport": ".review/header-motion/phone-verdict3-attachments/6B5DF5FA-D962-4B05-85A0-ED88C4C75FA8.png",
+      "attachment": "pro-live-light_0_91D9A4BC-B4ED-4476-B435-2C43AC0B4DA3.png",
+      "observedOrientation": "portrait",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/tablet/motion-compact-dark.png",
+      "sha256": "e74824684b4bbdb67bdeafa99fe87e6073fc40a64dbc9df3426ec1a7f9f1c658",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "exifOrientation": 8,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-compact-dark_0_4D37371D-EEB3-4505-AE51-71DC4B27D01F.png.",
+      "openedForCaptureValidity": true,
+      "run": "tablet-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+      "originalExport": ".review/header-motion/tablet-verdict3-attachments/ECB74B1B-3385-4B44-A8CA-030DE9D49766.png",
+      "attachment": "motion-compact-dark_0_4D37371D-EEB3-4505-AE51-71DC4B27D01F.png",
+      "observedOrientation": "landscape",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/tablet/motion-compact-light.png",
+      "sha256": "cbf6105c4ccbbd086f6a30108f968235ff3ce0cce99062939042af8b86b748b5",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "exifOrientation": 8,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-compact-light_0_E38A0070-FBA7-4BAB-85F3-AFDD0702ECAF.png.",
+      "openedForCaptureValidity": true,
+      "run": "tablet-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+      "originalExport": ".review/header-motion/tablet-verdict3-attachments/D6E363C2-E1C1-41D1-B58C-43ABDA62EFDF.png",
+      "attachment": "motion-compact-light_0_E38A0070-FBA7-4BAB-85F3-AFDD0702ECAF.png",
+      "observedOrientation": "landscape",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/tablet/motion-expanded-dark.png",
+      "sha256": "fe3e3ed643da44b73e263479e23e52e67b289f42098ac0c422c454299963c5af",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "exifOrientation": 8,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-expanded-dark_0_C51099DB-E6EA-4694-8CD9-A82F26F9984E.png.",
+      "openedForCaptureValidity": true,
+      "run": "tablet-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+      "originalExport": ".review/header-motion/tablet-verdict3-attachments/465C7DBF-DE1A-4114-94E7-6B6B75FADBB8.png",
+      "attachment": "motion-expanded-dark_0_C51099DB-E6EA-4694-8CD9-A82F26F9984E.png",
+      "observedOrientation": "landscape",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/tablet/motion-expanded-light.png",
+      "sha256": "2fb1e7ff2f894d1bb695b1d60b87eedab67460a18b28cc152f8f3ff1beb6d8a0",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "exifOrientation": 8,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-expanded-light_0_C2596573-B922-420F-9F3D-2CBA4D71B51C.png.",
+      "openedForCaptureValidity": true,
+      "run": "tablet-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+      "originalExport": ".review/header-motion/tablet-verdict3-attachments/621E2E64-8F22-40F8-979D-96835D5CA4CD.png",
+      "attachment": "motion-expanded-light_0_C2596573-B922-420F-9F3D-2CBA4D71B51C.png",
+      "observedOrientation": "landscape",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/tablet/motion-in-flight-01.png",
+      "sha256": "6c24e6bc4ae4c6163da31b7942589f8a25a1eb010a312e17577f6ccd4b584ca8",
+      "pngPixelDimensions": [
+        2360,
+        1640
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Unedited native iOS Simulator full-display video frame extracted with FFmpeg input seek 94.50 seconds from /tmp/magiccuts-header-motion-tablet-verdict3.mp4, recorded during correction 3 XCTest navigation. Seek values are extraction locators, not independently verified presentation timestamps. Explicit sample data; no compositing, masking, cropping, or pixel edits.",
+      "openedForCaptureValidity": true,
+      "originalExport": ".review/header-motion/tablet-verdict3-video/94.50.png",
+      "rawRecording": "/tmp/magiccuts-header-motion-tablet-verdict3.mp4",
+      "captureKind": "native simulator full-display recording frame",
+      "observedOrientation": "landscape",
+      "pixelContentMatchesOriginalExport": true,
+      "requestedInputSeekSecond": 94.5
+    },
+    {
+      "path": ".impeccable/review/header-motion/tablet/motion-in-flight-02.png",
+      "sha256": "10007bcd7eba0e151f96652f7b18b5c300e00a1f236cdd5862448e2bbd2e2455",
+      "pngPixelDimensions": [
+        2360,
+        1640
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Unedited native iOS Simulator full-display video frame extracted with FFmpeg input seek 94.60 seconds from /tmp/magiccuts-header-motion-tablet-verdict3.mp4, recorded during correction 3 XCTest navigation. Seek values are extraction locators, not independently verified presentation timestamps. Explicit sample data; no compositing, masking, cropping, or pixel edits.",
+      "openedForCaptureValidity": true,
+      "originalExport": ".review/header-motion/tablet-verdict3-video/94.60.png",
+      "rawRecording": "/tmp/magiccuts-header-motion-tablet-verdict3.mp4",
+      "captureKind": "native simulator full-display recording frame",
+      "observedOrientation": "landscape",
+      "pixelContentMatchesOriginalExport": true,
+      "requestedInputSeekSecond": 94.6
+    },
+    {
+      "path": ".impeccable/review/header-motion/tablet/motion-in-flight-03.png",
+      "sha256": "88e4f3698774ecb19816885a799848ad34351bb45477208223d9847611f06b5f",
+      "pngPixelDimensions": [
+        2360,
+        1640
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Unedited native iOS Simulator full-display video frame extracted with FFmpeg input seek 96.70 seconds from /tmp/magiccuts-header-motion-tablet-verdict3.mp4, recorded during correction 3 XCTest navigation. Seek values are extraction locators, not independently verified presentation timestamps. Explicit sample data; no compositing, masking, cropping, or pixel edits.",
+      "openedForCaptureValidity": true,
+      "originalExport": ".review/header-motion/tablet-verdict3-video/96.70.png",
+      "rawRecording": "/tmp/magiccuts-header-motion-tablet-verdict3.mp4",
+      "captureKind": "native simulator full-display recording frame",
+      "observedOrientation": "landscape",
+      "pixelContentMatchesOriginalExport": true,
+      "requestedInputSeekSecond": 96.7
+    },
+    {
+      "path": ".impeccable/review/header-motion/tablet/motion-in-flight-04.png",
+      "sha256": "7c76a754655ad88ca6b16afcf992669f9792589b28868d8a0018c52384525c5d",
+      "pngPixelDimensions": [
+        2360,
+        1640
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Unedited native iOS Simulator full-display video frame extracted with FFmpeg input seek 96.80 seconds from /tmp/magiccuts-header-motion-tablet-verdict3.mp4, recorded during correction 3 XCTest navigation. Seek values are extraction locators, not independently verified presentation timestamps. Explicit sample data; no compositing, masking, cropping, or pixel edits.",
+      "openedForCaptureValidity": true,
+      "originalExport": ".review/header-motion/tablet-verdict3-video/96.80.png",
+      "rawRecording": "/tmp/magiccuts-header-motion-tablet-verdict3.mp4",
+      "captureKind": "native simulator full-display recording frame",
+      "observedOrientation": "landscape",
+      "pixelContentMatchesOriginalExport": true,
+      "requestedInputSeekSecond": 96.8
+    },
+    {
+      "path": ".impeccable/review/header-motion/tablet/motion-long-title-dark.png",
+      "sha256": "0dca3fa025cbb05c834de9a61768dd8d90248252ead9ae04c5f875365054d55a",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "exifOrientation": 8,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-long-title-dark_0_C2A2F7BA-B60F-4EE7-AC22-E48984C472E9.png.",
+      "openedForCaptureValidity": true,
+      "run": "tablet-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+      "originalExport": ".review/header-motion/tablet-verdict3-attachments/64798B4B-82EF-4523-9FD7-CEC01F8A742B.png",
+      "attachment": "motion-long-title-dark_0_C2A2F7BA-B60F-4EE7-AC22-E48984C472E9.png",
+      "observedOrientation": "landscape",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/tablet/motion-long-title-light.png",
+      "sha256": "54f95b9c8752b01ad29e47de6a3a5630919f8df8faac7d73dc06666331a20755",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "exifOrientation": 8,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-long-title-light_0_C592667D-7CEF-46B0-AACF-05CCB55B59FF.png.",
+      "openedForCaptureValidity": true,
+      "run": "tablet-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+      "originalExport": ".review/header-motion/tablet-verdict3-attachments/E8111CCC-4DA5-4515-82D4-2949FF73AA97.png",
+      "attachment": "motion-long-title-light_0_C592667D-7CEF-46B0-AACF-05CCB55B59FF.png",
+      "observedOrientation": "landscape",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/tablet/motion-restored-dark.png",
+      "sha256": "bafab95eb354c305a11f4ff9625e5c2b5b7c69c0eceda191b46c6f2f82d29748",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "exifOrientation": 8,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-restored-dark_0_07204E1F-BC83-4764-BFF5-F106B856B3DF.png.",
+      "openedForCaptureValidity": true,
+      "run": "tablet-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+      "originalExport": ".review/header-motion/tablet-verdict3-attachments/D91CF5A3-128D-4491-88D6-CB14FA3BB9D8.png",
+      "attachment": "motion-restored-dark_0_07204E1F-BC83-4764-BFF5-F106B856B3DF.png",
+      "observedOrientation": "landscape",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/tablet/motion-restored-light.png",
+      "sha256": "ceeb062d152370d69898d85abfbce752a646ecb672fc3598524111f9b6c7dd74",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "exifOrientation": 8,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation(); attachment motion-restored-light_0_B9AB726A-DBFB-4B91-B8BF-715A317F97BF.png.",
+      "openedForCaptureValidity": true,
+      "run": "tablet-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+      "originalExport": ".review/header-motion/tablet-verdict3-attachments/D64DFEA8-273A-42DB-A2CB-6BDEA1400FAE.png",
+      "attachment": "motion-restored-light_0_B9AB726A-DBFB-4B91-B8BF-715A317F97BF.png",
+      "observedOrientation": "landscape",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/tablet/motion-tablet-portrait-compact-dark.png",
+      "sha256": "64852894e71d8d4c661283ec65d0c0da8dfeea447241bbd5b83de5c416b6841a",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display simulator screenshot after correction 3 from /tmp/magiccuts-header-motion-portrait-verdict3.xcresult; ProExperienceUITests/testSourceHeaderInPortraitTablet(); motion-tablet-portrait-compact-dark_0_29EEF32A-BB92-4013-B40E-A217529A4377.png. Explicit sample data; no pixel edits.",
+      "openedForCaptureValidity": true,
+      "run": "portrait-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderInPortraitTablet()",
+      "originalExport": ".review/header-motion/portrait-verdict3-attachments/4ABE2FD6-EB4C-40FB-A911-1CD3EC5D188D.png",
+      "attachment": "motion-tablet-portrait-compact-dark_0_29EEF32A-BB92-4013-B40E-A217529A4377.png",
+      "observedOrientation": "portrait",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/tablet/motion-tablet-portrait-compact-light.png",
+      "sha256": "9c344e849519606e3fd55ad9691fe5152331aae35de39adc5bce0c9319a5e232",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display simulator screenshot after correction 3 from /tmp/magiccuts-header-motion-portrait-verdict3.xcresult; ProExperienceUITests/testSourceHeaderInPortraitTablet(); motion-tablet-portrait-compact-light_0_92A3542A-3671-4124-AB9D-850500B5BBBD.png. Explicit sample data; no pixel edits.",
+      "openedForCaptureValidity": true,
+      "run": "portrait-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderInPortraitTablet()",
+      "originalExport": ".review/header-motion/portrait-verdict3-attachments/1301098B-16D8-4A65-97BD-CAA073F3A96A.png",
+      "attachment": "motion-tablet-portrait-compact-light_0_92A3542A-3671-4124-AB9D-850500B5BBBD.png",
+      "observedOrientation": "portrait",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/tablet/motion-tablet-portrait-expanded-dark.png",
+      "sha256": "6af1a5f67bcb185b1b63ccba3dabd0710c8962b850522b052448cd877275c4c3",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display simulator screenshot after correction 3 from /tmp/magiccuts-header-motion-portrait-verdict3.xcresult; ProExperienceUITests/testSourceHeaderInPortraitTablet(); motion-tablet-portrait-expanded-dark_0_36E0F89C-4AA2-4595-A05E-2709B11E2343.png. Explicit sample data; no pixel edits.",
+      "openedForCaptureValidity": true,
+      "run": "portrait-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderInPortraitTablet()",
+      "originalExport": ".review/header-motion/portrait-verdict3-attachments/F06FEF72-7D33-4883-9D8D-27944A643448.png",
+      "attachment": "motion-tablet-portrait-expanded-dark_0_36E0F89C-4AA2-4595-A05E-2709B11E2343.png",
+      "observedOrientation": "portrait",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/tablet/motion-tablet-portrait-expanded-light.png",
+      "sha256": "9c772876701e5712f1073c8057d99b4aa7fad94d3b2c935fb7b8b137bc6bbb21",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "exifOrientation": 1,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display simulator screenshot after correction 3 from /tmp/magiccuts-header-motion-portrait-verdict3.xcresult; ProExperienceUITests/testSourceHeaderInPortraitTablet(); motion-tablet-portrait-expanded-light_0_9D90A83E-BB12-4FAC-ACF8-CD636864DB42.png. Explicit sample data; no pixel edits.",
+      "openedForCaptureValidity": true,
+      "run": "portrait-verdict3",
+      "test": "ProExperienceUITests/testSourceHeaderInPortraitTablet()",
+      "originalExport": ".review/header-motion/portrait-verdict3-attachments/7BA2F89B-60C1-4B4A-8CC5-01B40C592774.png",
+      "attachment": "motion-tablet-portrait-expanded-light_0_9D90A83E-BB12-4FAC-ACF8-CD636864DB42.png",
+      "observedOrientation": "portrait",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/tablet/pro-largest-controls.png",
+      "sha256": "00b058304dc3f36fe82c2f9c638be59b220f4b07813e30f207a30c95c79986e4",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "exifOrientation": 8,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testLargestTextAndControlsReflow(); attachment pro-largest-controls_0_89E93E1E-0F96-4B0B-8E4E-54115B56CB1C.png.",
+      "openedForCaptureValidity": true,
+      "run": "tablet-verdict3",
+      "test": "ProExperienceUITests/testLargestTextAndControlsReflow()",
+      "originalExport": ".review/header-motion/tablet-verdict3-attachments/721785D5-D8EE-4EC8-A8E4-C49CE7932BD1.png",
+      "attachment": "pro-largest-controls_0_89E93E1E-0F96-4B0B-8E4E-54115B56CB1C.png",
+      "observedOrientation": "landscape",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/tablet/pro-largest-text.png",
+      "sha256": "1e0a9d1f23b0d69a088e25cd477180d6f6a21631d982710a7d7756b0acf763cb",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "exifOrientation": 8,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testLargestTextAndControlsReflow(); attachment pro-largest-text_0_54B7B04A-AD04-4D66-A9DD-ADB0A6B20FC7.png.",
+      "openedForCaptureValidity": true,
+      "run": "tablet-verdict3",
+      "test": "ProExperienceUITests/testLargestTextAndControlsReflow()",
+      "originalExport": ".review/header-motion/tablet-verdict3-attachments/F0BB8DF1-ADAA-4C86-9EBB-4981C6A47EC3.png",
+      "attachment": "pro-largest-text_0_54B7B04A-AD04-4D66-A9DD-ADB0A6B20FC7.png",
+      "observedOrientation": "landscape",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/tablet/pro-live-dark.png",
+      "sha256": "88a2df3f2a14d5424575fe0c6aaa5170742e1865f59e65a48cd31866f1a15bc6",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "exifOrientation": 8,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testHomeAccessibility(); attachment pro-live-dark_0_D681B0F0-8A95-46D5-9901-5FABF18013FE.png.",
+      "openedForCaptureValidity": true,
+      "run": "tablet-verdict3",
+      "test": "ProExperienceUITests/testHomeAccessibility()",
+      "originalExport": ".review/header-motion/tablet-verdict3-attachments/06E4E030-2F34-4717-80F9-D0F1D5CDE93D.png",
+      "attachment": "pro-live-dark_0_D681B0F0-8A95-46D5-9901-5FABF18013FE.png",
+      "observedOrientation": "landscape",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    },
+    {
+      "path": ".impeccable/review/header-motion/tablet/pro-live-light.png",
+      "sha256": "0734889d152a3200eb5b5e71949817c53785e1800ca765f1bcee49abdc73603e",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "exifOrientation": 8,
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest full-display iPad landscape screenshot, correction 3 after user rejection; explicit sample data; no pixel edits. Origin /tmp/magiccuts-header-motion-tablet-verdict3.xcresult; ProExperienceUITests/testHomeAccessibility(); attachment pro-live-light_0_CF472EA8-BC25-484C-BFA9-2D719A0B7355.png.",
+      "openedForCaptureValidity": true,
+      "run": "tablet-verdict3",
+      "test": "ProExperienceUITests/testHomeAccessibility()",
+      "originalExport": ".review/header-motion/tablet-verdict3-attachments/6FB95924-35A4-462B-8738-31BF62F8A280.png",
+      "attachment": "pro-live-light_0_CF472EA8-BC25-484C-BFA9-2D719A0B7355.png",
+      "observedOrientation": "landscape",
+      "captureKind": "native XCTest full-display screenshot",
+      "pixelContentMatchesOriginalExport": true
+    }
+  ],
+  "recordings": [
+    {
+      "deviceClass": "phone",
+      "rawPath": "/tmp/magiccuts-header-motion-phone-verdict3.mp4",
+      "sha256": "b9c8170a176220aa6d1e96537fe3f1339731723bf5acd653f5527c5563522960",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1206,
+            "height": 2622,
+            "tags": {}
+          }
+        ],
+        "format": {
+          "duration": "180.766667"
+        }
+      },
+      "requestedFrameExtractionSeekSeconds": [
+        107.15,
+        107.3,
+        109.6,
+        109.8
+      ]
+    },
+    {
+      "deviceClass": "tablet",
+      "rawPath": "/tmp/magiccuts-header-motion-tablet-verdict3.mp4",
+      "sha256": "71f9dce6c04df6abffd2458f4618bb7aee72ce1b4b61376f4d0fe45eb39a4e77",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1640,
+            "height": 2360,
+            "tags": {},
+            "side_data_list": [
+              {
+                "rotation": 90
+              }
+            ]
+          }
+        ],
+        "format": {
+          "duration": "175.543333"
+        }
+      },
+      "requestedFrameExtractionSeekSeconds": [
+        94.5,
+        94.6,
+        96.7,
+        96.8
+      ]
+    }
+  ],
+  "preview": {
+    "origin": "Native iPhone simulator recording with explicit sample data; no synthetic frames or retiming.",
+    "path": ".impeccable/review/header-motion/phone/header-motion.mp4",
+    "sha256": "a8423907adeeaf399ce34cc5faa23818385c61ad039abd4ffaa36e7486e2e872",
+    "rawPath": "/tmp/magiccuts-header-motion-phone-verdict3.mp4",
+    "rawSha256": "b9c8170a176220aa6d1e96537fe3f1339731723bf5acd653f5527c5563522960",
+    "trimStartSecond": 106,
+    "trimEndSecond": 114,
+    "encoding": "H.264, CRF 18, native variable frame timing; no audio, interpolation or retiming. Decode then trim seconds 106\u2013114; shift timestamps by a constant to start at zero.",
+    "durationSeconds": 7.62,
+    "frameCount": 142,
+    "firstSourceFrameSecond": 106.206667,
+    "lastSourceFrameSecond": 113.823333
+  },
+  "provenanceScan": ".impeccable/review/header-motion/provenance-scan.txt",
+  "limits": [
+    "Functional assertions and the visual verdict are separate evidence; native recording frames are included for motion legibility.",
+    "Reduce Motion test forces the same no-animation branch through a DEBUG fixture; an OS setting toggle is not claimed.",
+    "Simulator sample data does not establish physical sensor accuracy, live camera frames, LiDAR acceptance or physical-device frame rate.",
+    "Only the selected UI cases were rerun; broader application and commerce evidence remains historical."
+  ],
+  "preservedPreexistingChange": ".impeccable/review/native-utility/phone/pro-live-light.png",
+  "userRejection": {
+    "path": ".impeccable/review/header-motion/request/rejected-compact.png",
+    "sha256": "d710078b58d1a362dad0ab291d3b572e616531878e4810bd60dfd56fa3d8be2c",
+    "origin": "User-supplied screenshot on September 13, 2026, explicitly rejected with \"This is a no go\". Original compact Magnetic field header and underlying partial reading. Pixel content unchanged; design rejection evidence, not an approved comp.",
+    "role": "user rejection reference, not current UI evidence",
+    "openedForCaptureValidity": true
+  },
+  "evidenceCapturedBeforeCommit": true
+}

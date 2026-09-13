@@ -99,6 +99,7 @@ The build is SwiftUI for iOS and iPadOS. Native navigation, sheets, menus, SF Sy
 **Key Characteristics:**
 
 - Home uses a persistent source header containing Instrument, Room, Source, and Settings, followed by the Gauges, Info, and Compare evidence choices.
+- Standard text sizes fold that header from its expanded two-row group into one stable compact navigation bar; the same four controls remain represented throughout.
 - A measurement is prominent, while units, method, uncertainty, and history remain readable and subordinate.
 - Charcoal actions in light appearance become industrial yellow in dark appearance; signal blue and interval teal describe observed data.
 - Rounded tabular figures stabilize changing readings; surrounding language retains native SF text styles.
@@ -149,11 +150,15 @@ Adaptive color gives the light canvas a cool, quiet working temperature and pres
 
 `InstrumentWorkspaceView` is a scrollable native column. Phone content uses 16pt horizontal inset, 8pt top inset, 8pt normal stack rhythm, and a 680pt maximum width; regular-width layouts use 28pt horizontal inset, a 1040pt maximum width, and place a live face plus reference controls beside a 240pt history view. The action dock has a 720pt maximum width and stays inside the bottom safe area.
 
-Home’s source controls replace the root navigation title. One `ProTheme.face` group with 24pt continuous corners lives in the top safe-area inset, with an opaque canvas behind it while evidence scrolls. Instrument and Room share a 56pt-minimum first row; the second row pairs the source with a dedicated Settings control. Instruments using the phone show that source without adding an unnecessary chooser. At accessibility Dynamic Type sizes, Instrument, Room, Source, and Settings stack in reading order and the complete header scrolls with the content, preserving usable room for readings. The mode segment becomes an accessible menu and recording actions also move into the scroll flow. Native sheets retain their navigation bars. Never preserve a capture-specific position by shrinking native text or controls.
+Home’s source controls replace the root navigation title. One `ProTheme.face` group with 24pt continuous corners lives in the top safe-area inset, with an opaque canvas behind it while evidence scrolls. In its expanded state, Instrument and Room share a 56pt-minimum first row; the second row pairs Source with Settings. Once the scroll passes the quantized 88pt reading threshold, that group folds into one compact bar with a 56pt minimum height: Instrument and Source retain labels, while Room and Settings are equal 44pt icon targets in the same horizontal control group. The common compact row grows at the largest standard Dynamic Type sizes when intrinsic label fitting requires it. Longer labels wrap within their assigned compact cells and never create a second compact row or detached circles. The compact visual and accessibility order is Instrument, Source, Room, Settings; the expanded and accessibility-stacked order is Instrument, Room, Source, Settings. The fold restores only at the 12pt top threshold, so scroll insets cannot flicker it. Instruments using the phone show that source without adding an unnecessary chooser. At accessibility Dynamic Type sizes, Instrument, Room, Source, and Settings stack in reading order and the complete header scrolls with the content, preserving usable room for readings. The mode segment becomes an accessible menu and recording actions also move into the scroll flow. Native sheets retain their navigation bars. Never preserve a capture-specific position by shrinking native text or controls.
+
+The source-header fold uses one layout progress for its container width and height and all four control frames. Collapse takes `.smooth(duration: 0.32, extraBounce: 0)` and expansion takes `.smooth(duration: 0.38, extraBounce: 0)`; compact label metrics hold until the expanded surface has room, so interrupted motion never exposes an invalid intermediate arrangement. Reduce Motion changes state immediately. This is a useful compression of working context, not ornamental animation.
 
 The compact phone Bluetooth Gauges layout is a specific first-viewport rule: when the device is compact-width, Dynamic Type is not an accessibility size, the selected mode is Gauges, and Bluetooth is selected, the main chapter stack uses 6pt spacing, history is 75pt high, and the arc receives no extra 24pt lower padding. This keeps the full arc width, the Baseline row, and the 44pt “Calibrate nearby and away” action above the safe-area Log/Record dock. Other phone live layouts use 8pt spacing, 90pt history, and the normal arc lower padding.
 
 **The Evidence Order Rule.** Keep source selection before Gauges, Info, and Compare; present the reading before its interpretation and history; then place baseline, calibration, and recoverable actions in the native flow.
+
+**The One Working Header Rule.** At standard text sizes, fold the expanded source group only into its single composed bar: Instrument and Source stay labeled, Room and Settings stay equal icon targets, and its compact visual and accessibility order is Instrument, Source, Room, Settings. Expanded and accessibility-stacked layouts use Instrument, Room, Source, Settings in labeled scroll flow.
 
 ## Elevation & Depth
 
@@ -177,7 +182,7 @@ Soft continuous groups provide the principal form language: 24pt source and inst
 
 ### Source Groups
 
-**Character:** a soft operational header. `homeSelector` uses `ProTheme.face`, 24pt continuous corners, 16pt horizontal inset, 8pt vertical inset, dividers between related rows, and at least 56pt per selectable row. Settings has a 44pt quiet circle within a 60×56pt target; at accessibility sizes it becomes a full-width labeled row.
+**Character:** a soft operational header that compresses without losing context. `homeSelector` uses `ProTheme.face`, 24pt continuous corners, 16pt horizontal inset, 8pt vertical inset, and 56pt-minimum expanded rows. Standard text folds it into one bar with a 56pt minimum height, labeled Instrument and Source cells, and equal 44pt Room and Settings icon targets; the common compact row grows when its labels need fitting room. Its rounded shape follows layout progress, while dividers hide during compact-label staging and fade back after expansion. The compact visual and accessibility order is Instrument, Source, Room, Settings; accessibility sizes use all four full-width labeled rows in Instrument, Room, Source, Settings order in scroll flow. Reduced Motion uses the same two valid states without interpolation.
 
 ### Modes
 
@@ -203,6 +208,7 @@ Soft continuous groups provide the principal form language: 24pt source and inst
 - **Do** use the established action, signal, interval, and readable-secondary roles for their observed jobs.
 - **Do** use rounded tabular figures for values, comparisons, statistics, chart-adjacent readings, and numeric evidence.
 - **Do** retain 44pt minimum controls, 52pt primary actions, native safe areas, Dynamic Type adaptation, and Reduce Motion behavior.
+- **Do** keep compact header labels and controls within one composed horizontal bar throughout a standard-text scroll fold.
 - **Do** label fixtures as sample data and communicate unsupported hardware, unavailable permissions, missing observations, and incompatible baselines truthfully.
 
 ### Don't:
@@ -211,4 +217,5 @@ Soft continuous groups provide the principal form language: 24pt source and inst
 - **Don't** interpolate chart gaps, compare an incompatible baseline, or present a sample fixture as a live sensor result.
 - **Don't** use action colors, signal blue, or interval teal as unrelated decoration.
 - **Don't** replace native navigation, sheets, menus, system materials, safe-area controls, or SF Symbols with web-shaped substitutes.
+- **Don't** create a compact two-row fallback, detached icon circles, or a transient header frame that loses one of the four source controls.
 - **Don't** claim simulator captures prove physical sensors, live LiDAR accuracy, camera frames, StoreKit price, purchase, or App Store acceptance.

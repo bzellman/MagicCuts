@@ -1,6 +1,14 @@
 import Foundation
 
 enum AppRuntime {
+    static var isReducedMotionTest: Bool {
+        #if DEBUG
+        isUITesting && ProcessInfo.processInfo.arguments.contains("--reduce-motion")
+        #else
+        false
+        #endif
+    }
+
     static var isUITesting: Bool {
         #if DEBUG
         ProcessInfo.processInfo.arguments.contains("--uitesting")

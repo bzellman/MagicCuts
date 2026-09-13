@@ -1,0 +1,1 @@
+SCAN: 40 rasters, 0 missing

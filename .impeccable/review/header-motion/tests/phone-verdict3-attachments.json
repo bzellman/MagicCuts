@@ -1,0 +1,167 @@
+[
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+        "deviceName" : "MagicCuts Review iPhone",
+        "exportedFileName" : "4A1E4496-2A4E-4B92-A0B8-271C47199B04.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "pro-live-dark_0_59C66030-0C98-4B32-81C5-882D9B1DBF8C.png",
+        "timestamp" : 1789277314.835
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+        "deviceName" : "MagicCuts Review iPhone",
+        "exportedFileName" : "6B5DF5FA-D962-4B05-85A0-ED88C4C75FA8.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "pro-live-light_0_91D9A4BC-B4ED-4476-B435-2C43AC0B4DA3.png",
+        "timestamp" : 1789277305.416
+      }
+    ],
+    "testIdentifier" : "ProExperienceUITests/testHomeAccessibility()",
+    "testIdentifierURL" : "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testHomeAccessibility"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+        "deviceName" : "MagicCuts Review iPhone",
+        "exportedFileName" : "5DBF015B-66E3-4CDB-AA01-3D12B2A3266F.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "pro-largest-controls_0_0BD04E1C-D24D-481A-8344-A991F510E488.png",
+        "timestamp" : 1789277342.353
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+        "deviceName" : "MagicCuts Review iPhone",
+        "exportedFileName" : "7EAEA90D-C1E8-4DB8-8010-AC64FBB8E221.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "pro-largest-text_0_982004E7-8035-4053-B997-1FE0BAA1F9FE.png",
+        "timestamp" : 1789277324.406
+      }
+    ],
+    "testIdentifier" : "ProExperienceUITests/testLargestTextAndControlsReflow()",
+    "testIdentifierURL" : "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testLargestTextAndControlsReflow"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+        "deviceName" : "MagicCuts Review iPhone",
+        "exportedFileName" : "36F16B0A-D6CD-4CF0-AC70-22884EAD1D45.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-restored-dark_0_436B277A-121F-456D-8F84-0BDC1D0B0C59.png",
+        "timestamp" : 1789277417.51
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+        "deviceName" : "MagicCuts Review iPhone",
+        "exportedFileName" : "80C96369-4214-44D0-BFA1-984F5129709B.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-long-title-dark_0_B49BD830-69DD-4F13-A376-F9071B87B45A.png",
+        "timestamp" : 1789277415.473
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+        "deviceName" : "MagicCuts Review iPhone",
+        "exportedFileName" : "9F2E6A91-1527-429F-BF39-CBD90B3CA455.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-compact-dark_0_0003DFDA-F5B8-45A7-9255-B0DAE6A83B1D.png",
+        "timestamp" : 1789277394.903
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+        "deviceName" : "MagicCuts Review iPhone",
+        "exportedFileName" : "109AC594-443E-465A-9F7C-53BCA88B66BE.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-expanded-dark_0_76DABF85-DAA7-4E37-B4C2-0E9FAC7443F5.png",
+        "timestamp" : 1789277392.191
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+        "deviceName" : "MagicCuts Review iPhone",
+        "exportedFileName" : "D747A342-1467-480F-A96B-DBAED9DB841B.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-restored-light_0_BADE32B9-5BFC-44E6-BA81-1BDDD7620267.png",
+        "timestamp" : 1789277375.427
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+        "deviceName" : "MagicCuts Review iPhone",
+        "exportedFileName" : "D29E267A-98E2-43BE-BE27-896C81070756.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-long-title-light_0_BAA33293-58D4-4646-B0F4-9D793D8A9644.png",
+        "timestamp" : 1789277373.399
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+        "deviceName" : "MagicCuts Review iPhone",
+        "exportedFileName" : "68FCE5D0-6D60-4AB8-9FBD-B84107082112.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-compact-light_0_6B5248ED-38B7-4C44-840D-4C96CA58317F.png",
+        "timestamp" : 1789277353.076
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+        "deviceName" : "MagicCuts Review iPhone",
+        "exportedFileName" : "7C58EBB7-ECBF-4269-8011-9981F39669A8.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-expanded-light_0_17BFCD86-948F-45F1-B1DC-295193B4F223.png",
+        "timestamp" : 1789277350.356
+      }
+    ],
+    "testIdentifier" : "ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+    "testIdentifierURL" : "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+        "deviceName" : "MagicCuts Review iPhone",
+        "exportedFileName" : "E3EB7A99-5E41-41B9-92B2-381770BF697F.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-largest-standard_0_39244E47-C1C8-4CC7-ABEF-F929A7FACACC.png",
+        "timestamp" : 1789277435.17
+      }
+    ],
+    "testIdentifier" : "ProExperienceUITests/testSourceHeaderLargestStandardText()",
+    "testIdentifierURL" : "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testSourceHeaderLargestStandardText"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+        "deviceName" : "MagicCuts Review iPhone",
+        "exportedFileName" : "6277CCDA-8681-4603-A84A-37E3F0E51A93.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-reduced-expanded_0_A68CD0DF-5303-4318-AED8-65ED60EDEBDE.png",
+        "timestamp" : 1789277446.683
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+        "deviceName" : "MagicCuts Review iPhone",
+        "exportedFileName" : "498AC2CE-58D8-4594-A672-4BCF667DD510.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-reduced-compact_0_8CE117BB-D198-42A3-B494-3A3FEA4179C6.png",
+        "timestamp" : 1789277444.42
+      }
+    ],
+    "testIdentifier" : "ProExperienceUITests/testSourceHeaderReduceMotionPreservesScrollAndActions()",
+    "testIdentifierURL" : "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testSourceHeaderReduceMotionPreservesScrollAndActions"
+  }
+]
