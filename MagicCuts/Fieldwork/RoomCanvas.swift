@@ -80,7 +80,7 @@ struct RoomPlanCanvas: View {
                     let point = projection.screen(placement.pose.position, size: size)
                     let circle = Path(ellipseIn: CGRect(x: point.x - 12, y: point.y - 12, width: 24, height: 24))
                     context.fill(circle, with: .color(MC.action))
-                    context.draw(Text("\(index + 1)").font(.system(size: 12, weight: .bold)).foregroundStyle(.white), at: point)
+                    context.draw(Text("\(index + 1)").font(.system(size: 12, weight: .bold)).foregroundStyle(MC.onAction), at: point)
                 }
                 if let pose { drawPosition(pose.position, heading: pose.heading, context: &context, projection: projection, size: size) }
                 if let proposedPoint { drawPosition(proposedPoint, heading: 0, context: &context, projection: projection, size: size) }

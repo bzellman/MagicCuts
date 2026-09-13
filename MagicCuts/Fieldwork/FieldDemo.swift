@@ -68,6 +68,47 @@ nonisolated enum FieldDemo {
             method: "Illustrative uncached HEAD requests. TLS overlaps connection setup. Failed requests are excluded from response-time statistics.",
             metrics: FieldStatistics.networkMetrics(probes), probes: probes, placement: placement(x: 4.2, z: 1.8, revision: revision), demonstration: true)
     }
+    /// Render fixtures for the native design review. Never substitutes for a live sensor.
+    static func visualizationCaptures(at date: Date) -> [FieldCapture] {
+        let values: [Float?] = (0..<600).map { index -> Float? in
+            guard index % 30 >= 3 else { return nil }
+            let x = Float(index % 30) * 0.018
+            let y = Float(index / 30) * 0.01
+            return 1.4 + x + y
+        }
+        let depth = DepthEvidence(width: 30, height: 20, meters: values,
+            confidence: (0..<600).map { UInt8($0 % 30 < 8 ? 1 : 2) }, minimum: 1.4, maximum: 2.2, cameraPose: SpatialTransform())
+        let points: [SpatialVector] = (0..<100).map { i in
+            .init(x: Float(i % 10) * 0.035, y: sin(Float(i) * 1.3) * 0.003, z: Float(i / 10) * 0.035)
+        }
+        let fit = SurfaceFitting.fit(points)
+        let forecasts = [CellularForecast(receivedAt: date, startsAt: date.addingTimeInterval(600), duration: 720,
+            impact: "Elevated", predictionConfidence: "Medium", startConfidence: "Medium", durationConfidence: "Low")]
+        let counts = [3, 9, 22, 41, 25]
+        let buckets: [CellularHistoryBucket] = (0..<5).map { i in
+            CellularHistoryBucket(id: i, lowerBars: Double(i), upperBars: Double(i + 1), count: counts[i])
+        }
+        let history = CellularHistory(beginsAt: date.addingTimeInterval(-86400), endsAt: date,
+            receivedAt: date.addingTimeInterval(3600), buckets: buckets)
+        let ranges: [FieldSample] = (0..<24).map { i in
+            let elapsed = Double(i)
+            let distance = 1.8 + sin(elapsed * 0.2) * 0.12
+            return FieldSample(date: date.addingTimeInterval(elapsed), elapsed: elapsed, values: ["distance": distance])
+        }
+        return [
+            FieldCapture(title: "Depth patch · sample", kind: .depth, date: date, source: "Raw depth · sample",
+                method: "Illustrative depth and categorical confidence. Missing pixels remain unobserved; no physical surface was measured.", depth: depth, demonstration: true),
+            FieldCapture(title: "Surface patch · sample", kind: .surface, date: date, source: "Surface fit · sample",
+                method: "Illustrative local best-fit plane. Residuals include modeled sensor noise and do not establish dimensional accuracy.", metrics: fit?.metrics ?? [], surface: fit, demonstration: true),
+            FieldCapture(title: "Cellular outlook · sample", kind: .cellular, date: date, source: "Cellular forecast · sample",
+                method: "Illustrative forecast intervals and confidence categories. A forecast is not a current signal reading.", forecasts: forecasts, demonstration: true),
+            FieldCapture(title: "Cellular history · sample", kind: .cellular, date: date, source: "Delayed cellular history · sample",
+                method: "Illustrative delayed aggregate of application runtime by cellular condition. This is not live signal strength or a coverage survey.", cellularHistory: history, demonstration: true),
+            FieldCapture(title: "Peer range · sample", kind: .nearby, date: date, source: "Nearby peer · sample",
+                method: "Illustrative discrete distance observations. Direction is unavailable in this sample.", samples: ranges, demonstration: true)
+        ]
+    }
+
     @MainActor static func seed(_ library: ProLibrary) async {
         guard AppRuntime.isUITesting, ProcessInfo.processInfo.arguments.contains("--room-demo"), library.index.roomRevisions.isEmpty else { return }
         do {
@@ -84,6 +125,9 @@ nonisolated enum FieldDemo {
             try await library.save(FieldCapture(title: "Room noise · sample", kind: .reading, date: latest.endedAt, source: "Microphone · sample",
                 method: "Illustrative digital audio level, not calibrated sound-pressure level.", metrics: [.init(id: "sound", title: "Audio level", value: -41.2, unit: "dBFS")],
                 placement: placement(x: 2.4, z: 3, revision: latest), demonstration: true))
+            if ProcessInfo.processInfo.arguments.contains("--visualization-demo") {
+                for capture in visualizationCaptures(at: latest.endedAt) { try await library.save(capture) }
+            }
         } catch { library.error = "Sample room could not be prepared: \(error.localizedDescription)" }
     }
 }

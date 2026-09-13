@@ -1,207 +1,221 @@
 ---
 name: "MagicCuts Pro"
-description: "A native field chronograph for deliberate, truthful measurements."
+description: "A native field utility for deliberate, truthful measurements."
 colors:
-  action: "#0052C7"
+  action: "#242A2F"
+  action-dark: "#E7F542"
+  on-action: "#FFFFFF"
+  on-action-dark: "#242A2F"
   signal: "#0052C7"
-  signal-contrast: "#61B8FF"
+  signal-dark: "#61B8FF"
   interval: "#1F6E61"
+  interval-dark: "#8FD9C7"
   secondary-label: "#59636E"
+  secondary-label-dark: "#A8B3BD"
   canvas: "#F2F5F7"
+  canvas-dark: "#0F141A"
   instrument: "#122438"
 typography:
-  display:
-    fontFamily: "SF Pro Rounded, SF Pro, system-ui"
-    fontSize: "@ScaledMetric 66pt relative to Large Title"
+  measurement:
+    fontFamily: "SF Pro Rounded, system-ui"
+    fontSize: "66pt @ScaledMetric relative to Large Title"
     fontWeight: 600
     lineHeight: "native"
     fontFeature: "monospacedDigit"
   title:
-    fontFamily: "SF Pro Rounded, SF Pro, system-ui"
-    fontSize: "SwiftUI headline"
+    fontFamily: "SF Pro Rounded, system-ui"
+    fontSize: "SwiftUI headline or subheadline"
     fontWeight: 600
     lineHeight: "native"
   body:
     fontFamily: "SF Pro, system-ui"
-    fontSize: "SwiftUI body and callout"
-    lineHeight: "native"
-  label:
-    fontFamily: "SF Pro, system-ui"
-    fontSize: "SwiftUI caption and subheadline"
+    fontSize: "SwiftUI body, callout, caption, and navigation styles"
     lineHeight: "native"
 rounded:
-  tick-marker: "3pt"
-  control: "10pt"
-  action-control: "12pt"
-  segment-well: "14pt"
-  surface: "16pt"
+  small-control: "10pt"
+  quiet-control: "14pt"
+  utility-control: "22pt continuous"
+  baseline: "20pt"
+  soft-group: "24pt continuous"
+  capsule: "26pt"
+  action: "28pt continuous"
 spacing:
-  compact: "8pt"
-  control: "10pt"
-  normal: "16pt"
-  content: "22pt"
+  compact: "4pt"
+  regular: "8pt"
+  control-gap: "10pt"
+  content: "16pt"
+  tablet-content: "28pt"
 components:
-  action-button:
+  primary-action:
     backgroundColor: "{colors.action}"
-    textColor: "#FFFFFF"
+    textColor: "{colors.on-action}; {colors.on-action-dark} in dark appearance"
     typography: "{typography.title}"
-    rounded: "{rounded.action-control}"
+    rounded: "{rounded.action}"
     padding: "14pt 16pt"
     height: "52pt minimum"
   quiet-action:
-    backgroundColor: "system primary at 7% opacity"
-    textColor: "system primary"
+    backgroundColor: "system primary at 5.5% opacity"
+    textColor: "{colors.action}; {colors.action-dark} in dark appearance"
     typography: "{typography.title}"
-    rounded: "{rounded.action-control}"
+    rounded: "{rounded.action}"
     padding: "14pt 16pt"
     height: "52pt minimum"
+  utility-action:
+    backgroundColor: "system primary at 2.5% opacity"
+    textColor: "adaptive action"
+    rounded: "{rounded.utility-control}"
+    padding: "10pt 16pt"
+    height: "44pt minimum"
   mode-segments:
     backgroundColor: "system primary at 5.5% opacity"
-    textColor: "system primary"
+    textColor: "system primary and {colors.secondary-label}"
     typography: "{typography.title}"
-    rounded: "{rounded.segment-well}"
-    padding: "4pt"
-    height: "46pt minimum"
-  instrument-face:
-    backgroundColor: "system secondary grouped background"
+    rounded: "{rounded.capsule}"
+    padding: "3pt"
+    height: "44pt minimum"
+  source-group:
+    backgroundColor: "secondarySystemGroupedBackground"
     textColor: "system primary"
-    rounded: "{rounded.surface}"
-    padding: "native layout"
+    rounded: "{rounded.soft-group}"
+    padding: "8pt 16pt"
+    height: "56pt minimum per row"
+  instrument-surface:
+    backgroundColor: "secondarySystemGroupedBackground"
+    textColor: "system primary"
+    rounded: "{rounded.soft-group}"
+    padding: "12pt"
 ---
 
 # Design System: MagicCuts Pro
 
 ## Overview
 
-**Creative North Star: "The grounded field chronograph"**
+**Creative North Star: "Native Utility / C · Soft forms"**
 
-MagicCuts Pro turns a live reading into an instrument page: choose a source, make a measurement, inspect the evidence, set a baseline, record a session, and use it in a report or workflow. Matte ink fields, precise rulers, quiet history, and rounded measurement values establish the working character. A pin in the chart changes the related reading; returning to live is explicit.
+MagicCuts makes a measurement the center of a native working surface: select the instrument and source, read the current value, inspect evidence, set a compatible baseline, then log, record, or begin a workflow. The user-selected Native Utility world, with its approved C · Soft forms composition, lands as a cool adaptive canvas, quiet grouped materials, broad continuous corners, and rounded tabular readings. It is a utility, not a marketing plate.
 
-The implementation is native SwiftUI for iOS and iPadOS. Native navigation, sheets, safe areas, `TabView` chrome, SF Symbols, Swift Charts, and semantic system materials carry structure and interaction. The Pro pages use custom Canvas instruments only for data geometry. They do not use generated image plates or web controls.
+The build is SwiftUI for iOS and iPadOS. Native navigation, sheets, menus, SF Symbols, safe areas, system grouped materials, Canvas, and Swift Charts carry hierarchy and interaction. Custom Canvas geometry is reserved for readings such as arcs, levels, compasses, and linear scales. Final review evidence is the native phone and tablet capture set, including light and dark Home, camera-distance, and tablet Home states.
 
 **Key Characteristics:**
 
-- A dominant live instrument is followed by a quieter evidence chart and recoverable recording actions.
-- Existing Action blue signals selection and action; cyan and teal are measurement inks with constrained jobs.
-- SF Rounded, tabular measurement figures make numbers stable and legible; body copy remains native SF.
-- Live, Inspect, and Compare are related evidence views, never three unrelated dashboards.
-- Large text changes the native layout rather than shrinking essential controls or chart content.
+- Home uses a persistent source header containing Instrument, Room, Source, and Settings, followed by the Gauges, Info, and Compare evidence choices.
+- Standard text sizes fold that header from its expanded two-row group into one stable compact navigation bar; the same four controls remain represented throughout.
+- A measurement is prominent, while units, method, uncertainty, and history remain readable and subordinate.
+- Charcoal actions in light appearance become industrial yellow in dark appearance; signal blue and interval teal describe observed data.
+- Rounded tabular figures stabilize changing readings; surrounding language retains native SF text styles.
+- Phone uses a safe-area action dock; regular-width iPad places related reading and evidence side by side.
 
 ## Colors
 
-The palette uses adaptive asset colors and semantic iOS colors so both light and dark appearance remain intentional.
+Adaptive color gives the light canvas a cool, quiet working temperature and preserves contrast in dark appearance.
 
 ### Primary
 
-- **Action Blue:** the `Action` asset drives primary actions and the selected Live, Inspect, or Compare segment. Its light appearance is the normative `action` frontmatter token; its dark appearance is `#1F66D9`.
-- **Signal Blue:** `ProTheme.signal` follows Action blue in light appearance and becomes the higher-contrast `signal-contrast` token in dark appearance. It marks a live needle, selected chart series, source affordance, or selected reading.
+- **Action Charcoal / Industrial Yellow:** actions and selection use `action` (`#242A2F`), adapting to `action-dark` (`#E7F542`). Filled actions use white lettering in light appearance and charcoal lettering in dark appearance through `MC.onAction`. These pairs have 14.51:1 and 12.12:1 contrast.
+- **Signal Blue:** `ProTheme.signal` uses `signal` / `signal-dark` for data lines, needles, and selected readings.
 
 ### Secondary
 
-- **Interval Teal:** `ProTheme.band` identifies an interquartile band and qualified interpretive state. It adapts to a lighter teal in dark appearance.
+- **Interval Teal:** `interval` marks a qualified band, threshold, or interpretive state. It adapts to `interval-dark` in dark appearance.
 
 ### Neutral
 
-- **Canvas:** the `Canvas` asset provides the page ground and becomes `#0F141A` in dark appearance.
-- **Matte Instrument:** the `Instrument` asset is retained for the existing calibration surface; Pro live instrument faces use system secondary grouped background so they follow the platform appearance.
-- **Pro Secondary Label:** `ProTheme.secondary` is opaque `#59636E` in light appearance and `#A8B3BD` in dark appearance. It owns Pro units, state, interpretation, chart axes, and quiet evidence labels where generic `Color.secondary` did not provide the required contrast.
-- **System Ink:** `Color.primary` and native grouped/background materials own ordinary platform text, grids, dividers, bars, and quiet controls. Individual data geometry may use its observed system-secondary stroke values.
+- **Cool Canvas:** `canvas` grounds Pro pages and becomes `canvas-dark` in dark appearance.
+- **Native Group:** `ProTheme.face` is iOS `secondarySystemGroupedBackground`, used for soft groups and instrument surfaces rather than a fixed cross-appearance hex.
+- **Readable Secondary:** `ProTheme.secondary` uses `secondary-label` for units, interpretation, chart axes, state, and quiet evidence labels, adapting to `secondary-label-dark`.
+- **Instrument Ink:** `instrument` is the existing dark calibration-surface asset; it adapts to `#172B40` in dark appearance.
 
-**The Blue Has Meaning Rule.** Action blue indicates a current action, selected instrument state, or observed reading. Cyan signal ink and interval teal identify data only; neither becomes general decoration.
+**The Action and Evidence Color Rule.** Use adaptive charcoal/yellow for actions and selection. Use signal blue and interval teal to communicate measured information. Always pair a filled action with the adaptive `onAction` foreground.
 
-**The Opaque Secondary Label Rule.** In Pro instrument pages, use `ProTheme.secondary` for quiet readable text rather than reducing generic secondary text until it fails contrast.
+**The Opaque Secondary Label Rule.** Use `ProTheme.secondary` for quiet Pro evidence instead of reducing generic secondary text until it becomes illegible.
 
 ## Typography
 
-**Display Font:** SF Rounded through SwiftUI's rounded design, with `@ScaledMetric` relative to `.largeTitle` for the 66pt live measurement baseline.
+**Display Font:** SF Pro Rounded through SwiftUI’s rounded design.
 
 **Body Font:** SF Pro through native SwiftUI semantic styles.
 
-**Character:** Values, segment labels, headings, and statistics use SF Rounded with semibold emphasis where the hierarchy needs a reading-like character. Body, callouts, captions, menus, labels, and navigation stay on the system face. Changing figures use `.monospacedDigit()`.
+**Character:** Readings, segment labels, headings, and statistics use rounded weight and tabular figures where they change. Explanations, menus, navigation, and platform chrome retain system styles.
 
 ### Hierarchy
 
-- **Navigation title** (`.inline` Instruments): restores the native context before source and mode controls.
-- **Live measurement** (66pt scalable rounded semibold baseline): the primary result; it may compact for comparison while retaining tabular digits.
-- **Instrument title and segment label** (`.headline`, rounded, semibold): sources, modes, method headings, and recording labels.
-- **Supporting explanation** (`.callout`): interpretation, truth constraints, baseline difference, and recovery guidance.
-- **Evidence label** (`.caption` / `.subheadline`, monospaced where numeric): elapsed time, chart axes, units, state, and method detail.
+- **Measurement** (66pt scalable rounded semibold baseline): the principal live result. Compact comparison reduces this value to half-size while retaining the same type family.
+- **Instrument title and mode label** (rounded `.headline` or `.subheadline`, semibold): names sources, modes, methods, and recorded actions.
+- **Supporting explanation** (`.callout`): communicates interpretation, baseline difference, truth constraints, and recovery guidance.
+- **Evidence label** (`.caption` / `.subheadline`, monospaced where numeric): communicates units, elapsed time, axes, state, method, and uncertainty.
 
-**The Measurement Family Rule.** Apply rounded, semibold, monospaced treatment to readings and measurement-adjacent labels. Do not turn explanatory body copy or platform chrome into display typography.
+**The Measurement Family Rule.** Apply rounded, semibold, monospaced treatment to a reading and its measurement-adjacent labels. Do not promote explanatory body copy or native chrome to display type.
 
 ## Layout
 
-`InstrumentWorkspaceView` is a scrollable, centered reading column with 22pt horizontal inset, 16pt vertical rhythm, an 8pt top inset, and 28pt bottom clearance. The column caps at 680pt; the bottom recording bar caps at 720pt. The native navigation title is “Instruments,” then source control, mode control, status, instrument, history, statistics, baseline, and recording actions follow the measurement story.
+`InstrumentWorkspaceView` is a scrollable native column. Phone content uses 16pt horizontal inset, 8pt top inset, 8pt normal stack rhythm, and a 680pt maximum width; regular-width layouts use 28pt horizontal inset, a 1040pt maximum width, and place a live face plus reference controls beside a 240pt history view. The action dock has a 720pt maximum width and stays inside the bottom safe area.
 
-On ordinary text sizes, recording controls sit in a bottom safe-area inset above the native three-section tab bar. At accessibility text sizes they move into the scroll view, use vertical action layout, and remain reachable. Source controls and comparison rows switch from horizontal to vertical layouts. The mode selector becomes a compact native `Menu` offering Live, Inspect, and Compare; it does not squeeze three segment labels into an accessibility width.
+Home’s source controls replace the root navigation title. One `ProTheme.face` group with 24pt continuous corners lives in the top safe-area inset, with an opaque canvas behind it while evidence scrolls. In its expanded state, Instrument and Room share a 56pt-minimum first row; the second row pairs Source with Settings. Once the scroll passes the quantized 88pt reading threshold, that group folds into one compact bar with a 56pt minimum height: Instrument and Source retain labels, while Room and Settings are equal 44pt icon targets in the same horizontal control group. The common compact row grows at the largest standard Dynamic Type sizes when intrinsic label fitting requires it. Longer labels wrap within their assigned compact cells and never create a second compact row or detached circles. The compact visual and accessibility order is Instrument, Source, Room, Settings; the expanded and accessibility-stacked order is Instrument, Room, Source, Settings. The fold restores only at the 12pt top threshold, so scroll insets cannot flicker it. Instruments using the phone show that source without adding an unnecessary chooser. At accessibility Dynamic Type sizes, Instrument, Room, Source, and Settings stack in reading order and the complete header scrolls with the content, preserving usable room for readings. The mode segment becomes an accessible menu and recording actions also move into the scroll flow. Native sheets retain their navigation bars. Never preserve a capture-specific position by shrinking native text or controls.
 
-Live places the arc, level, or compass above its dominant reading, then a short interpretation and history. Inspect leads with a reading, ruler, and 260pt chart. Compare aligns two ruler readings to the same range and supplies a dashed-versus-solid explanation. Charts are 120pt live, 190pt compare, and 260pt Inspect at regular sizes; at accessibility sizes, a chart is at least 240pt high and both axes scale up to 22pt.
+The source-header fold uses one layout progress for its container width and height and all four control frames. Collapse takes `.smooth(duration: 0.32, extraBounce: 0)` and expansion takes `.smooth(duration: 0.38, extraBounce: 0)`; compact label metrics hold until the expanded surface has room, so interrupted motion never exposes an invalid intermediate arrangement. Reduce Motion changes state immediately. This is a useful compression of working context, not ornamental animation.
 
-**The Evidence Order Rule.** Keep source and view controls directly under Instruments, then show the measurement before its interpretation, history, summary, and recording action. Let safe areas and Dynamic Type supersede any capture-specific geometry.
+The compact phone Bluetooth Gauges layout is a specific first-viewport rule: when the device is compact-width, Dynamic Type is not an accessibility size, the selected mode is Gauges, and Bluetooth is selected, the main chapter stack uses 6pt spacing, history is 75pt high, and the arc receives no extra 24pt lower padding. This keeps the full arc width, the Baseline row, and the 44pt “Calibrate nearby and away” action above the safe-area Log/Record dock. Other phone live layouts use 8pt spacing, 90pt history, and the normal arc lower padding.
+
+**The Evidence Order Rule.** Keep source selection before Gauges, Info, and Compare; present the reading before its interpretation and history; then place baseline, calibration, and recoverable actions in the native flow.
+
+**The One Working Header Rule.** At standard text sizes, fold the expanded source group only into its single composed bar: Instrument and Source stay labeled, Room and Settings stay equal icon targets, and its compact visual and accessibility order is Instrument, Source, Room, Settings. Expanded and accessibility-stacked layouts use Instrument, Room, Source, Settings in labeled scroll flow.
 
 ## Elevation & Depth
 
-MagicCuts Pro is flat and material-led. The instrument face earns attention through ruler geometry, signal ink, and system surface contrast. Native `.bar` material separates recording controls from scroll content. There are no authored shadows, gradients, glow, faux glass, or decorative raster surfaces.
+Depth is tonal and selective. The cool canvas sits behind adaptive system groups; instrument surfaces use a flat grouped material and 24pt continuous corners. The selected mode pill alone receives a contact shadow (`black` at 10% opacity, 2pt blur, y 1pt) above its shallow 5.5%-primary track. Home’s pinned header has a restrained scroll-boundary shadow (black at 3.5% opacity, 6pt blur, y 4pt). Native sheet navigation bars remain opaque canvas with no separator shadow. The spatial camera overlay has a restrained black 60%-opacity, 2pt/y1 text shadow for legibility over live imagery.
 
-**The Instrument-Not-Poster Rule.** Depth may clarify an active native surface; it must not make a measurement page resemble a marketing card or an image plate.
+**The Instrument-Not-Poster Rule.** Elevation may clarify a selected native control or live camera label; it must not turn a measurement surface into a floating marketing card.
 
 ## Shapes
 
-Live measurement faces use circles, arcs, ticks, needles, and rulers that describe their data. Standard mode wells use a 14pt rounded rectangle with 10pt selected segments. Existing instrument surfaces retain the 16pt radius. Step buttons use 10pt corners; a selected ruler marker uses a 3pt rounded end.
-
-The mode segments are full-width, equal-width native buttons at least 46pt tall. Other tappable source, return-to-live, menu, and recording controls keep at least 44pt height; `ControlStyle` primary and quiet actions are at least 52pt.
+Soft continuous groups provide the principal form language: 24pt source and instrument groups, 20pt baseline control, 14pt recovery panel, and 10pt small controls. Instrument modes use a 26pt capsule well and selected pill. Primary and quiet actions use a 28pt continuous rounded rectangle with 52pt minimum height. Supporting Calibrate and Start Flow controls use a 22pt continuous outline, 44pt minimum height, and a faint neutral fill. The marker on a data instrument receives a face-colored separation ring so it remains distinct without introducing decorative depth.
 
 ## Components
 
-The component previews in `.impeccable/design.json` are self-contained HTML/CSS documentation approximations for the Impeccable panel. They demonstrate observed tokens and states but are never MagicCuts app code or a web implementation requirement; the native SwiftUI symbols named alongside each preview remain authoritative.
+### Buttons
 
-### Instrument source controls
+**Character:** native, deliberate actions with enough height for field use.
 
-The source row sits below the Instruments title. The selected instrument has its SF Symbol, rounded headline, chevron, and a 44pt target. Bluetooth sources use a native menu; network sources use a native button. At accessibility sizes the source row stacks.
+- **Primary:** `ControlStyle` uses adaptive charcoal/yellow with `MC.onAction` lettering, 16pt horizontal and 14pt vertical padding, a 28pt continuous radius, and a 52pt minimum height. Pressed or disabled state reduces opacity.
+- **Quiet:** retains the same geometry, a 5.5%-primary background, and adaptive action-colored text.
+- **Supporting:** `UtilityControlStyle` gives Calibrate and Start Flow a 1pt action-colored border at 22% opacity, a 2.5%-primary fill, 16pt horizontal / 10pt vertical padding, and a 44pt minimum target. Recovery controls retain native behavior.
 
-### Live, Inspect, and Compare selector
+### Source Groups
 
-At regular Dynamic Type sizes, `InstrumentSegments` renders three 46pt minimum rounded segments. Selection fills the current segment with Action blue, uses white rounded semibold text, supplies the selected accessibility trait, selection haptics, and a `.snappy(duration: 0.2)` movement unless Reduce Motion is enabled. At accessibility sizes it becomes the compact native mode menu with all three choices and the current selection checkmark.
+**Character:** a soft operational header that compresses without losing context. `homeSelector` uses `ProTheme.face`, 24pt continuous corners, 16pt horizontal inset, 8pt vertical inset, and 56pt-minimum expanded rows. Standard text folds it into one bar with a 56pt minimum height, labeled Instrument and Source cells, and equal 44pt Room and Settings icon targets; the common compact row grows when its labels need fitting room. Its rounded shape follows layout progress, while dividers hide during compact-label staging and fade back after expansion. The compact visual and accessibility order is Instrument, Source, Room, Settings; accessibility sizes use all four full-width labeled rows in Instrument, Room, Source, Settings order in scroll flow. Reduced Motion uses the same two valid states without interpolation.
 
-### Measurement face and value
+### Modes
 
-The signature face is a Canvas arc, a level target, a compass, or a linear ruler according to the instrument's data type. Major/minor tick weights and readable labels communicate scale. The live value is an accessible `MeasurementValue`; its visual Canvas geometry is hidden from assistive technology. The reading uses the instrument's truthful unit and uses an em dash when no reading exists.
+**Character:** a shallow native segmented control. `InstrumentSegments` uses a 26pt track, 44pt target per mode, a face-colored selected capsule, and the small contact shadow described above. At accessibility sizes it becomes a labeled menu with the same Gauges, Info, and Compare choices.
 
-### History chart
+### Instrument Surfaces
 
-`InstrumentHistoryChart` uses Swift Charts: Action/signal blue for current readings, dashed secondary ink for a baseline, and a selected rule and point for the pinned sample. The selected time is shared with the value above; “Return to live” clears it. It labels elapsed seconds and states that gaps are unobserved. It supports accessibility adjustment through actual retained readings. Its Dynamic Type layout retains scrollable recording controls, vertical statistics, and enlarged chart axes.
+**Character:** the evidence is the face. `instrumentSurface` uses `ProTheme.face`, 24pt continuous corners, and 12pt default internal inset. `InstrumentArc`, `LevelInstrument`, `CompassInstrument`, and `LinearInstrumentScale` are Canvas views whose decorative geometry is hidden from accessibility while `MeasurementValue` and chart actions expose the reading.
 
-### Baseline and recording controls
+### History
 
-The baseline selector is a 44pt native menu that only lists compatible profiles. Record session, finish recording, Set baseline, Mark, Pause or Resume, and Start measuring retain native controls and their explicit state. Recording is a recoverable local session flow; controls are scrollable at accessibility sizes rather than fixed over the content.
+**Character:** a readable evidence view, not a decorative graph. `InstrumentHistoryChart` uses Swift Charts with signal-blue series and points, a dashed interval-teal threshold, and an adjustable accessibility action for retained readings. Gaps remain unobserved; they are not interpolated. Axis and chart labels use the readable secondary token.
 
-### Native navigation
+### Spatial Capture
 
-The app uses the native Instruments, Sessions, and Workflows `TabView`, navigation titles, toolbars, sheets, and safe areas. The iOS/iPadOS 26 system tab presentation supplies the floating chrome; the Pro design does not replace it with a custom tab bar.
-
-### Optional iCloud settings
-
-The existing native Settings list adds a “Your library, across devices” section. A system toggle defaults off, followed by readable status, progress/error recovery, manual sync when enabled and Bluetooth setup references. The footer explains what moves, that edits and deletions sync, and that disabling keeps both copies. Purchase restoration remains a separate StoreKit action.
-
-Other-device Bluetooth references use a native list, navigation, picker and history disclosure. A reference never looks connected until the user chooses a locally identified saved device. Original evidence and the next local test remain clearly distinguished. Text wraps at accessibility sizes; the section reuses Action blue, rounded headings and existing quiet text tokens without new motion or custom chrome.
+**Character:** live capability first. `SpatialInstrumentStage` opens the relevant camera stage when hardware support permits, identifies it as a live measurement camera, and provides a truthful unavailable/permission state. On regular-width screens it pairs camera with controls; compact or accessibility layouts keep controls in a bottom safe-area inset. Simulator screenshots may show explicitly labeled sample fixtures or an unavailable camera state; they are not physical camera, LiDAR, or accuracy proof.
 
 ## Do's and Don'ts
 
 ### Do:
 
-- **Do** use existing Action blue for selection and primary action, reserve signal and interval inks for measured information, and use opaque `ProTheme.secondary` labels for quiet Pro evidence.
-- **Do** show truthful unit labels and retain “Sample session” for demonstration data.
-- **Do** keep rounded tabular figures for live values, comparisons, statistics, segment labels, and chart-adjacent readings.
-- **Do** keep Instruments visible as the native navigation title and place source controls immediately beneath it.
-- **Do** provide Live, Inspect, and Compare in the native segment control or the accessibility menu, with the same three choices.
-- **Do** preserve the 44pt control floor, 46pt segments, 52pt action controls, system safe areas, Reduce Motion behavior, and accessibility-adjustable history.
-- **Do** use a 240pt minimum chart height and axis text that can scale to 22pt at accessibility sizes.
+- **Do** keep the persistent source header, evidence selector, reading, history, baseline/calibration, and safe-area actions in that working order when the available viewport permits.
+- **Do** use the established action, signal, interval, and readable-secondary roles for their observed jobs.
+- **Do** use rounded tabular figures for values, comparisons, statistics, chart-adjacent readings, and numeric evidence.
+- **Do** retain 44pt minimum controls, 52pt primary actions, native safe areas, Dynamic Type adaptation, and Reduce Motion behavior.
+- **Do** keep compact header labels and controls within one composed horizontal bar throughout a standard-text scroll fold.
+- **Do** label fixtures as sample data and communicate unsupported hardware, unavailable permissions, missing observations, and incompatible baselines truthfully.
 
 ### Don't:
 
-- **Don't** promise measurements that the selected instrument cannot truthfully produce, including distance from Bluetooth signal or dB SPL from dBFS.
-- **Don't** treat gaps in the chart as interpolated measurements, or compare incompatible baselines.
-- **Don't** use blue, cyan, or teal as unconnected decoration.
-- **Don't** replace native navigation, sheets, menus, tabs, materials, or touch controls with web-shaped components.
-- **Don't** ship generated raster control plates or use a generated image as an instrument surface.
-- **Don't** claim simulator captures establish physical sensor, background, StoreKit price, purchase, or hardware acceptance.
+- **Don't** infer distance from Bluetooth RSSI or dB SPL from microphone dBFS.
+- **Don't** interpolate chart gaps, compare an incompatible baseline, or present a sample fixture as a live sensor result.
+- **Don't** use action colors, signal blue, or interval teal as unrelated decoration.
+- **Don't** replace native navigation, sheets, menus, system materials, safe-area controls, or SF Symbols with web-shaped substitutes.
+- **Don't** create a compact two-row fallback, detached icon circles, or a transient header frame that loses one of the four source controls.
+- **Don't** claim simulator captures prove physical sensors, live LiDAR accuracy, camera frames, StoreKit price, purchase, or App Store acceptance.

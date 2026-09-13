@@ -1,12 +1,12 @@
 {
   "tool": "build-phase",
   "version": 2,
-  "startedAt": "2026-09-10T03:20:04.253Z",
-  "comp": ".impeccable/mocks/pro/field-dial.png",
+  "startedAt": "2026-09-13T00:06:54.204Z",
+  "comp": ".impeccable/mocks/native-utility/home-trace.png",
   "direction": null,
-  "breakpoint": "853x1844",
+  "breakpoint": "852x1846",
   "artifact": null,
-  "phase": "spec",
+  "phase": "hero",
   "phases": {
     "comps": {
       "status": "skipped",
@@ -15,7 +15,7 @@
       "attempts": 0,
       "notes": [
         {
-          "at": "2026-09-10T03:20:04.253Z",
+          "at": "2026-09-13T00:06:54.204Z",
           "text": "started with an approved comp; the comp round happened before this state (surface round or manual)"
         }
       ],
@@ -23,31 +23,156 @@
       "forced": null
     },
     "spec": {
-      "status": "open",
-      "openedAt": "2026-09-10T03:20:04.253Z",
-      "closedAt": null,
-      "attempts": 0,
+      "status": "closed",
+      "openedAt": "2026-09-13T00:06:54.204Z",
+      "closedAt": "2026-09-13T00:24:22.923Z",
+      "attempts": 2,
       "notes": [],
-      "gate": null,
+      "gate": {
+        "ok": true,
+        "reasons": [],
+        "summary": "22 regions, 0 plates, 5 text regions measured",
+        "at": "2026-09-13T00:24:22.923Z"
+      },
       "forced": null
     },
     "plates": {
-      "status": "pending",
-      "openedAt": null,
-      "closedAt": null,
-      "attempts": 0,
+      "status": "closed",
+      "openedAt": "2026-09-13T00:24:22.923Z",
+      "closedAt": "2026-09-13T00:24:23.039Z",
+      "attempts": 1,
       "notes": [],
-      "gate": null,
+      "gate": {
+        "ok": true,
+        "reasons": [],
+        "summary": "no plates owed",
+        "at": "2026-09-13T00:24:23.039Z"
+      },
       "forced": null
     },
     "hero": {
-      "status": "pending",
-      "openedAt": null,
+      "status": "open",
+      "openedAt": "2026-09-13T00:24:23.039Z",
       "closedAt": null,
       "attempts": 0,
-      "notes": [],
-      "gate": null,
-      "forced": null
+      "notes": [
+        {
+          "at": "2026-09-13T01:27:28.351Z",
+          "text": "Native SwiftUI finish review and verdict are in .impeccable/review/native-utility/. The scored first-viewport correction is ship. Native state is recorded in native-utility-state.json. Automated hero crops remain failed at 77% because native chrome and layout shift the fixed text boxes; no web gate was forced or asserted passed."
+        }
+      ],
+      "gate": {
+        "ok": false,
+        "reasons": [
+          "region home-title is missing (detail 0%, structure 58%): the comp shows material the build does not",
+          "region instrument-selector is missing (detail 0%, structure 72%): the comp shows material the build does not",
+          "region room-selector is missing (detail 0%, structure 79%): the comp shows material the build does not",
+          "region source-selector is missing (detail 0%, structure 72%): the comp shows material the build does not",
+          "region modes is missing (detail 0%, structure 63%): the comp shows material the build does not",
+          "region history-title is missing (detail 0%, structure 51%): the comp shows material the build does not",
+          "region interpretation (text) is contradicted (structure 45%, detail added 25%): the composition of this text region differs from the comp; re-derive it from the spec box",
+          "control calibration drifts to 62% (structure 71%, color 73%): its chrome differs from the comp's; open .impeccable/review/diff/hero/regions/calibration.png and match the border, fill, radius, chevron or arrow, and label size"
+        ],
+        "summary": "hero 77% (drift)",
+        "score": 0.7729,
+        "verdict": "drift",
+        "report": ".impeccable/review/diff/hero/report.json",
+        "sideBySide": "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/hero/side-by-side.png",
+        "worst": [
+          "history-title missing 50%",
+          "home-title missing 50%",
+          "source-surface drift 57%"
+        ],
+        "worstIds": [
+          "history-title",
+          "home-title",
+          "source-surface"
+        ],
+        "worstCrops": [
+          {
+            "id": "history-title",
+            "verdict": "missing",
+            "score": {
+              "overall": 0.5016,
+              "structure": 0.5063,
+              "color": 0.8331,
+              "colorIntersection": 0.8102,
+              "paletteMatch": 0.8455,
+              "detail": 0.0012,
+              "detailRaw": 0.0064,
+              "detailAdded": 0.0104,
+              "bands": 0.4
+            },
+            "file": ".impeccable/review/diff/hero/regions/history-title.png"
+          },
+          {
+            "id": "home-title",
+            "verdict": "missing",
+            "score": {
+              "overall": 0.5038,
+              "structure": 0.5758,
+              "color": 0.7037,
+              "colorIntersection": 0.6162,
+              "paletteMatch": 0.7508,
+              "detail": 0,
+              "detailRaw": 0,
+              "detailAdded": 0,
+              "bands": 0.4
+            },
+            "file": ".impeccable/review/diff/hero/regions/home-title.png"
+          },
+          {
+            "id": "source-surface",
+            "verdict": "drift",
+            "score": {
+              "overall": 0.5736,
+              "structure": 0.6809,
+              "color": 0.9713,
+              "colorIntersection": 0.9359,
+              "paletteMatch": 0.9904,
+              "detail": 0.1298,
+              "detailRaw": 0.26,
+              "detailAdded": 0.2604,
+              "bands": 0.4
+            },
+            "file": ".impeccable/review/diff/hero/regions/source-surface.png"
+          }
+        ],
+        "advisories": [
+          "(advisory, above the 72% bar) region settings: its ink sits in a 137x121px box in the comp and 101x130px in the build (padding, row height, or size); match the box, not only the position",
+          "(advisory, above the 72% bar) region room-selector: its ink sits in a 330x129px box in the comp and 358x172px in the build (padding, row height, or size); match the box, not only the position",
+          "(advisory, above the 72% bar) region modes: its ink sits in a 618x117px box in the comp and 712x139px in the build (padding, row height, or size); match the box, not only the position",
+          "(advisory, above the 72% bar) region record: its ink sits in a 285x221px box in the comp and 284x354px in the build (padding, row height, or size); match the box, not only the position"
+        ],
+        "regionVerdicts": {
+          "system-status": "drift",
+          "home-title": "missing",
+          "settings": "drift",
+          "source-surface": "drift",
+          "instrument-selector": "missing",
+          "room-selector": "missing",
+          "source-selector": "missing",
+          "modes": "missing",
+          "measurement-surface": "drift",
+          "gauge": "drift",
+          "reading": "drift",
+          "phase": "drift",
+          "interpretation": "contradicted",
+          "history-surface": "drift",
+          "history-title": "missing",
+          "history": "drift",
+          "baseline": "drift",
+          "calibration": "drift",
+          "log": "drift",
+          "record": "match",
+          "flow": "drift",
+          "home-indicator": "drift"
+        },
+        "at": "2026-09-13T01:21:52.681Z"
+      },
+      "forced": null,
+      "readingsSeen": {},
+      "records": 1
     },
     "sections": {
       "status": "pending",
@@ -87,6 +212,5 @@
     }
   },
   "finish": null,
-  "applicability": "CSS-oriented helper scaffold; native workflow completed in native-state.json. No passing CSS or raster-plate gate is asserted.",
-  "nativeState": ".impeccable/build/native-state.json"
+  "plates": {}
 }

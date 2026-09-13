@@ -16,7 +16,7 @@ Turn locally available sensor and connectivity data into understandable readings
 Native SwiftUI app using CoreBluetooth, SwiftData, and AppIntents. Actual Bluetooth scanning requires physical hardware; simulator visuals cannot establish radio reliability.
 
 ## Capabilities and Constraints
-The Pro implementation includes twelve instruments: Bluetooth signal, level, vibration, rotation, magnetic field, pressure, relative elevation, magnetic heading, speed, microphone dBFS, HTTP response time, and battery state. A shared native Live / Inspect / Compare system connects named baselines, calibration, recordings, field reports, groups, and Shortcuts workflows. See docs/PRO_INSTRUMENT_RESEARCH.md for calculation contracts and docs/CAPABILITY_EXPANSION_PLAN.md for the broader research inventory; that inventory includes future hardware-dependent adapters and is not a list of shipped features.
+The Pro implementation includes twelve instruments: Bluetooth signal, level, vibration, rotation, magnetic field, pressure, relative elevation, magnetic heading, speed, microphone dBFS, HTTP response time, and battery state. A shared native Gauges / Info / Compare system connects named baselines, calibration, recordings, field reports, groups, and Shortcuts workflows. See docs/PRO_INSTRUMENT_RESEARCH.md for calculation contracts and docs/CAPABILITY_EXPANSION_PLAN.md for the broader research inventory; that inventory includes future hardware-dependent adapters and is not a list of shipped features.
 
 The selected Room canvas and 18 field-capability paths are implemented in the development branch: saved room meshes/revisions, localization attempts and manual/tracked measurement placement; NFC inspection; network transaction/consistency tools; cellular context/verified tests/forecasts/history; LiDAR point/surface/depth tools; and participating-device network, Wi-Fi Aware and Nearby Interaction tools. See docs/ROOM_INSTRUMENT_VALIDATION.md for the implementation/evidence matrix. Physical capture, revisit accuracy, provider delivery and compatible-device acceptance remain separate release gates.
 
@@ -26,6 +26,8 @@ Signal strength is evidence of proximity, not a precise distance measurement. A 
 
 ## Brand Commitments
 MagicCuts name. Native iOS interactions remain familiar. Apple Watch face level of polish, thought, and utility is the minimum: consistent typography, meaningful data geometry, precise interaction, and carefully composed states. No web UI framework or generic component-library visual system.
+
+Native Utility is the user's selected design language, with C · Soft forms approved on September 12, 2026. Tempo informed the shape relationships and restrained tonal depth. Use continuous grouped surfaces, shallow selected controls, capsule actions, rounded tabular readings, charcoal actions in light appearance, industrial yellow actions in dark appearance, and meaningful measurement geometry. The enlarged source group is the Home header, with Settings integrated; Calibrate and Start Flow use defined supporting controls. Preserve the Home/Settings journey and cover every visualization family.
 
 ## Commercial and Infrastructure Commitments
 One hard Pro paywall covers all working functionality, including existing Bluetooth and Shortcuts actions, Device Groups, and every additional instrument. There is no free legacy or basic sensor tier. Purchase, restore, legal information and purchase recovery remain accessible before unlocking. Use a verified StoreKit entitlement across every entry point; no writable local-flag unlock in production. Final pricing has not been chosen.
@@ -42,6 +44,7 @@ README.md and Swift sources describe the incumbent implementation. All sample de
 - Keep Simple and Technical modes on the same underlying configuration.
 - Pair measurements with a plain-language explanation and next step.
 - Treat testing and validation as part of setup.
+- Open relevant physical/LiDAR tools directly into their camera surface, subject to permission and device support. Avoid a separate camera-start tap; saving a measurement remains deliberate.
 
 ## Open Decisions
-Live StoreKit product/price and physical acceptance of each supported sensor. The combined native composition was approved with the existing blue palette and rounded segment labels. The local StoreKit configuration's price is test data. Sessions pause in the background; the Live Activity reports this state and does not claim unrestricted background sensing. Mockups and explicitly labeled sample sessions demonstrate design intent and do not prove sensor availability or accuracy.
+Live StoreKit product/price and physical acceptance of each supported sensor. The local StoreKit configuration's price is test data. Sessions pause in the background; the Live Activity reports this state and does not claim unrestricted background sensing. Mockups and explicitly labeled sample sessions demonstrate design intent and do not prove sensor availability or accuracy.

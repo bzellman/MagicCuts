@@ -1,0 +1,50 @@
+[
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+        "deviceName" : "MagicCuts Review iPhone",
+        "exportedFileName" : "401B707E-B982-4D70-A106-8B025CEA5781.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "pro-live-dark_0_00B22A9D-2855-4DB4-80FB-75215017C964.png",
+        "timestamp" : 1789273458.765
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+        "deviceName" : "MagicCuts Review iPhone",
+        "exportedFileName" : "CFC813D3-B1DB-4D64-9F50-1BA9AF5199D3.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "pro-live-light_0_D351F338-2790-4D9F-B61A-DA067820E8A6.png",
+        "timestamp" : 1789273449.255
+      }
+    ],
+    "testIdentifier" : "ProExperienceUITests/testHomeAccessibility()",
+    "testIdentifierURL" : "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testHomeAccessibility"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+        "deviceName" : "MagicCuts Review iPhone",
+        "exportedFileName" : "F38917AE-F7AA-4F97-A862-F2DA0A3EDAF6.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "pro-largest-controls_0_699DBEA0-7624-4883-B407-2FBECFDB73D2.png",
+        "timestamp" : 1789273486.205
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+        "deviceName" : "MagicCuts Review iPhone",
+        "exportedFileName" : "67A208B6-606E-4FEC-8E45-B31A9FFB0AC9.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "pro-largest-text_0_CF4F7EDF-A916-43C7-9427-04430F2B2DB4.png",
+        "timestamp" : 1789273468.482
+      }
+    ],
+    "testIdentifier" : "ProExperienceUITests/testLargestTextAndControlsReflow()",
+    "testIdentifierURL" : "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testLargestTextAndControlsReflow"
+  }
+]

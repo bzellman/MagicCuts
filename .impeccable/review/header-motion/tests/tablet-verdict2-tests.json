@@ -1,0 +1,71 @@
+{
+  "devices" : [
+    {
+      "architecture" : "arm64",
+      "deviceId" : "EEF203AE-DF4A-4C0B-B6AD-DFE8F4C3E62C",
+      "deviceName" : "MagicCuts Review iPad",
+      "modelName" : "iPad Air 11-inch (M3)",
+      "osBuildNumber" : "23F77",
+      "osVersion" : "26.5",
+      "platform" : "iOS Simulator"
+    }
+  ],
+  "testNodes" : [
+    {
+      "children" : [
+        {
+          "children" : [
+            {
+              "children" : [
+                {
+                  "duration" : "19s",
+                  "durationInSeconds" : 19.321208953857422,
+                  "name" : "testHomeAccessibility()",
+                  "nodeIdentifier" : "ProExperienceUITests/testHomeAccessibility()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testHomeAccessibility",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "25s",
+                  "durationInSeconds" : 25.576563000679016,
+                  "name" : "testLargestTextAndControlsReflow()",
+                  "nodeIdentifier" : "ProExperienceUITests/testLargestTextAndControlsReflow()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testLargestTextAndControlsReflow",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "1m 23s",
+                  "durationInSeconds" : 83.34118902683258,
+                  "name" : "testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+                  "nodeIdentifier" : "ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "ProExperienceUITests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            }
+          ],
+          "name" : "MagicCutsUITests",
+          "nodeIdentifierURL" : "test://com.apple.xcode/MagicCuts/MagicCutsUITests",
+          "nodeType" : "UI test bundle",
+          "result" : "Passed"
+        }
+      ],
+      "name" : "MagicCuts",
+      "nodeType" : "Test Plan",
+      "result" : "Passed"
+    }
+  ],
+  "testPlanConfigurations" : [
+    {
+      "configurationId" : "1",
+      "configurationName" : "Test Scheme Action"
+    }
+  ]
+}

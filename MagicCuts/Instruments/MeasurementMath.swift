@@ -112,7 +112,9 @@ nonisolated enum MeasurementMath {
     static func scaleLabel(_ value: Double, range: ClosedRange<Double>) -> String {
         let step = (range.upperBound - range.lowerBound) / 6
         let decimals = max(0, min(4, Int(ceil(-log10(step)))))
-        return value.formatted(.number.precision(.fractionLength(decimals)))
+        let formatted = value.formatted(.number.precision(.fractionLength(decimals)))
+        guard value < 0 else { return formatted }
+        return formatted.replacingOccurrences(of: "-", with: "\u{2212}")
     }
 
     static func delta(_ value: Double, baseline: Double, kind: InstrumentKind) -> Double {

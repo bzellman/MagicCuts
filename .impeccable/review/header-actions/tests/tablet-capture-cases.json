@@ -1,0 +1,77 @@
+{
+  "devices": [
+    {
+      "architecture": "arm64",
+      "deviceId": "EEF203AE-DF4A-4C0B-B6AD-DFE8F4C3E62C",
+      "deviceName": "MagicCuts Review iPad",
+      "modelName": "iPad Air 11-inch (M3)",
+      "osBuildNumber": "23F77",
+      "osVersion": "26.5",
+      "platform": "iOS Simulator"
+    }
+  ],
+  "testNodes": [
+    {
+      "children": [
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "duration": "18s",
+                  "durationInSeconds": 18.85804295539856,
+                  "name": "testHomeAccessibility()",
+                  "nodeIdentifier": "ProExperienceUITests/testHomeAccessibility()",
+                  "nodeIdentifierURL": "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testHomeAccessibility",
+                  "nodeType": "Test Case",
+                  "result": "Passed"
+                },
+                {
+                  "duration": "25s",
+                  "durationInSeconds": 25.703609943389893,
+                  "name": "testLargestTextAndControlsReflow()",
+                  "nodeIdentifier": "ProExperienceUITests/testLargestTextAndControlsReflow()",
+                  "nodeIdentifierURL": "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testLargestTextAndControlsReflow",
+                  "nodeType": "Test Case",
+                  "result": "Passed"
+                },
+                {
+                  "children": [
+                    {
+                      "name": "ProExperienceUITests.swift:372: XCTAssertTrue failed",
+                      "nodeType": "Failure Message"
+                    }
+                  ],
+                  "duration": "24s",
+                  "durationInSeconds": 24.450437903404236,
+                  "name": "testSourceHeaderKeepsContextAndSettingsReachable()",
+                  "nodeIdentifier": "ProExperienceUITests/testSourceHeaderKeepsContextAndSettingsReachable()",
+                  "nodeIdentifierURL": "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testSourceHeaderKeepsContextAndSettingsReachable",
+                  "nodeType": "Test Case",
+                  "result": "Failed"
+                }
+              ],
+              "name": "ProExperienceUITests",
+              "nodeIdentifierURL": "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests",
+              "nodeType": "Test Suite",
+              "result": "Failed"
+            }
+          ],
+          "name": "MagicCutsUITests",
+          "nodeIdentifierURL": "test://com.apple.xcode/MagicCuts/MagicCutsUITests",
+          "nodeType": "UI test bundle",
+          "result": "Failed"
+        }
+      ],
+      "name": "MagicCuts",
+      "nodeType": "Test Plan",
+      "result": "Failed"
+    }
+  ],
+  "testPlanConfigurations": [
+    {
+      "configurationId": "1",
+      "configurationName": "Test Scheme Action"
+    }
+  ]
+}

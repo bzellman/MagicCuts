@@ -28,7 +28,7 @@ struct PeerInstrumentView: View {
                         .accessibilityIdentifier("peer.code")
                     Text("Compare the code shown on the other device, then confirm on both devices.").font(.callout).foregroundStyle(ProTheme.secondary)
                     Button(instrument.locallyConfirmed ? "Waiting for other device" : "Codes match") { instrument.confirm() }
-                        .buttonStyle(.borderedProminent).controlSize(.large).tint(MC.action).disabled(instrument.locallyConfirmed).frame(minHeight: 44).accessibilityIdentifier("peer.confirm")
+                        .buttonStyle(ControlStyle()).disabled(instrument.locallyConfirmed).frame(minHeight: 44).accessibilityIdentifier("peer.confirm")
                     Button("Cancel connection") { instrument.stop() }.frame(minHeight: 44)
                 } else {
                     Text("Two devices. One local test.").font(.system(.title2, design: .rounded).weight(.semibold))
@@ -36,8 +36,8 @@ struct PeerInstrumentView: View {
                     Picker("Connection transport", selection: $transport) { Text("Local network").tag(0); Text("Wi-Fi Aware").tag(1) }.pickerStyle(.segmented)
                         .disabled(instrument.hosting || instrument.browsing || instrument.aware.running)
                     if transport == 0 {
-                        Button("Host a local test") { instrument.host() }.buttonStyle(.borderedProminent).controlSize(.large).tint(MC.action).frame(minHeight: 44).accessibilityIdentifier("peer.host")
-                        Button("Find a host") { instrument.browse() }.buttonStyle(.bordered).controlSize(.large).frame(minHeight: 44).accessibilityIdentifier("peer.browse")
+                        Button("Host a local test") { instrument.host() }.buttonStyle(ControlStyle()).frame(minHeight: 44).accessibilityIdentifier("peer.host")
+                        Button("Find a host") { instrument.browse() }.buttonStyle(ControlStyle(primary: false)).frame(minHeight: 44).accessibilityIdentifier("peer.browse")
                         Text(instrument.status).font(.callout)
                         ForEach(instrument.peers) { peer in
                             Button { instrument.connect(peer) } label: { Label(peer.name, systemImage: "iphone.gen3.radiowaves.left.and.right").frame(minHeight: 44) }
@@ -48,7 +48,7 @@ struct PeerInstrumentView: View {
                         Text("Open pairing on both devices first. Then advertise on the host and discover it from the other device.").font(.callout).foregroundStyle(ProTheme.secondary)
                         ForEach(instrument.aware.paired) { peer in Label(peer.name, systemImage: "checkmark.shield").font(.callout) }
                         Button(host ? "Advertise to paired devices" : "Discover paired hosts") { instrument.startAware(host: host) }
-                            .buttonStyle(.borderedProminent).controlSize(.large).tint(MC.action).frame(minHeight: 44).disabled(!instrument.aware.supported)
+                            .buttonStyle(ControlStyle()).frame(minHeight: 44).disabled(!instrument.aware.supported)
                         Text(instrument.aware.status).font(.callout)
                         ForEach(instrument.aware.discovered) { peer in Button(peer.name) { instrument.aware.connect(peer.id) }.frame(minHeight: 44) }
                         if let failure = instrument.aware.failure { InlineFailure(message: failure) }
@@ -57,7 +57,7 @@ struct PeerInstrumentView: View {
                 }
                 if let failure = instrument.failure { InlineFailure(message: failure) }
                 if !instrument.connected, let capture = instrument.capture {
-                    FieldCaptureEvidence(capture: capture)
+                    FieldCaptureEvidence(capture: capture).instrumentSurface()
                     Button("Save completed observations") { saving = capture }.frame(minHeight: 44)
                 }
             }.padding(22).frame(maxWidth: 750).frame(maxWidth: .infinity)
@@ -76,10 +76,10 @@ struct PeerInstrumentView: View {
             Text("20 echo requests, then 2 MiB in each direction. The result measures encrypted application traffic between these devices.").font(.callout).foregroundStyle(ProTheme.secondary)
             Button(instrument.testing ? "Stop benchmark" : "Run benchmark") {
                 if instrument.testing { instrument.stopBenchmark() } else { instrument.benchmark() }
-            }.buttonStyle(.borderedProminent).controlSize(.large).tint(MC.action).frame(minHeight: 44).accessibilityIdentifier("peer.benchmark")
+            }.buttonStyle(ControlStyle()).frame(minHeight: 44).accessibilityIdentifier("peer.benchmark")
             Text(instrument.testStatus).font(.callout)
             if let capture = instrument.capture {
-                FieldCaptureEvidence(capture: capture)
+                FieldCaptureEvidence(capture: capture).instrumentSurface()
                 Button("Save benchmark") { saving = capture }.frame(minHeight: 44).disabled(instrument.testing)
             }
         }
@@ -102,7 +102,7 @@ struct PeerInstrumentView: View {
                 Button(instrument.nearby.active ? "Stop ranging" : "Start ranging") {
                     if instrument.nearby.active { instrument.stopNearby() }
                     else { Task { await instrument.nearby.start() } }
-                }.buttonStyle(.borderedProminent).controlSize(.large).tint(MC.action).frame(minHeight: 44)
+                }.buttonStyle(ControlStyle()).frame(minHeight: 44)
                 Text("Start ranging on both devices. Hold the phones upright and point their back cameras toward each other. Distance and direction may be unavailable outside the supported range or line of sight.").font(.caption).foregroundStyle(ProTheme.secondary)
                 if let failure = instrument.nearby.failure { InlineFailure(message: failure) }
             }
@@ -112,7 +112,7 @@ struct PeerInstrumentView: View {
         VStack(alignment: .leading, spacing: 14) {
             if instrument.transportTitle != "Wi-Fi Aware" { Text("This is a local network connection. Connect with Wi-Fi Aware to inspect its optional link reports.").font(.callout).foregroundStyle(ProTheme.secondary) }
             else if let capture = instrument.aware.capture {
-                FieldCaptureEvidence(capture: capture)
+                FieldCaptureEvidence(capture: capture).instrumentSurface()
                 Text("Report age is shown by its timestamp. Unavailable optional fields remain blank.").font(.caption).foregroundStyle(ProTheme.secondary)
                 Button("Save link report") {
                     saving = capture

@@ -97,7 +97,7 @@ struct DeviceDetailView: View {
         let layout = dynamicType.isAccessibilitySize ? AnyLayout(VStackLayout(spacing: 1)) : AnyLayout(HStackLayout(spacing: 1))
         return layout {
             if let running {
-                HStack { ProgressView().tint(.white); Text("Testing \(running.title.lowercased())…") }.font(.headline).foregroundStyle(.white).padding().frame(maxWidth: .infinity).background(MC.action)
+                HStack { ProgressView().tint(MC.onAction); Text("Testing \(running.title.lowercased())…") }.font(.headline).foregroundStyle(MC.onAction).padding().frame(maxWidth: .infinity).background(MC.action)
                 Button("Stop") { cancel() }.buttonStyle(ControlStyle(primary: false)).accessibilityIdentifier("test.stop")
             } else {
                 Button { run(.nearby) } label: { Label("Test nearby", systemImage: "arrow.left.and.right.righttriangle.left.righttriangle.right") }.buttonStyle(ControlStyle(radius: 0)).accessibilityIdentifier("test.nearby")

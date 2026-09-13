@@ -76,6 +76,14 @@
         "Real two-device CloudKit transfer is unverified",
         "Production schema deployment and public privacy-policy verification remain open"
       ]
+    },
+    "nativeUtility": {
+      "direction": "C \u00b7 Soft forms",
+      "validation": "docs/NATIVE_UTILITY_VALIDATION.md",
+      "evidence": "docs/validation/native-utility-evidence.json",
+      "review": ".impeccable/review/native-utility/finish-verdict.md",
+      "scope": "Native visual system, camera entry and scored first-viewport correction; earlier release and hardware gates retain their original authority"
     }
-  }
+  },
+  "currentDesignBuild": ".impeccable/build/native-utility-state.json"
 }

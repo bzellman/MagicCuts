@@ -270,7 +270,7 @@ struct RoomDetailView: View {
             ForEach(Array(pins.enumerated()), id: \.element.id) { index, pin in
                 NavigationLink { FieldCaptureDetailView(id: pin.id, library: library) } label: {
                     HStack(alignment: .top) {
-                        Text("\(index + 1)").font(.caption.bold()).foregroundStyle(.white).frame(width: 26, height: 26).background(MC.action, in: Circle())
+                        Text("\(index + 1)").font(.caption.bold()).foregroundStyle(MC.onAction).frame(width: 26, height: 26).background(MC.action, in: Circle())
                         VStack(alignment: .leading, spacing: 4) {
                             Text(pin.title).font(.headline)
                             if let metric = pin.metrics.first { Text("\(metric.formatted) \(metric.unit)").monospacedDigit() }
@@ -343,53 +343,12 @@ struct RoomCaptureView: View {
     @State private var showObservedMesh = true
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    if session.cameraActive {
-                        ZStack {
-                            RoomCameraView(session: session, showObservedMesh: purpose != .localize && showObservedMesh).frame(height: 340).clipShape(RoundedRectangle(cornerRadius: 16))
-                            Image(systemName: "plus").font(.title).foregroundStyle(.white).shadow(radius: 2).accessibilityHidden(true)
-                        }
-                    }
-                    if session.cameraActive && purpose != .localize {
-                        Toggle("Show observed surfaces", isOn: $showObservedMesh)
-                        Text("The mesh overlay shows observed geometry. Its surface colors are not accuracy scores.").font(.caption).foregroundStyle(ProTheme.secondary)
-                    }
-                    Label(session.phase.title, systemImage: session.canPin ? "location.fill" : "viewfinder").font(.system(.title2, design: .rounded).weight(.semibold))
-                    Text(session.instruction).font(.callout)
-                    if let failure = session.failure { InlineFailure(message: failure) }
-                    if session.phase == .locating, let data = reference?.referenceImage, let image = UIImage(data: data) {
-                        Text("Match this saved view").font(.headline)
-                        Image(uiImage: image).resizable().scaledToFit().frame(maxHeight: 220).clipShape(RoundedRectangle(cornerRadius: 12)).accessibilityLabel("Reference camera photo from the saved room scan")
-                    }
-                    if purpose == .update, session.phase == .locating || session.phase == .unavailable {
-                        Button("Capture a separate pass") { Task { await session.start(.update, reference: reference, archive: library.archive, unaligned: true) } }.frame(minHeight: 44)
-                        Text("A separate pass preserves this room's history, but its measurements use a new coordinate frame.").font(.caption).foregroundStyle(ProTheme.secondary)
-                    }
-                    if session.cameraActive {
-                        LabeledContent("Observed vertices", value: session.vertexCount.formatted())
-                        if let distance = session.distance {
-                            LabeledContent("Surface at reticle", value: "\(distance.formatted(.number.precision(.fractionLength(2)))) m")
-                            Text("Depth estimate · \(session.confidence == 2 ? "high" : "limited") confidence").font(.caption).foregroundStyle(ProTheme.secondary)
-                        }
-                        if purpose != .localize {
-                            Button(session.firstPoint == nil ? "Set first dimension point" : "Set second dimension point") { session.selectPoint() }
-                                .buttonStyle(.bordered).controlSize(.large).disabled(!session.tracked || (session.confidence ?? 0) < 1).frame(minHeight: 44)
-                            if session.firstPoint != nil || !session.dimensions.isEmpty { Button("Undo last point") { session.undoPoint() }.frame(minHeight: 44) }
-                            ForEach(session.dimensions) { dimension in LabeledContent(dimension.title, value: "\(dimension.meters.formatted(.number.precision(.fractionLength(2)))) m") }
-                        }
-                    }
-                    if session.phase == .processing { ProgressView("Preparing saved geometry…") }
-                    if session.phase == .review, let room = session.draft {
-                        RoomMeshCanvas(room: room)
-                        Button("Review and save room") { saving = true }.buttonStyle(.borderedProminent).controlSize(.large).tint(MC.action).frame(minHeight: 44)
-                    }
-                    if session.canFinish { Button("Finish scan") { session.finish() }.buttonStyle(.borderedProminent).controlSize(.large).tint(MC.action).frame(minHeight: 44) }
-                    if session.canPin {
-                        Button("Use this orientation") { keepOrientation = true; dismiss() }.buttonStyle(.borderedProminent).controlSize(.large).tint(MC.action).frame(minHeight: 44)
-                        Text("Keep the camera unobstructed while you capture readings. Tracking ends when you close MagicCuts or choose End room orientation.").font(.caption).foregroundStyle(ProTheme.secondary)
-                    }
-                }.padding(22).frame(maxWidth: 800).frame(maxWidth: .infinity)
+            Group {
+                if session.phase == .review || session.phase == .processing {
+                    ScrollView { controls.padding(22).frame(maxWidth: 800).frame(maxWidth: .infinity) }
+                } else {
+                    SpatialInstrumentStage(session: session, showObservedMesh: purpose != .localize && showObservedMesh) { controls }
+                }
             }.background(MC.canvas).navigationTitle(purpose == .localize ? "Locate in room" : "Capture room").navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Close") {
                 if session.cameraActive && purpose != .localize { cancelConfirmation = true } else { dismiss() }
@@ -404,6 +363,49 @@ struct RoomCaptureView: View {
         }.interactiveDismissDisabled(session.cameraActive && purpose != .localize)
         .onDisappear { if !keepOrientation { session.end() } }
     }
+    private var controls: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            if session.cameraActive && purpose != .localize {
+                Toggle("Show observed surfaces", isOn: $showObservedMesh)
+                Text("The mesh overlay shows observed geometry. Its surface colors are not accuracy scores.").font(.caption).foregroundStyle(ProTheme.secondary)
+            }
+            Label(session.phase.title, systemImage: session.canPin ? "location.fill" : "viewfinder").font(.system(.title2, design: .rounded).weight(.semibold))
+            Text(session.instruction).font(.callout)
+            if let failure = session.failure, session.cameraActive { InlineFailure(message: failure) }
+            if session.phase == .locating, let data = reference?.referenceImage, let image = UIImage(data: data) {
+                Text("Match this saved view").font(.headline)
+                Image(uiImage: image).resizable().scaledToFit().frame(maxHeight: 220).clipShape(RoundedRectangle(cornerRadius: 12)).accessibilityLabel("Reference camera photo from the saved room scan")
+            }
+            if purpose == .update, session.phase == .locating || session.phase == .unavailable {
+                Button("Capture a separate pass") { Task { await session.start(.update, reference: reference, archive: library.archive, unaligned: true) } }.frame(minHeight: 44)
+                Text("A separate pass preserves this room's history, but its measurements use a new coordinate frame.").font(.caption).foregroundStyle(ProTheme.secondary)
+            }
+            if session.cameraActive {
+                LabeledContent("Observed vertices", value: session.vertexCount.formatted())
+                if let distance = session.distance {
+                    LabeledContent("Surface at reticle", value: "\(distance.formatted(.number.precision(.fractionLength(2)))) m")
+                    Text("Depth estimate · \(session.confidence == 2 ? "high" : "limited") confidence").font(.caption).foregroundStyle(ProTheme.secondary)
+                }
+                if purpose != .localize {
+                    Button(session.firstPoint == nil ? "Set first dimension point" : "Set second dimension point") { session.selectPoint() }
+                        .buttonStyle(ControlStyle(primary: false)).disabled(!session.tracked || (session.confidence ?? 0) < 1).frame(minHeight: 44)
+                    if session.firstPoint != nil || !session.dimensions.isEmpty { Button("Undo last point") { session.undoPoint() }.frame(minHeight: 44) }
+                    ForEach(session.dimensions) { dimension in LabeledContent(dimension.title, value: "\(dimension.meters.formatted(.number.precision(.fractionLength(2)))) m") }
+                }
+            }
+            if session.phase == .processing { ProgressView("Preparing saved geometry…") }
+            if session.phase == .review, let room = session.draft {
+                RoomMeshCanvas(room: room)
+                Button("Review and save room") { saving = true }.buttonStyle(ControlStyle())
+            }
+            if session.canFinish { Button("Finish scan") { session.finish() }.buttonStyle(ControlStyle()) }
+            if session.canPin {
+                Button("Use this orientation") { keepOrientation = true; dismiss() }.buttonStyle(ControlStyle())
+                Text("Keep the camera unobstructed while you capture readings. Tracking ends when you close MagicCuts or choose End room orientation.").font(.caption).foregroundStyle(ProTheme.secondary)
+            }
+        }
+    }
+
 }
 
 struct RoomSaveView: View {
