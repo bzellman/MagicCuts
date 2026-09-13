@@ -37,7 +37,7 @@ struct WorkflowsView: View {
                                     Text(recipe.name).font(.system(.headline, design: .rounded)).foregroundStyle(.primary)
                                     Text("\(recipe.requiresAll ? "All" : "Any") of \(recipe.conditions.count) conditions · measured in order").font(.caption).foregroundStyle(ProTheme.secondary)
                                 }
-                                Spacer(); Image(systemName: "slider.horizontal.3").foregroundStyle(ProTheme.signal)
+                                Spacer(); Image(systemName: "slider.horizontal.3").foregroundStyle(MC.action)
                             }.frame(minHeight: 44)
                         }.buttonStyle(.plain)
                         Button { showResult = true; runner.run(recipe, radio: radio) } label: { Label("Run workflow", systemImage: "play.fill").frame(minHeight: 44) }.disabled(runner.running)
@@ -56,7 +56,7 @@ struct WorkflowsView: View {
                                     Text(group.name).font(.system(.headline, design: .rounded)).foregroundStyle(.primary)
                                     Text("\(group.minimumMatches.map { "At least \($0)" } ?? (group.requiresAll ? "All" : "Any")) of \(group.deviceIDs.count) devices nearby").font(.caption).foregroundStyle(ProTheme.secondary)
                                 }
-                                Spacer(); Image(systemName: "slider.horizontal.3").foregroundStyle(ProTheme.signal)
+                                Spacer(); Image(systemName: "slider.horizontal.3").foregroundStyle(MC.action)
                             }.frame(minHeight: 44)
                         }.buttonStyle(.plain)
                         Button {

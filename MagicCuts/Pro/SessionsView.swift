@@ -202,7 +202,7 @@ struct SessionDetailView: View {
                             exporting = false
                         }
                     } label: {
-                        HStack { if exporting { ProgressView().tint(.white) }; Label("Export session", systemImage: "square.and.arrow.up") }
+                        HStack { if exporting { ProgressView().tint(MC.onAction) }; Label("Export session", systemImage: "square.and.arrow.up") }
                     }.buttonStyle(ControlStyle()).disabled(exporting).accessibilityIdentifier("session.export")
                 } else if failure == nil { ProgressView("Opening session…").frame(maxWidth: .infinity) }
                 if let failure {

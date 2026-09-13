@@ -270,7 +270,7 @@ struct RoomDetailView: View {
             ForEach(Array(pins.enumerated()), id: \.element.id) { index, pin in
                 NavigationLink { FieldCaptureDetailView(id: pin.id, library: library) } label: {
                     HStack(alignment: .top) {
-                        Text("\(index + 1)").font(.caption.bold()).foregroundStyle(.white).frame(width: 26, height: 26).background(MC.action, in: Circle())
+                        Text("\(index + 1)").font(.caption.bold()).foregroundStyle(MC.onAction).frame(width: 26, height: 26).background(MC.action, in: Circle())
                         VStack(alignment: .leading, spacing: 4) {
                             Text(pin.title).font(.headline)
                             if let metric = pin.metrics.first { Text("\(metric.formatted) \(metric.unit)").monospacedDigit() }

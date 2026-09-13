@@ -1,0 +1,103 @@
+{
+  "devices": [
+    {
+      "architecture": "arm64",
+      "deviceId": "EEF203AE-DF4A-4C0B-B6AD-DFE8F4C3E62C",
+      "deviceName": "MagicCuts Review iPad",
+      "modelName": "iPad Air 11-inch (M3)",
+      "osBuildNumber": "23F77",
+      "osVersion": "26.5",
+      "platform": "iOS Simulator"
+    }
+  ],
+  "testNodes": [
+    {
+      "children": [
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "duration": "19s",
+                  "durationInSeconds": 19.28657603263855,
+                  "name": "testHomeAccessibility()",
+                  "nodeIdentifier": "ProExperienceUITests/testHomeAccessibility()",
+                  "nodeIdentifierURL": "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testHomeAccessibility",
+                  "nodeType": "Test Case",
+                  "result": "Passed"
+                },
+                {
+                  "duration": "24s",
+                  "durationInSeconds": 24.41158103942871,
+                  "name": "testLargestTextAndControlsReflow()",
+                  "nodeIdentifier": "ProExperienceUITests/testLargestTextAndControlsReflow()",
+                  "nodeIdentifierURL": "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testLargestTextAndControlsReflow",
+                  "nodeType": "Test Case",
+                  "result": "Passed"
+                },
+                {
+                  "children": [
+                    {
+                      "name": "ProExperienceUITests.swift:361: XCTAssertEqual failed: (\"XCTWaiterResult(rawValue: 2)\") is not equal to (\"XCTWaiterResult(rawValue: 1)\")",
+                      "nodeType": "Failure Message"
+                    }
+                  ],
+                  "duration": "22s",
+                  "durationInSeconds": 22.89968502521515,
+                  "name": "testSourceHeaderKeepsContextAndSettingsReachable()",
+                  "nodeIdentifier": "ProExperienceUITests/testSourceHeaderKeepsContextAndSettingsReachable()",
+                  "nodeIdentifierURL": "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testSourceHeaderKeepsContextAndSettingsReachable",
+                  "nodeType": "Test Case",
+                  "result": "Failed"
+                },
+                {
+                  "duration": "11s",
+                  "durationInSeconds": 11.922089099884033,
+                  "name": "testStartFlowPromptOpensChooser()",
+                  "nodeIdentifier": "ProExperienceUITests/testStartFlowPromptOpensChooser()",
+                  "nodeIdentifierURL": "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testStartFlowPromptOpensChooser",
+                  "nodeType": "Test Case",
+                  "result": "Passed"
+                }
+              ],
+              "name": "ProExperienceUITests",
+              "nodeIdentifierURL": "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests",
+              "nodeType": "Test Suite",
+              "result": "Failed"
+            },
+            {
+              "children": [
+                {
+                  "duration": "38s",
+                  "durationInSeconds": 38.19519400596619,
+                  "name": "testCameraToolsOpenWithoutAnExtraStartStep()",
+                  "nodeIdentifier": "RoomFieldworkUITests/testCameraToolsOpenWithoutAnExtraStartStep()",
+                  "nodeIdentifierURL": "test://com.apple.xcode/MagicCuts/MagicCutsUITests/RoomFieldworkUITests/testCameraToolsOpenWithoutAnExtraStartStep",
+                  "nodeType": "Test Case",
+                  "result": "Passed"
+                }
+              ],
+              "name": "RoomFieldworkUITests",
+              "nodeIdentifierURL": "test://com.apple.xcode/MagicCuts/MagicCutsUITests/RoomFieldworkUITests",
+              "nodeType": "Test Suite",
+              "result": "Passed"
+            }
+          ],
+          "name": "MagicCutsUITests",
+          "nodeIdentifierURL": "test://com.apple.xcode/MagicCuts/MagicCutsUITests",
+          "nodeType": "UI test bundle",
+          "result": "Failed"
+        }
+      ],
+      "name": "MagicCuts",
+      "nodeType": "Test Plan",
+      "result": "Failed"
+    }
+  ],
+  "testPlanConfigurations": [
+    {
+      "configurationId": "1",
+      "configurationName": "Test Scheme Action"
+    }
+  ]
+}

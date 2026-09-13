@@ -18,7 +18,7 @@ struct FieldToolsView: View {
     }
     private func tool(_ title: String, symbol: String, detail: String) -> some View {
         HStack(alignment: .top, spacing: 14) {
-            Image(systemName: symbol).font(.title2).foregroundStyle(ProTheme.signal).frame(width: 30)
+            Image(systemName: symbol).font(.title2).foregroundStyle(MC.action).frame(width: 30)
             VStack(alignment: .leading, spacing: 6) { Text(title).font(.system(.headline, design: .rounded)); Text(detail).font(.callout).foregroundStyle(ProTheme.secondary) }
         }.padding(.vertical, 12)
     }

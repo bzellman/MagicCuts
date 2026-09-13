@@ -1,0 +1,45 @@
+{
+  "devicesAndConfigurations": [
+    {
+      "device": {
+        "architecture": "arm64",
+        "deviceId": "EEF203AE-DF4A-4C0B-B6AD-DFE8F4C3E62C",
+        "deviceName": "MagicCuts Review iPad",
+        "modelName": "iPad Air 11-inch (M3)",
+        "osBuildNumber": "23F77",
+        "osVersion": "26.5",
+        "platform": "iOS Simulator"
+      },
+      "expectedFailures": 0,
+      "failedTests": 1,
+      "passedTests": 4,
+      "skippedTests": 0,
+      "testPlanConfiguration": {
+        "configurationId": "1",
+        "configurationName": "Test Scheme Action"
+      }
+    }
+  ],
+  "environmentDescription": "MagicCuts \u00b7 Built with macOS 26.6.2",
+  "expectedFailures": 0,
+  "failedTests": 1,
+  "finishTime": 1789267726.14,
+  "passedTests": 4,
+  "result": "Failed",
+  "skippedTests": 0,
+  "startTime": 1789267597.415,
+  "statistics": [],
+  "testFailures": [
+    {
+      "failureText": "XCTAssertEqual failed: (\"XCTWaiterResult(rawValue: 2)\") is not equal to (\"XCTWaiterResult(rawValue: 1)\")",
+      "targetName": "MagicCutsUITests",
+      "testIdentifier": 3,
+      "testIdentifierString": "ProExperienceUITests/testSourceHeaderKeepsContextAndSettingsReachable()",
+      "testIdentifierURL": "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testSourceHeaderKeepsContextAndSettingsReachable",
+      "testName": "testSourceHeaderKeepsContextAndSettingsReachable()"
+    }
+  ],
+  "title": "Test - MagicCuts",
+  "topInsights": [],
+  "totalTestCount": 5
+}

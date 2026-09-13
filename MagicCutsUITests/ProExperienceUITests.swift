@@ -19,7 +19,9 @@ nonisolated final class ProExperienceUITests: XCTestCase {
     }
 
     @MainActor private func capture(_ app: XCUIApplication, _ name: String) {
-        let screenshot = app.screenshot()
+        // Capture the display: app.screenshot() can crop using a stale frame
+        // after iPad rotation, yielding a truncated image with a black band.
+        let screenshot = XCUIScreen.main.screenshot()
         let attachment = XCTAttachment(screenshot: screenshot)
         attachment.name = name; attachment.lifetime = .keepAlways; add(attachment)
         // Keep reviewable files even when Xcode stalls finalizing an xcresult.
@@ -321,6 +323,62 @@ nonisolated final class ProExperienceUITests: XCTestCase {
             try audit(app)
             app.swipeUp()
             try audit(app)
+        }
+    }
+
+    @MainActor func testSourceHeaderKeepsContextAndSettingsReachable() throws {
+        defer { XCUIDevice.shared.orientation = .portrait }
+        for dark in [false, true] {
+            XCUIDevice.shared.orientation = .portrait
+            let app = launch(dark ? ["--dark-appearance"] : [])
+            let appearance = dark ? "dark" : "light"
+            let supportsLandscape = app.frame.width >= 600
+            let instrument = app.buttons["instrument.choose"]
+            let headerPosition = instrument.frame.minY
+            app.scrollViews.firstMatch.swipeUp()
+            XCTAssertEqual(instrument.frame.minY, headerPosition, accuracy: 1)
+            XCTAssertTrue(app.buttons["rooms.capture"].isHittable)
+            let settings = app.buttons["settings.open"]
+            XCTAssertTrue(settings.isHittable)
+            settings.tap()
+            XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 5))
+            capture(app, "header-settings-\(appearance)")
+            app.buttons["Done"].tap()
+            XCTAssertTrue(settings.waitForExistence(timeout: 5))
+            app.scrollViews.firstMatch.swipeDown()
+
+            let calibrate = app.buttons["instrument.calibrate"]
+            reveal(calibrate, in: app); calibrate.tap()
+            XCTAssertTrue(app.navigationBars["Calibrate Bluetooth"].waitForExistence(timeout: 5))
+            capture(app, "header-calibration-\(appearance)")
+            app.buttons["Done"].tap()
+            XCTAssertTrue(settings.waitForExistence(timeout: 5))
+            if app.buttons["instrument.start"].exists { app.buttons["instrument.start"].tap() }
+
+            instrument.tap()
+            // The iPad picker can collapse its native search field in landscape.
+            // Use the visible filter to exercise header navigation in both layouts.
+            let motion = app.buttons["instrument.filter.motion"]
+            XCTAssertTrue(motion.waitForExistence(timeout: 5)); motion.tap()
+            let magnetic = app.buttons["instrument.pick.magnetic"]
+            XCTAssertTrue(magnetic.waitForExistence(timeout: 5))
+            reveal(magnetic, in: app); magnetic.tap()
+            XCTAssertTrue(motion.waitForNonExistence(timeout: 5))
+            XCTAssertEqual(instrument.value as? String, "Magnetic field")
+            XCTAssertTrue(settings.isHittable)
+            capture(app, "header-magnetic-\(appearance)")
+
+            XCUIDevice.shared.orientation = .landscapeLeft
+            // The shipping iPhone target supports portrait only; iPad supports both.
+            let orientation = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                let size = app.windows.firstMatch.frame.size
+                return (size.width > size.height) == supportsLandscape
+            }, object: nil)
+            XCTAssertEqual(XCTWaiter.wait(for: [orientation], timeout: 5), .completed)
+            XCTAssertTrue(instrument.isHittable)
+            XCTAssertTrue(settings.isHittable)
+            XCTAssertTrue(app.buttons["instrument.start-flow"].isHittable)
+            capture(app, "header-\(supportsLandscape ? "landscape" : "portrait-rotation")-\(appearance)")
         }
     }
 

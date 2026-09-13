@@ -17,7 +17,7 @@ struct ProRootView: View {
             case .unlocked: ProWorkspaceView(radio: radio, access: access, guidanceWarning: guidanceWarning, requestedRecordingID: requestedRecordingID)
             }
         }
-        .tint(ProTheme.signal)
+        .tint(MC.action)
         .task { await access.load() }
         .onOpenURL { url in
             if url.scheme == "magiccuts", url.host == "session" { requestedRecordingID = UUID(uuidString: url.lastPathComponent) }
@@ -61,7 +61,7 @@ struct ProPaywallView: View {
                             Task { await access.purchase() }
                         } label: {
                             HStack {
-                                if access.isWorking { ProgressView().tint(.white) }
+                                if access.isWorking { ProgressView().tint(MC.onAction) }
                                 Text(access.product.map { "Unlock Pro · \($0.displayPrice)" } ?? "Unlock Pro")
                             }
                         }
@@ -128,21 +128,7 @@ struct ProWorkspaceView: View {
 
     var body: some View {
         NavigationStack {
-            InstrumentWorkspaceView(engine: engine, library: library, radio: radio, guidanceWarning: guidanceWarning)
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button { settings = true } label: {
-                            Image(systemName: "gearshape")
-                                .frame(width: 44, height: 44)
-                                .contentShape(Rectangle())
-                        }
-                        .accessibilityLabel("Settings")
-                        .accessibilityIdentifier("settings.open")
-                    }
-                }
-                .toolbarBackground(MC.canvas, for: .navigationBar)
-                .toolbarBackground(.visible, for: .navigationBar)
-                .background(OpaqueNavigationBar())
+            InstrumentWorkspaceView(engine: engine, library: library, radio: radio, guidanceWarning: guidanceWarning, openSettings: { settings = true })
                 .sheet(isPresented: $settings) {
                     ProSettingsView(access: access, library: library, radio: workflowRadio, activeRecordingID: engine.recordingID)
                 }
@@ -206,6 +192,7 @@ struct InstrumentWorkspaceView: View {
     @Bindable var library: ProLibrary
     let radio: any RadioScanning
     var guidanceWarning: String?
+    let openSettings: () -> Void
     @Query(sort: \MonitoredDevice.name) private var devices: [MonitoredDevice]
     @State private var mode: InstrumentViewMode = .live
     @State private var chosenKind: InstrumentKind = .bluetooth
@@ -263,11 +250,11 @@ struct InstrumentWorkspaceView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: compactCalibrationLayout ? 6 : 8) {
+                if dynamicType.isAccessibilitySize { homeSelector }
                 RoomOrientationBanner()
                 if let guidanceWarning {
                     Text(guidanceWarning).font(.footnote).foregroundStyle(ProTheme.secondary)
                 }
-                homeSelector
                 InstrumentSegments(selection: $mode)
                 if let message = failure ?? engine.phase.explanation { recovery(message) }
                 if chosenKind == .bluetooth, source.deviceID == nil {
@@ -308,11 +295,16 @@ struct InstrumentWorkspaceView: View {
         }
         .background(MC.canvas)
         .scrollEdgeEffectStyle(.hard, for: .top)
-        .navigationTitle("Home")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(MC.canvas, for: .navigationBar)
-        .toolbarBackground(.visible, for: .navigationBar)
-        .background(OpaqueNavigationBar())
+        .toolbar(.hidden, for: .navigationBar)
+        .safeAreaInset(edge: .top, spacing: 0) {
+            if !dynamicType.isAccessibilitySize {
+                homeSelector
+                    .padding(.horizontal, sizeClass == .regular ? 28 : 16)
+                    .padding(.vertical, 8)
+                    .frame(maxWidth: sizeClass == .regular ? 1040 : 680).frame(maxWidth: .infinity)
+                    .background(MC.canvas.shadow(.drop(color: .black.opacity(0.035), radius: 6, y: 4)))
+            }
+        }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             if !dynamicType.isAccessibilitySize {
                 if engine.recording { recordingControls }
@@ -382,17 +374,41 @@ struct InstrumentWorkspaceView: View {
                 if !dynamicType.isAccessibilitySize { Divider().frame(height: 24).accessibilityHidden(true) }
                 newRoomButton
             }
-            if chosenKind == .bluetooth || chosenKind == .network {
-                Divider().padding(.horizontal, 16)
-                sourceChip
+            Divider().padding(.horizontal, 16)
+            layout {
+                if chosenKind == .bluetooth || chosenKind == .network {
+                    sourceChip
+                } else {
+                    Label(source.name, systemImage: "iphone")
+                        .font(.body).foregroundStyle(ProTheme.secondary)
+                        .padding(.horizontal, 16).padding(.vertical, 8)
+                        .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
+                }
+                if !dynamicType.isAccessibilitySize { Divider().frame(height: 24).accessibilityHidden(true) }
+                Button(action: openSettings) {
+                    if dynamicType.isAccessibilitySize {
+                        selectorLabel("Settings", symbol: "gearshape")
+                    } else {
+                        Image(systemName: "gearshape").font(.title3)
+                            .foregroundStyle(MC.action)
+                            .frame(width: 44, height: 44)
+                            .background(Color.primary.opacity(0.045), in: Circle())
+                            .frame(width: 60, height: 56).contentShape(Rectangle())
+                    }
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Settings")
+                .accessibilityIdentifier("settings.open")
             }
         }
         .background(ProTheme.face, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("instrument.header")
     }
 
     private var instrumentPickerButton: some View {
         Button { engine.pause(); picker = true } label: {
-            selectorLabel(chosenKind.title, symbol: chosenKind.symbol, accent: true)
+            selectorLabel(chosenKind.title, symbol: chosenKind.symbol, prominent: true)
         }
         .buttonStyle(.plain)
         .disabled(engine.recording)
@@ -405,7 +421,7 @@ struct InstrumentWorkspaceView: View {
 
     private var newRoomButton: some View {
         Button { engine.pause(); roomCapture = true } label: {
-            selectorLabel("Room", symbol: "house")
+            selectorLabel("Room", symbol: "house", prominent: true)
         }
         .buttonStyle(.plain)
         .disabled(engine.recording)
@@ -415,16 +431,17 @@ struct InstrumentWorkspaceView: View {
         .accessibilityIdentifier("rooms.capture")
     }
 
-    private func selectorLabel(_ title: String, symbol: String, accent: Bool = false) -> some View {
+    private func selectorLabel(_ title: String, symbol: String, prominent: Bool = false) -> some View {
         HStack(spacing: 10) {
-            Image(systemName: symbol).foregroundStyle(accent ? ProTheme.signal : ProTheme.secondary).accessibilityHidden(true)
-            Text(title).font(.body).foregroundStyle(.primary).lineLimit(dynamicType.isAccessibilitySize ? nil : 1)
+            Image(systemName: symbol).foregroundStyle(MC.action).accessibilityHidden(true)
+            Text(title).foregroundStyle(.primary).lineLimit(dynamicType.isAccessibilitySize ? nil : prominent ? 2 : 1)
             Spacer(minLength: 2)
             Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(ProTheme.secondary).accessibilityHidden(true)
         }
+        .font(prominent ? .title3 : .body)
         .padding(.horizontal, 16)
-        .padding(.vertical, 4)
-        .frame(maxWidth: .infinity, minHeight: 44)
+        .padding(.vertical, 8)
+        .frame(maxWidth: .infinity, minHeight: 56)
         .contentShape(Rectangle())
     }
 
@@ -433,17 +450,20 @@ struct InstrumentWorkspaceView: View {
             baselineControl
             if chosenKind == .bluetooth {
                 Button { engine.pause(); calibrationSheet = true } label: {
-                    Text("Calibrate nearby and away").font(.callout)
-                        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-                        .padding(.horizontal, 16).contentShape(Rectangle())
-                }.buttonStyle(.plain).foregroundStyle(ProTheme.signal).disabled(engine.recording)
+                    HStack(spacing: 10) {
+                        Label("Calibrate nearby and away", systemImage: "slider.horizontal.3")
+                        Spacer(minLength: 0)
+                        Image(systemName: "chevron.right").font(.caption.weight(.semibold)).accessibilityHidden(true)
+                    }
+                }.buttonStyle(UtilityControlStyle()).disabled(engine.recording)
+                    .accessibilityIdentifier("instrument.calibrate")
             }
         }
     }
 
     private var homeActions: some View {
         let split = dynamicType.isAccessibilitySize ? AnyLayout(VStackLayout(spacing: 10)) : AnyLayout(HStackLayout(spacing: 10))
-        return VStack(spacing: 4) {
+        return VStack(spacing: 8) {
             if !engine.phase.isActive {
                 Button(engine.phase == .paused ? "Resume measuring" : "Start measuring") { Task { await start() } }
                     .font(.system(.callout, design: .rounded).weight(.semibold)).frame(minHeight: 44)
@@ -467,11 +487,9 @@ struct InstrumentWorkspaceView: View {
                 .accessibilityIdentifier("instrument.record")
             }
             Button { startFlow = true } label: {
-                Label("Start Flow", systemImage: "play.fill").font(.system(.callout, design: .rounded).weight(.semibold))
-                    .frame(maxWidth: .infinity, minHeight: 44).contentShape(Rectangle())
+                Label("Start Flow", systemImage: "play.fill")
             }
-            .buttonStyle(.plain)
-            .foregroundStyle(ProTheme.signal)
+            .buttonStyle(UtilityControlStyle())
             .accessibilityIdentifier("instrument.start-flow")
         }
         .padding(.horizontal, 16).padding(.top, 8).padding(.bottom, 2)

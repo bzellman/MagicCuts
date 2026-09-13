@@ -2,7 +2,10 @@
 name: "MagicCuts Pro"
 description: "A native field utility for deliberate, truthful measurements."
 colors:
-  action: "#0052C7"
+  action: "#242A2F"
+  action-dark: "#E7F542"
+  on-action: "#FFFFFF"
+  on-action-dark: "#242A2F"
   signal: "#0052C7"
   signal-dark: "#61B8FF"
   interval: "#1F6E61"
@@ -31,6 +34,7 @@ typography:
 rounded:
   small-control: "10pt"
   quiet-control: "14pt"
+  utility-control: "22pt continuous"
   baseline: "20pt"
   soft-group: "24pt continuous"
   capsule: "26pt"
@@ -44,18 +48,24 @@ spacing:
 components:
   primary-action:
     backgroundColor: "{colors.action}"
-    textColor: "#FFFFFF"
+    textColor: "{colors.on-action}; {colors.on-action-dark} in dark appearance"
     typography: "{typography.title}"
     rounded: "{rounded.action}"
     padding: "14pt 16pt"
     height: "52pt minimum"
   quiet-action:
     backgroundColor: "system primary at 5.5% opacity"
-    textColor: "{colors.signal}"
+    textColor: "{colors.action}; {colors.action-dark} in dark appearance"
     typography: "{typography.title}"
     rounded: "{rounded.action}"
     padding: "14pt 16pt"
     height: "52pt minimum"
+  utility-action:
+    backgroundColor: "system primary at 2.5% opacity"
+    textColor: "adaptive action"
+    rounded: "{rounded.utility-control}"
+    padding: "10pt 16pt"
+    height: "44pt minimum"
   mode-segments:
     backgroundColor: "system primary at 5.5% opacity"
     textColor: "system primary and {colors.secondary-label}"
@@ -67,8 +77,8 @@ components:
     backgroundColor: "secondarySystemGroupedBackground"
     textColor: "system primary"
     rounded: "{rounded.soft-group}"
-    padding: "4pt 16pt"
-    height: "44pt minimum per row"
+    padding: "8pt 16pt"
+    height: "56pt minimum per row"
   instrument-surface:
     backgroundColor: "secondarySystemGroupedBackground"
     textColor: "system primary"
@@ -88,9 +98,9 @@ The build is SwiftUI for iOS and iPadOS. Native navigation, sheets, menus, SF Sy
 
 **Key Characteristics:**
 
-- Home begins with one soft, two-row source group and the Gauges, Info, and Compare evidence choices.
+- Home uses a persistent source header containing Instrument, Room, Source, and Settings, followed by the Gauges, Info, and Compare evidence choices.
 - A measurement is prominent, while units, method, uncertainty, and history remain readable and subordinate.
-- Action blue signals action or selection; signal blue and interval teal describe observed data.
+- Charcoal actions in light appearance become industrial yellow in dark appearance; signal blue and interval teal describe observed data.
 - Rounded tabular figures stabilize changing readings; surrounding language retains native SF text styles.
 - Phone uses a safe-area action dock; regular-width iPad places related reading and evidence side by side.
 
@@ -100,7 +110,8 @@ Adaptive color gives the light canvas a cool, quiet working temperature and pres
 
 ### Primary
 
-- **Action Blue:** primary actions and selected instrument state use `action`; the asset adapts to `#1F66D9` in dark appearance. `ProTheme.signal` shares the light value and becomes `signal-dark` in dark appearance for data lines, needles, source affordances, and selected readings.
+- **Action Charcoal / Industrial Yellow:** actions and selection use `action` (`#242A2F`), adapting to `action-dark` (`#E7F542`). Filled actions use white lettering in light appearance and charcoal lettering in dark appearance through `MC.onAction`. These pairs have 14.51:1 and 12.12:1 contrast.
+- **Signal Blue:** `ProTheme.signal` uses `signal` / `signal-dark` for data lines, needles, and selected readings.
 
 ### Secondary
 
@@ -113,7 +124,7 @@ Adaptive color gives the light canvas a cool, quiet working temperature and pres
 - **Readable Secondary:** `ProTheme.secondary` uses `secondary-label` for units, interpretation, chart axes, state, and quiet evidence labels, adapting to `secondary-label-dark`.
 - **Instrument Ink:** `instrument` is the existing dark calibration-surface asset; it adapts to `#172B40` in dark appearance.
 
-**The Blue Has Meaning Rule.** Use Action blue for a current action or selection. Use signal blue and interval teal only to communicate measured information.
+**The Action and Evidence Color Rule.** Use adaptive charcoal/yellow for actions and selection. Use signal blue and interval teal to communicate measured information. Always pair a filled action with the adaptive `onAction` foreground.
 
 **The Opaque Secondary Label Rule.** Use `ProTheme.secondary` for quiet Pro evidence instead of reducing generic secondary text until it becomes illegible.
 
@@ -138,7 +149,7 @@ Adaptive color gives the light canvas a cool, quiet working temperature and pres
 
 `InstrumentWorkspaceView` is a scrollable native column. Phone content uses 16pt horizontal inset, 8pt top inset, 8pt normal stack rhythm, and a 680pt maximum width; regular-width layouts use 28pt horizontal inset, a 1040pt maximum width, and place a live face plus reference controls beside a 240pt history view. The action dock has a 720pt maximum width and stays inside the bottom safe area.
 
-Home’s source controls are a single `ProTheme.face` group with 24pt continuous corners. On ordinary type sizes its instrument and Room rows share a horizontal layout; Bluetooth and network add a divided source row. At accessibility Dynamic Type sizes, controls become a vertical layout, the mode segment becomes an accessible menu, and recording actions move into the scroll flow. Never preserve a capture-specific position by shrinking native text or controls.
+Home’s source controls replace the root navigation title. One `ProTheme.face` group with 24pt continuous corners lives in the top safe-area inset, with an opaque canvas behind it while evidence scrolls. Instrument and Room share a 56pt-minimum first row; the second row pairs the source with a dedicated Settings control. Instruments using the phone show that source without adding an unnecessary chooser. At accessibility Dynamic Type sizes, Instrument, Room, Source, and Settings stack in reading order and the complete header scrolls with the content, preserving usable room for readings. The mode segment becomes an accessible menu and recording actions also move into the scroll flow. Native sheets retain their navigation bars. Never preserve a capture-specific position by shrinking native text or controls.
 
 The compact phone Bluetooth Gauges layout is a specific first-viewport rule: when the device is compact-width, Dynamic Type is not an accessibility size, the selected mode is Gauges, and Bluetooth is selected, the main chapter stack uses 6pt spacing, history is 75pt high, and the arc receives no extra 24pt lower padding. This keeps the full arc width, the Baseline row, and the 44pt “Calibrate nearby and away” action above the safe-area Log/Record dock. Other phone live layouts use 8pt spacing, 90pt history, and the normal arc lower padding.
 
@@ -146,13 +157,13 @@ The compact phone Bluetooth Gauges layout is a specific first-viewport rule: whe
 
 ## Elevation & Depth
 
-Depth is tonal and selective. The cool canvas sits behind adaptive system groups; instrument surfaces use a flat grouped material and 24pt continuous corners. The selected mode pill alone receives a contact shadow (`black` at 10% opacity, 2pt blur, y 1pt) above its shallow 5.5%-primary track. Navigation bars are opaque canvas with no separator shadow. The spatial camera overlay has a restrained black 60%-opacity, 2pt/y1 text shadow for legibility over live imagery.
+Depth is tonal and selective. The cool canvas sits behind adaptive system groups; instrument surfaces use a flat grouped material and 24pt continuous corners. The selected mode pill alone receives a contact shadow (`black` at 10% opacity, 2pt blur, y 1pt) above its shallow 5.5%-primary track. Home’s pinned header has a restrained scroll-boundary shadow (black at 3.5% opacity, 6pt blur, y 4pt). Native sheet navigation bars remain opaque canvas with no separator shadow. The spatial camera overlay has a restrained black 60%-opacity, 2pt/y1 text shadow for legibility over live imagery.
 
 **The Instrument-Not-Poster Rule.** Elevation may clarify a selected native control or live camera label; it must not turn a measurement surface into a floating marketing card.
 
 ## Shapes
 
-Soft continuous groups provide the principal form language: 24pt source and instrument groups, 20pt baseline control, 14pt recovery panel, and 10pt small controls. Instrument modes use a 26pt capsule well and selected pill. Primary and quiet actions use a 28pt continuous rounded rectangle with 52pt minimum height. The marker on a data instrument receives a face-colored separation ring so it remains distinct without introducing decorative depth.
+Soft continuous groups provide the principal form language: 24pt source and instrument groups, 20pt baseline control, 14pt recovery panel, and 10pt small controls. Instrument modes use a 26pt capsule well and selected pill. Primary and quiet actions use a 28pt continuous rounded rectangle with 52pt minimum height. Supporting Calibrate and Start Flow controls use a 22pt continuous outline, 44pt minimum height, and a faint neutral fill. The marker on a data instrument receives a face-colored separation ring so it remains distinct without introducing decorative depth.
 
 ## Components
 
@@ -160,13 +171,13 @@ Soft continuous groups provide the principal form language: 24pt source and inst
 
 **Character:** native, deliberate actions with enough height for field use.
 
-- **Primary:** `ControlStyle` uses Action blue, white text, 16pt horizontal and 14pt vertical padding, a 28pt continuous radius, and a 52pt minimum height. Pressed or disabled state reduces opacity; it does not add a web hover effect.
-- **Quiet:** retains the same geometry, a 5.5%-primary background, and signal-blue text.
-- **Inline:** Start Flow, calibration, and recovery controls retain native plain-button behavior with a 44pt minimum target.
+- **Primary:** `ControlStyle` uses adaptive charcoal/yellow with `MC.onAction` lettering, 16pt horizontal and 14pt vertical padding, a 28pt continuous radius, and a 52pt minimum height. Pressed or disabled state reduces opacity.
+- **Quiet:** retains the same geometry, a 5.5%-primary background, and adaptive action-colored text.
+- **Supporting:** `UtilityControlStyle` gives Calibrate and Start Flow a 1pt action-colored border at 22% opacity, a 2.5%-primary fill, 16pt horizontal / 10pt vertical padding, and a 44pt minimum target. Recovery controls retain native behavior.
 
 ### Source Groups
 
-**Character:** one made, soft source block instead of detached cards. `homeSelector` uses `ProTheme.face`, 24pt continuous corners, 16pt horizontal inset, a 4pt vertical inset, dividers only between related rows, and at least 44pt per selectable row.
+**Character:** a soft operational header. `homeSelector` uses `ProTheme.face`, 24pt continuous corners, 16pt horizontal inset, 8pt vertical inset, dividers between related rows, and at least 56pt per selectable row. Settings has a 44pt quiet circle within a 60×56pt target; at accessibility sizes it becomes a full-width labeled row.
 
 ### Modes
 
@@ -188,7 +199,7 @@ Soft continuous groups provide the principal form language: 24pt source and inst
 
 ### Do:
 
-- **Do** keep Home navigation, the combined source group, the evidence selector, reading, history, baseline/calibration, and safe-area actions in that working order when the available viewport permits.
+- **Do** keep the persistent source header, evidence selector, reading, history, baseline/calibration, and safe-area actions in that working order when the available viewport permits.
 - **Do** use the established action, signal, interval, and readable-secondary roles for their observed jobs.
 - **Do** use rounded tabular figures for values, comparisons, statistics, chart-adjacent readings, and numeric evidence.
 - **Do** retain 44pt minimum controls, 52pt primary actions, native safe areas, Dynamic Type adaptation, and Reduce Motion behavior.
@@ -198,6 +209,6 @@ Soft continuous groups provide the principal form language: 24pt source and inst
 
 - **Don't** infer distance from Bluetooth RSSI or dB SPL from microphone dBFS.
 - **Don't** interpolate chart gaps, compare an incompatible baseline, or present a sample fixture as a live sensor result.
-- **Don't** use Action blue, signal blue, or interval teal as unrelated decoration.
+- **Don't** use action colors, signal blue, or interval teal as unrelated decoration.
 - **Don't** replace native navigation, sheets, menus, system materials, safe-area controls, or SF Symbols with web-shaped substitutes.
 - **Don't** claim simulator captures prove physical sensors, live LiDAR accuracy, camera frames, StoreKit price, purchase, or App Store acceptance.

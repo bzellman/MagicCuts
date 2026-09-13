@@ -44,13 +44,13 @@ struct InstrumentPickerView: View {
                             ForEach(section) { kind in
                                 Button { choose(kind) } label: {
                                     HStack(alignment: .top, spacing: 16) {
-                                        Image(systemName: kind.symbol).font(.title3).foregroundStyle(ProTheme.signal).frame(width: 28)
+                                        Image(systemName: kind.symbol).font(.title3).foregroundStyle(MC.action).frame(width: 28)
                                         VStack(alignment: .leading, spacing: 5) {
                                             Text(kind.title).font(.system(.headline, design: .rounded)).foregroundStyle(.primary)
                                             Text(kind.summary).font(.callout).foregroundStyle(ProTheme.secondary)
                                         }
                                         Spacer(minLength: 0)
-                                        if selected == kind { Image(systemName: "checkmark").foregroundStyle(ProTheme.signal) }
+                                        if selected == kind { Image(systemName: "checkmark").foregroundStyle(MC.action) }
                                     }.padding(.vertical, 8)
                                 }
                                 .buttonStyle(.plain)
@@ -84,7 +84,7 @@ struct InstrumentPickerView: View {
                 .padding(.horizontal, 8)
                 .frame(maxWidth: .infinity, minHeight: 44)
                 .background(group == value ? MC.action : Color.primary.opacity(0.07), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-                .foregroundStyle(group == value ? Color.white : MC.ink)
+                .foregroundStyle(group == value ? MC.onAction : MC.ink)
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(group == value ? .isSelected : [])
