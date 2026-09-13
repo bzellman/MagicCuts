@@ -12,13 +12,32 @@ enum MC {
 
 struct ControlStyle: ButtonStyle {
     var primary = true
-    var radius: CGFloat = 12
+    var radius: CGFloat = 28
+    @Environment(\.isEnabled) private var isEnabled
     func makeBody(configuration: Configuration) -> some View {
         configuration.label.font(.headline).padding(.horizontal, 16).padding(.vertical, 14)
             .frame(maxWidth: .infinity, minHeight: 52)
-            .foregroundStyle(primary ? Color.white : MC.ink)
-            .background(primary ? MC.action : Color.primary.opacity(0.07), in: RoundedRectangle(cornerRadius: radius))
-            .opacity(configuration.isPressed ? 0.75 : 1)
+            .foregroundStyle(primary ? Color.white : ProTheme.signal)
+            .background(primary ? MC.action : Color.primary.opacity(0.055), in: RoundedRectangle(cornerRadius: radius, style: .continuous))
+            .opacity(!isEnabled ? 0.4 : configuration.isPressed ? 0.75 : 1)
+    }
+}
+
+/// The instrument and evidence surfaces share one quiet, adaptive material.
+/// Elevation belongs to selected controls; the reading panels sit on the canvas.
+struct InstrumentSurface: ViewModifier {
+    var inset: CGFloat = 18
+    func body(content: Content) -> some View {
+        content
+            .padding(inset)
+            .frame(maxWidth: .infinity)
+            .background(ProTheme.face, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+    }
+}
+
+extension View {
+    func instrumentSurface(inset: CGFloat = 18) -> some View {
+        modifier(InstrumentSurface(inset: inset))
     }
 }
 

@@ -12,7 +12,11 @@ nonisolated final class RoomFieldworkUITests: XCTestCase {
     @MainActor private func activeScrollView(_ app: XCUIApplication) -> XCUIElement {
         // A presented sheet can leave the room's underlying scroll view in the tree.
         let trim = app.scrollViews.containing(.any, identifier: "room.trim.canvas").firstMatch
-        return trim.exists ? trim : app.scrollViews.firstMatch
+        if trim.exists { return trim }
+        // Native Lists in iPad sheets are collection views. Scroll the presented
+        // list, rather than Home's scroll view behind the sheet.
+        let list = app.collectionViews.allElementsBoundByIndex.last { $0.isHittable }
+        return list ?? app.scrollViews.allElementsBoundByIndex.last { $0.isHittable } ?? app.scrollViews.firstMatch
     }
     @MainActor private func reveal(_ element: XCUIElement, _ app: XCUIApplication) {
         for _ in 0..<10 {
@@ -39,7 +43,15 @@ nonisolated final class RoomFieldworkUITests: XCTestCase {
         XCTAssertTrue(element.isHittable, element.debugDescription)
     }
     @MainActor private func screenshot(_ app: XCUIApplication, _ name: String) {
-        let image = XCTAttachment(screenshot: app.screenshot()); image.name = name; image.lifetime = .keepAlways; add(image)
+        let screenshot = app.screenshot()
+        let attachment = XCTAttachment(screenshot: screenshot)
+        attachment.name = name; attachment.lifetime = .keepAlways; add(attachment)
+        // Keep reviewable files even when Xcode stalls finalizing an xcresult.
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("native-utility", isDirectory: true)
+        do {
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            try screenshot.pngRepresentation.write(to: folder.appendingPathComponent(name + ".png"), options: .atomic)
+        } catch { XCTFail("Could not retain visual evidence: \(error)") }
     }
     @MainActor private func openSettingsItem(_ identifier: String, in app: XCUIApplication) {
         app.buttons["Settings"].tap()
@@ -58,9 +70,12 @@ nonisolated final class RoomFieldworkUITests: XCTestCase {
         try app.performAccessibilityAudit(for: [.contrast, .hitRegion, .sufficientElementDescription, .trait]) { issue in
             if issue.auditType == .contrast, let element = issue.element {
                 if !element.isEnabled { return true }
-                let tabs = app.tabBars.firstMatch
-                let bottom = tabs.exists && tabs.frame.minY > app.frame.midY ? tabs.frame.minY : app.frame.maxY
-                let top = app.navigationBars.firstMatch.exists ? app.navigationBars.firstMatch.frame.maxY : app.frame.minY
+                // A floating iPad sheet has its own viewport. XCTest also samples
+                // text beyond that viewport; audit it after scrolling into view.
+                let scroll = self.activeScrollView(app)
+                let viewport = scroll.exists ? scroll.frame.intersection(app.frame) : app.frame
+                let top = max(viewport.minY, app.navigationBars.allElementsBoundByIndex.last?.frame.maxY ?? app.frame.minY)
+                let bottom = viewport.maxY
                 if element.frame.minY < top || element.frame.maxY > bottom { return true }
             }
             print("Room accessibility issue: \(issue.compactDescription); \(issue.element?.debugDescription ?? "unknown")")
@@ -222,7 +237,7 @@ nonisolated final class RoomFieldworkUITests: XCTestCase {
         app.navigationBars.buttons["Close"].tap()
         XCTAssertTrue(app.buttons["Update room"].exists)
         app.navigationBars.buttons["Rooms"].tap()
-        app.navigationBars.buttons["Settings"].tap()
+        app.navigationBars["Rooms"].buttons["Settings"].tap()
         XCTAssertTrue(app.buttons["instruments.field-tools"].waitForExistence(timeout: 5))
         app.buttons["instruments.field-tools"].tap()
         let nfc = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "NFC inspector")).firstMatch
@@ -231,7 +246,7 @@ nonisolated final class RoomFieldworkUITests: XCTestCase {
         screenshot(app, "nfc-unsupported-device")
         app.buttons["Save scan diagnostics"].tap(); app.buttons["capture.save"].tap()
         app.navigationBars.buttons["Field tools"].tap()
-        app.navigationBars.buttons["Settings"].tap()
+        app.navigationBars["Field tools"].buttons["Settings"].tap()
         XCTAssertTrue(app.buttons["settings.sessions"].waitForExistence(timeout: 5))
         app.buttons["settings.sessions"].tap()
         let attempt = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "NFC scan attempt")).firstMatch
@@ -279,8 +294,72 @@ nonisolated final class RoomFieldworkUITests: XCTestCase {
             let tool = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", title)).firstMatch
             reveal(tool, app); tool.tap()
             screenshot(app, "field-tool-" + title); try auditVisible(app)
+            if title == "Cellular" {
+                let note = app.staticTexts["Predictions are future possibilities. No prediction does not mean service is healthy."]
+                reveal(note, app)
+                activeScrollView(app).swipeUp(velocity: .slow)
+                screenshot(app, "field-tool-Cellular-details"); try auditVisible(app)
+            }
             app.navigationBars.buttons["Field tools"].tap()
         }
+    }
+
+    @MainActor func testSavedVisualizationFamilies() throws {
+        let app = launch(["--room-fixture-id", UUID().uuidString, "--visualization-demo"])
+        openSettingsItem("settings.sessions", in: app)
+        for title in ["Desk tag", "At the window", "Depth patch", "Surface patch", "Cellular outlook", "Cellular history", "Peer range"] {
+            let search = app.searchFields["Name, source or instrument"]
+            XCTAssertTrue(search.waitForExistence(timeout: 5)); search.tap()
+            if let value = search.value as? String, value != search.placeholderValue {
+                search.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: value.count))
+            }
+            search.typeText(title + "\n")
+            let entry = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", title + " · sample")).firstMatch
+            XCTAssertTrue(entry.waitForExistence(timeout: 5)); entry.tap()
+            XCTAssertTrue(app.staticTexts["Illustrative sample data"].waitForExistence(timeout: 5))
+            screenshot(app, "family-" + title)
+            if title == "Depth patch" {
+                app.segmentedControls.buttons["Confidence"].tap()
+                screenshot(app, "family-depth-confidence")
+            }
+            app.swipeUp()
+            screenshot(app, "family-" + title + "-detail")
+            app.navigationBars.buttons["Sessions"].tap()
+        }
+    }
+
+    @MainActor func testCameraToolsOpenWithoutAnExtraStartStep() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Simulator verifies automatic preparation and unsupported-hardware recovery; live depth needs a LiDAR device")
+        #else
+        let app = launch(["--room-fixture-id", UUID().uuidString])
+        openSettingsItem("instruments.field-tools", in: app)
+        let lidar = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "LiDAR measurements")).firstMatch
+        reveal(lidar, app); lidar.tap()
+        XCTAssertTrue(app.staticTexts["Camera unavailable"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "needs a LiDAR-equipped device")).firstMatch.exists)
+        XCTAssertFalse(app.buttons["Start LiDAR"].exists)
+        XCTAssertFalse(app.buttons["depth.capture"].exists)
+        screenshot(app, "native-camera-distance")
+        for title in ["Two points", "Surface", "Depth", "Distance"] {
+            app.buttons["depth.mode"].tap()
+            try XCTUnwrap(app.buttons.matching(identifier: title).allElementsBoundByIndex.last).tap()
+            XCTAssertTrue(app.staticTexts["Camera unavailable"].exists)
+            XCTAssertFalse(app.buttons["Start LiDAR"].exists)
+        }
+        screenshot(app, "native-camera-modes")
+        app.navigationBars.buttons["Field tools"].tap()
+        lidar.tap()
+        XCTAssertTrue(app.staticTexts["Camera unavailable"].waitForExistence(timeout: 5))
+        app.navigationBars.buttons["Field tools"].tap()
+        app.navigationBars["Field tools"].buttons["Settings"].tap()
+        app.navigationBars.buttons["Done"].tap()
+        app.buttons["rooms.capture"].tap()
+        XCTAssertTrue(app.staticTexts["Camera unavailable"].waitForExistence(timeout: 5))
+        screenshot(app, "native-room-camera")
+        app.navigationBars.buttons["Close"].tap()
+        XCTAssertTrue(app.buttons["instrument.choose"].waitForExistence(timeout: 5))
+        #endif
     }
     @MainActor func testRoomDarkAppearance() throws {
         let app = launch(["--dark-appearance"]); openRoom(app)

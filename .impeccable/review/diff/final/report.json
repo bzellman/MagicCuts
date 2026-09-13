@@ -1,0 +1,842 @@
+{
+  "tool": "comp-diff",
+  "version": 1,
+  "createdAt": "2026-09-13T01:21:27.259Z",
+  "label": "pro-live-light",
+  "comp": ".impeccable/mocks/native-utility/home-trace.png",
+  "build": ".impeccable/review/native-utility/phone/pro-live-light.png",
+  "spec": ".impeccable/build/native-fidelity-spec.json",
+  "compSize": "852x1846",
+  "buildSize": "1206x2622",
+  "align": "top",
+  "overall": 0.7729,
+  "verdict": "drift",
+  "scores": {
+    "overall": 0.7729,
+    "structure": 0.6719,
+    "color": 0.9566,
+    "colorIntersection": 0.9136,
+    "paletteMatch": 0.9797,
+    "detail": 0.6079,
+    "detailRaw": 0.6964,
+    "detailAdded": 0.1771,
+    "bands": 0.9778
+  },
+  "palette": {
+    "comp": [
+      {
+        "hex": "#f7f7f7",
+        "coverage": 0.9652
+      },
+      {
+        "hex": "#0866e6",
+        "coverage": 0.0219
+      },
+      {
+        "hex": "#08080f",
+        "coverage": 0.0098
+      },
+      {
+        "hex": "#c0c0d0",
+        "coverage": 0.0011
+      },
+      {
+        "hex": "#388878",
+        "coverage": 0.0011
+      },
+      {
+        "hex": "#085848",
+        "coverage": 0.0008
+      }
+    ],
+    "build": [
+      {
+        "hex": "#f7f7f7",
+        "coverage": 0.9506
+      },
+      {
+        "hex": "#0858c8",
+        "coverage": 0.0288
+      },
+      {
+        "hex": "#080808",
+        "coverage": 0.0101
+      },
+      {
+        "hex": "#5f6868",
+        "coverage": 0.0056
+      },
+      {
+        "hex": "#186868",
+        "coverage": 0.0041
+      },
+      {
+        "hex": "#c8c8c8",
+        "coverage": 0.0008
+      }
+    ]
+  },
+  "regions": [
+    {
+      "id": "system-status",
+      "x": 0,
+      "y": 0,
+      "w": 1,
+      "h": 0.047670639219934995,
+      "kind": "chrome",
+      "score": {
+        "overall": 0.6112,
+        "structure": 0.8529,
+        "color": 0.9906,
+        "colorIntersection": 0.9801,
+        "paletteMatch": 0.9963,
+        "detail": 0,
+        "detailRaw": 0.0371,
+        "detailAdded": 0.1563,
+        "bands": 0.4333
+      },
+      "verdict": "missing",
+      "inkBox": {
+        "comp": {
+          "x": 75,
+          "y": 32,
+          "w": 732,
+          "h": 26
+        },
+        "build": {
+          "x": 120,
+          "y": 55,
+          "w": 658,
+          "h": 28
+        }
+      }
+    },
+    {
+      "id": "home-title",
+      "x": 0.42370892018779344,
+      "y": 0.05579631635969664,
+      "w": 0.16784037558685447,
+      "h": 0.027085590465872156,
+      "kind": "text",
+      "score": {
+        "overall": 0.5557,
+        "structure": 0.6424,
+        "color": 0.7779,
+        "colorIntersection": 0.7083,
+        "paletteMatch": 0.8154,
+        "detail": 0,
+        "detailRaw": 0,
+        "detailAdded": 0,
+        "bands": 0.4
+      },
+      "verdict": "missing",
+      "inkBox": {
+        "comp": {
+          "x": 17,
+          "y": 11,
+          "w": 96,
+          "h": 28
+        },
+        "build": null
+      }
+    },
+    {
+      "id": "settings",
+      "x": 0.8767605633802817,
+      "y": 0.04929577464788732,
+      "w": 0.09389671361502347,
+      "h": 0.04008667388949079,
+      "kind": "control",
+      "score": {
+        "overall": 0.6231,
+        "structure": 0.7256,
+        "color": 0.8472,
+        "colorIntersection": 0.752,
+        "paletteMatch": 0.8985,
+        "detail": 0,
+        "detailRaw": 0.0143,
+        "detailAdded": 0.0729,
+        "bands": 0.4
+      },
+      "verdict": "missing",
+      "inkBox": {
+        "comp": {
+          "x": 24,
+          "y": 14,
+          "w": 48,
+          "h": 48
+        },
+        "build": {
+          "x": 0,
+          "y": 63,
+          "w": 32,
+          "h": 11
+        }
+      }
+    },
+    {
+      "id": "source-surface",
+      "x": 0.03873239436619718,
+      "y": 0.09913326110509209,
+      "w": 0.9225352112676056,
+      "h": 0.11105092091007585,
+      "kind": "chrome",
+      "score": {
+        "overall": 0.5417,
+        "structure": 0.6838,
+        "color": 0.9703,
+        "colorIntersection": 0.9452,
+        "paletteMatch": 0.9838,
+        "detail": 0.047,
+        "detailRaw": 0.1772,
+        "detailAdded": 0.2604,
+        "bands": 0.32
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 28,
+          "y": 33,
+          "w": 726,
+          "h": 137
+        },
+        "build": {
+          "x": 35,
+          "y": 0,
+          "w": 716,
+          "h": 174
+        }
+      }
+    },
+    {
+      "id": "instrument-selector",
+      "x": 0.06338028169014084,
+      "y": 0.11375947995666305,
+      "w": 0.4107981220657277,
+      "h": 0.035752979414951244,
+      "kind": "control",
+      "score": {
+        "overall": 0.6639,
+        "structure": 0.7498,
+        "color": 0.933,
+        "colorIntersection": 0.9112,
+        "paletteMatch": 0.9447,
+        "detail": 0,
+        "detailRaw": 0,
+        "detailAdded": 0,
+        "bands": 0.4
+      },
+      "verdict": "missing",
+      "inkBox": {
+        "comp": {
+          "x": 15,
+          "y": 6,
+          "w": 321,
+          "h": 43
+        },
+        "build": null
+      }
+    },
+    {
+      "id": "room-selector",
+      "x": 0.5258215962441315,
+      "y": 0.11375947995666305,
+      "w": 0.4084507042253521,
+      "h": 0.035752979414951244,
+      "kind": "control",
+      "score": {
+        "overall": 0.6549,
+        "structure": 0.7872,
+        "color": 0.8589,
+        "colorIntersection": 0.7705,
+        "paletteMatch": 0.9065,
+        "detail": 0,
+        "detailRaw": 0.0022,
+        "detailAdded": 0.0104,
+        "bands": 0.4
+      },
+      "verdict": "missing",
+      "inkBox": {
+        "comp": {
+          "x": 9,
+          "y": 8,
+          "w": 330,
+          "h": 37
+        },
+        "build": null
+      }
+    },
+    {
+      "id": "source-selector",
+      "x": 0.06338028169014084,
+      "y": 0.16251354279523295,
+      "w": 0.8708920187793427,
+      "h": 0.035752979414951244,
+      "kind": "control",
+      "score": {
+        "overall": 0.7354,
+        "structure": 0.8886,
+        "color": 0.9588,
+        "colorIntersection": 0.9088,
+        "paletteMatch": 0.9857,
+        "detail": 0,
+        "detailRaw": 0.0419,
+        "detailAdded": 0.4375,
+        "bands": 0
+      },
+      "verdict": "missing",
+      "inkBox": {
+        "comp": {
+          "x": 7,
+          "y": 19,
+          "w": 726,
+          "h": 34
+        },
+        "build": {
+          "x": 14,
+          "y": 0,
+          "w": 716,
+          "h": 57
+        }
+      }
+    },
+    {
+      "id": "modes",
+      "x": 0.03873239436619718,
+      "y": 0.22047670639219935,
+      "w": 0.9225352112676056,
+      "h": 0.043878656554712896,
+      "kind": "control",
+      "score": {
+        "overall": 0.6401,
+        "structure": 0.8336,
+        "color": 0.7571,
+        "colorIntersection": 0.527,
+        "paletteMatch": 0.881,
+        "detail": 0,
+        "detailRaw": 0.0597,
+        "detailAdded": 0.1667,
+        "bands": 0
+      },
+      "verdict": "missing",
+      "inkBox": {
+        "comp": {
+          "x": 91,
+          "y": 30,
+          "w": 618,
+          "h": 27
+        },
+        "build": {
+          "x": 38,
+          "y": 0,
+          "w": 709,
+          "h": 13
+        }
+      }
+    },
+    {
+      "id": "measurement-surface",
+      "x": 0.03873239436619718,
+      "y": 0.2746478873239437,
+      "w": 0.9225352112676056,
+      "h": 0.261646803900325,
+      "kind": "chrome",
+      "score": {
+        "overall": 0.6913,
+        "structure": 0.6411,
+        "color": 0.9378,
+        "colorIntersection": 0.8748,
+        "paletteMatch": 0.9718,
+        "detail": 0.4392,
+        "detailRaw": 0.559,
+        "detailAdded": 0.2396,
+        "bands": 0.8182
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 37,
+          "y": 34,
+          "w": 704,
+          "h": 413
+        },
+        "build": {
+          "x": 44,
+          "y": 0,
+          "w": 690,
+          "h": 483
+        }
+      }
+    },
+    {
+      "id": "gauge",
+      "x": 0.07629107981220658,
+      "y": 0.2898158179848321,
+      "w": 0.8438967136150235,
+      "h": 0.13651137594799567,
+      "kind": "control",
+      "score": {
+        "overall": 0.6275,
+        "structure": 0.63,
+        "color": 0.9314,
+        "colorIntersection": 0.8833,
+        "paletteMatch": 0.9574,
+        "detail": 0.09,
+        "detailRaw": 0.215,
+        "detailAdded": 0.25,
+        "bands": 0.6
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 5,
+          "y": 6,
+          "w": 704,
+          "h": 246
+        },
+        "build": {
+          "x": 92,
+          "y": 78,
+          "w": 538,
+          "h": 174
+        }
+      }
+    },
+    {
+      "id": "reading",
+      "x": 0.3403755868544601,
+      "y": 0.4068255687973998,
+      "w": 0.37910798122065725,
+      "h": 0.06175514626218852,
+      "kind": "text",
+      "score": {
+        "overall": 0.6151,
+        "structure": 0.5162,
+        "color": 0.8983,
+        "colorIntersection": 0.8219,
+        "paletteMatch": 0.9395,
+        "detail": 0.4775,
+        "detailRaw": 0.5504,
+        "detailAdded": 0.1458,
+        "bands": 0.6077
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 9,
+          "y": 5,
+          "w": 298,
+          "h": 102
+        },
+        "build": {
+          "x": 0,
+          "y": 13,
+          "w": 295,
+          "h": 101
+        }
+      }
+    },
+    {
+      "id": "phase",
+      "x": 0.36502347417840375,
+      "y": 0.4739978331527627,
+      "w": 0.2828638497652582,
+      "h": 0.020043336944745395,
+      "kind": "text",
+      "score": {
+        "overall": 0.4818,
+        "structure": 0.536,
+        "color": 0.8551,
+        "colorIntersection": 0.8058,
+        "paletteMatch": 0.8816,
+        "detail": 0,
+        "detailRaw": 0,
+        "detailAdded": 0.0313,
+        "bands": 0
+      },
+      "verdict": "missing",
+      "inkBox": {
+        "comp": {
+          "x": 13,
+          "y": 7,
+          "w": 203,
+          "h": 30
+        },
+        "build": {
+          "x": 0,
+          "y": 45,
+          "w": 195,
+          "h": 3
+        }
+      }
+    },
+    {
+      "id": "interpretation",
+      "x": 0.2992957746478873,
+      "y": 0.49945828819068255,
+      "w": 0.4471830985915493,
+      "h": 0.022210184182015168,
+      "kind": "text",
+      "score": {
+        "overall": 0.5378,
+        "structure": 0.5069,
+        "color": 0.8424,
+        "colorIntersection": 0.8135,
+        "paletteMatch": 0.8579,
+        "detail": 0.1815,
+        "detailRaw": 0.2909,
+        "detailAdded": 0.2188,
+        "bands": 0.465
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 17,
+          "y": 10,
+          "w": 312,
+          "h": 25
+        },
+        "build": {
+          "x": 53,
+          "y": 0,
+          "w": 236,
+          "h": 28
+        }
+      }
+    },
+    {
+      "id": "history-surface",
+      "x": 0.03873239436619718,
+      "y": 0.5487540628385699,
+      "w": 0.9225352112676056,
+      "h": 0.19230769230769232,
+      "kind": "chrome",
+      "score": {
+        "overall": 0.6506,
+        "structure": 0.6835,
+        "color": 0.983,
+        "colorIntersection": 0.9668,
+        "paletteMatch": 0.9917,
+        "detail": 0.2426,
+        "detailRaw": 0.3468,
+        "detailAdded": 0.2083,
+        "bands": 0.7
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 21,
+          "y": 29,
+          "w": 735,
+          "h": 292
+        },
+        "build": {
+          "x": 28,
+          "y": 62,
+          "w": 730,
+          "h": 293
+        }
+      }
+    },
+    {
+      "id": "history-title",
+      "x": 0.06807511737089202,
+      "y": 0.5612134344528711,
+      "w": 0.318075117370892,
+      "h": 0.023293607800650054,
+      "kind": "text",
+      "score": {
+        "overall": 0.5767,
+        "structure": 0.623,
+        "color": 0.901,
+        "colorIntersection": 0.8536,
+        "paletteMatch": 0.9266,
+        "detail": 0,
+        "detailRaw": 0.0091,
+        "detailAdded": 0.0417,
+        "bands": 0.4
+      },
+      "verdict": "missing",
+      "inkBox": {
+        "comp": {
+          "x": 8,
+          "y": 8,
+          "w": 202,
+          "h": 22
+        },
+        "build": {
+          "x": 4,
+          "y": 41,
+          "w": 189,
+          "h": 7
+        }
+      }
+    },
+    {
+      "id": "history",
+      "x": 0.057511737089201875,
+      "y": 0.5920910075839654,
+      "w": 0.8697183098591549,
+      "h": 0.13976164680390032,
+      "kind": "control",
+      "score": {
+        "overall": 0.7048,
+        "structure": 0.6947,
+        "color": 0.9742,
+        "colorIntersection": 0.9577,
+        "paletteMatch": 0.9831,
+        "detail": 0.2559,
+        "detailRaw": 0.3392,
+        "detailAdded": 0.1667,
+        "bands": 0.6267
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 5,
+          "y": 10,
+          "w": 735,
+          "h": 231
+        },
+        "build": {
+          "x": 12,
+          "y": 0,
+          "w": 729,
+          "h": 185
+        }
+      }
+    },
+    {
+      "id": "baseline",
+      "x": 0.03873239436619718,
+      "y": 0.752979414951246,
+      "w": 0.9225352112676056,
+      "h": 0.05417118093174431,
+      "kind": "control",
+      "score": {
+        "overall": 0.73,
+        "structure": 0.8624,
+        "color": 0.9768,
+        "colorIntersection": 0.9691,
+        "paletteMatch": 0.981,
+        "detail": 0,
+        "detailRaw": 0.0117,
+        "detailAdded": 0.1146,
+        "bands": 0
+      },
+      "verdict": "missing",
+      "inkBox": {
+        "comp": {
+          "x": 33,
+          "y": 40,
+          "w": 721,
+          "h": 24
+        },
+        "build": {
+          "x": 37,
+          "y": 85,
+          "w": 402,
+          "h": 15
+        }
+      }
+    },
+    {
+      "id": "calibration",
+      "x": 0.06690140845070422,
+      "y": 0.8147345612134345,
+      "w": 0.5481220657276995,
+      "h": 0.024918743228602384,
+      "kind": "control",
+      "score": {
+        "overall": 0.6334,
+        "structure": 0.7458,
+        "color": 0.8509,
+        "colorIntersection": 0.7858,
+        "paletteMatch": 0.8859,
+        "detail": 0,
+        "detailRaw": 0,
+        "detailAdded": 0.0208,
+        "bands": 0.4
+      },
+      "verdict": "missing",
+      "inkBox": {
+        "comp": {
+          "x": 8,
+          "y": 10,
+          "w": 295,
+          "h": 26
+        },
+        "build": {
+          "x": 248,
+          "y": 0,
+          "w": 159,
+          "h": 4
+        }
+      }
+    },
+    {
+      "id": "log",
+      "x": 0.03873239436619718,
+      "y": 0.8559046587215602,
+      "w": 0.45305164319248825,
+      "h": 0.051462621885157094,
+      "kind": "control",
+      "score": {
+        "overall": 0.6282,
+        "structure": 0.8026,
+        "color": 0.4548,
+        "colorIntersection": 0.0858,
+        "paletteMatch": 0.6534,
+        "detail": 0.5394,
+        "detailRaw": 0.555,
+        "detailAdded": 0.0313,
+        "bands": 0.4333
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 0,
+          "y": 0,
+          "w": 386,
+          "h": 95
+        },
+        "build": {
+          "x": 0,
+          "y": 0,
+          "w": 386,
+          "h": 95
+        }
+      }
+    },
+    {
+      "id": "record",
+      "x": 0.5117370892018779,
+      "y": 0.8559046587215602,
+      "w": 0.4507042253521127,
+      "h": 0.051462621885157094,
+      "kind": "control",
+      "score": {
+        "overall": 0.6494,
+        "structure": 0.8385,
+        "color": 0.4916,
+        "colorIntersection": 0.0893,
+        "paletteMatch": 0.7083,
+        "detail": 0.5001,
+        "detailRaw": 0.5365,
+        "detailAdded": 0.0729,
+        "bands": 0
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 117,
+          "y": 24,
+          "w": 158,
+          "h": 46
+        },
+        "build": {
+          "x": 110,
+          "y": 22,
+          "w": 164,
+          "h": 35
+        }
+      }
+    },
+    {
+      "id": "flow",
+      "x": 0.38967136150234744,
+      "y": 0.9236186348862405,
+      "w": 0.27230046948356806,
+      "h": 0.027085590465872156,
+      "kind": "control",
+      "score": {
+        "overall": 0.659,
+        "structure": 0.5711,
+        "color": 0.8462,
+        "colorIntersection": 0.7269,
+        "paletteMatch": 0.9104,
+        "detail": 0.5293,
+        "detailRaw": 0.6074,
+        "detailAdded": 0.1563,
+        "bands": 0.8
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 6,
+          "y": 6,
+          "w": 181,
+          "h": 32
+        },
+        "build": {
+          "x": 0,
+          "y": 11,
+          "w": 197,
+          "h": 27
+        }
+      }
+    },
+    {
+      "id": "home-indicator",
+      "x": 0.3145539906103286,
+      "y": 0.9783315276273022,
+      "w": 0.37089201877934275,
+      "h": 0.014626218851570965,
+      "kind": "chrome",
+      "score": {
+        "overall": 0.547,
+        "structure": 0.7108,
+        "color": 0.7309,
+        "colorIntersection": 0.6907,
+        "paletteMatch": 0.7526,
+        "detail": 0.1859,
+        "detailRaw": 0.3109,
+        "detailAdded": 0.25,
+        "bands": 0.46
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 7,
+          "y": 17,
+          "w": 303,
+          "h": 12
+        },
+        "build": {
+          "x": 6,
+          "y": 29,
+          "w": 305,
+          "h": 11
+        }
+      }
+    }
+  ],
+  "files": {
+    "sideBySide": "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/side-by-side.png",
+    "heatmap": "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/heatmap.png",
+    "regionFiles": [
+      "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/regions/system-status.png",
+      "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/regions/home-title.png",
+      "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/regions/settings.png",
+      "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/regions/source-surface.png",
+      "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/regions/instrument-selector.png",
+      "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/regions/room-selector.png",
+      "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/regions/source-selector.png",
+      "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/regions/modes.png",
+      "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/regions/measurement-surface.png",
+      "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/regions/gauge.png",
+      "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/regions/reading.png",
+      "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/regions/phase.png",
+      "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/regions/interpretation.png",
+      "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/regions/history-surface.png",
+      "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/regions/history-title.png",
+      "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/regions/history.png",
+      "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/regions/baseline.png",
+      "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/regions/calibration.png",
+      "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/regions/log.png",
+      "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/regions/record.png",
+      "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/regions/flow.png",
+      "/Volumes/External Use/DeveloperResources/usr/.codex/worktrees/559c/MagicCuts/.impeccable/review/diff/final/regions/home-indicator.png"
+    ]
+  }
+}

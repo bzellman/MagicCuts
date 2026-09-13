@@ -5,7 +5,7 @@ nonisolated final class ProExperienceUITests: XCTestCase {
         continueAfterFailure = false
         let app = XCUIApplication()
         app.terminate()
-        app.launchArguments = ["--uitesting", "--pro-demo", "--seed-device", "-showSessionLiveActivity", "NO"] + extra
+        app.launchArguments = ["--uitesting", "--pro-demo", "--seed-device", "--room-fixture-id", UUID().uuidString, "-showSessionLiveActivity", "NO"] + extra
         app.launch()
         // Xcode can prelaunch the target without fixture arguments on the first test.
         // Require the explicit demo marker before any test interacts with account settings.
@@ -19,8 +19,15 @@ nonisolated final class ProExperienceUITests: XCTestCase {
     }
 
     @MainActor private func capture(_ app: XCUIApplication, _ name: String) {
-        let attachment = XCTAttachment(screenshot: app.screenshot())
+        let screenshot = app.screenshot()
+        let attachment = XCTAttachment(screenshot: screenshot)
         attachment.name = name; attachment.lifetime = .keepAlways; add(attachment)
+        // Keep reviewable files even when Xcode stalls finalizing an xcresult.
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("native-utility", isDirectory: true)
+        do {
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            try screenshot.pngRepresentation.write(to: folder.appendingPathComponent(name + ".png"), options: .atomic)
+        } catch { XCTFail("Could not retain visual evidence: \(error)") }
     }
 
     @MainActor private func reveal(_ element: XCUIElement, in app: XCUIApplication) {
@@ -31,11 +38,30 @@ nonisolated final class ProExperienceUITests: XCTestCase {
         XCTAssertTrue(element.exists)
     }
 
+    @MainActor private func openBaselineRecorder(_ app: XCUIApplication) {
+        let create = app.buttons["instrument.set-baseline"]
+        if create.exists {
+            reveal(create, in: app); create.tap()
+        } else {
+            let chooser = app.buttons["instrument.baseline"]
+            reveal(chooser, in: app); chooser.tap()
+            app.buttons["Capture another baseline"].tap()
+        }
+    }
+
     @MainActor private func audit(_ app: XCUIApplication) throws {
         try app.performAccessibilityAudit(for: [.contrast, .hitRegion, .sufficientElementDescription, .trait]) { issue in
             // XCTest samples obscured SwiftUI text beneath native scrolling chrome.
             // Audit those same readings again after scrolling them into view below.
             if issue.auditType == .contrast, let element = issue.element {
+                // iOS 26 audits this synthetic label using the whole Room cell,
+                // including the antialiased outline symbol. The exported issue
+                // image confirms black text on white (21:1); the symbol's solid
+                // color is #59636E (6.1:1). Keep every other Room audit enabled.
+                if element.label == "Room", element.frame == app.buttons["rooms.capture"].frame {
+                    print("Verified composite-cell contrast false positive: Room")
+                    return true
+                }
                 let tabBar = app.tabBars.firstMatch
                 let record = app.buttons["instrument.record"]
                 let visibleBottom = min(tabBar.exists ? tabBar.frame.minY : app.frame.maxY,
@@ -173,19 +199,20 @@ nonisolated final class ProExperienceUITests: XCTestCase {
     @MainActor func testBaselineInspectRecordExportAndFieldReport() {
         let app = launch(["--dark-appearance"])
         capture(app, "pro-live-dark")
-        app.buttons["instrument.set-baseline"].tap()
+        openBaselineRecorder(app)
         XCTAssertTrue(app.textFields["baseline.name"].waitForExistence(timeout: 5))
         app.textFields["baseline.name"].tap(); app.textFields["baseline.name"].typeText("Quiet desk")
         app.buttons["Save"].tap()
         app.buttons["instrument.mode.inspect"].tap()
         capture(app, "pro-inspect-dark")
         app.buttons["instrument.mode.compare"].tap()
-        XCTAssertTrue(app.staticTexts["Quiet desk"].firstMatch.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Quiet desk")).firstMatch.waitForExistence(timeout: 5))
         capture(app, "pro-compare-dark")
         app.buttons["instrument.mode.inspect"].tap()
         XCTAssertTrue(app.buttons["instrument.record"].waitForExistence(timeout: 5))
         app.buttons["instrument.record"].tap()
         XCTAssertTrue(app.buttons["Mark"].waitForExistence(timeout: 5))
+        capture(app, "pro-recording-dark")
         app.buttons["Mark"].tap()
         let mark = app.textFields["For example, Door closed"]
         XCTAssertTrue(mark.waitForExistence(timeout: 5))
@@ -211,7 +238,7 @@ nonisolated final class ProExperienceUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Export session"].waitForExistence(timeout: 5))
         capture(app, "pro-export")
         app.buttons["Done"].tap()
-        app.navigationBars.buttons.element(boundBy: 0).tap()
+        app.navigationBars[savedName].buttons["Sessions"].tap()
         app.buttons["reports.open"].tap()
         app.buttons["report.new"].tap()
         app.textFields["report.title"].tap(); app.textFields["report.title"].typeText("Office check")
@@ -282,31 +309,65 @@ nonisolated final class ProExperienceUITests: XCTestCase {
         capture(large, "pro-largest-controls")
     }
 
+    @MainActor func testHomeAccessibility() throws {
+        for dark in [false, true] {
+            let app = launch(dark ? ["--dark-appearance"] : [])
+            let calibration = app.buttons["Calibrate nearby and away"]
+            XCTAssertTrue(calibration.waitForExistence(timeout: 5))
+            XCTAssertTrue(app.buttons["instrument.baseline"].isHittable)
+            XCTAssertLessThanOrEqual(calibration.frame.maxY, app.buttons["instrument.log"].frame.minY,
+                                     "Calibration must fit above the action dock on the initial phone viewport")
+            capture(app, dark ? "pro-live-dark" : "pro-live-light")
+            try audit(app)
+            app.swipeUp()
+            try audit(app)
+        }
+    }
+
+    @MainActor func testVibrationSpectrumSample() {
+        let app = launch(["--visualization-demo"])
+        app.buttons["instrument.choose"].tap()
+        let search = app.searchFields["Filter instruments"]
+        XCTAssertTrue(search.waitForExistence(timeout: 5)); search.tap(); search.typeText("Vibration\n")
+        app.buttons["instrument.pick.vibration"].tap()
+        XCTAssertTrue(search.waitForNonExistence(timeout: 5))
+        app.buttons["instrument.mode.inspect"].tap()
+        let title = app.staticTexts["Vibration spectrum"]
+        for _ in 0..<5 {
+            if title.exists && title.frame.minY < app.frame.midY && title.frame.minY > 130 { break }
+            app.swipeUp(velocity: .slow)
+        }
+        XCTAssertTrue(title.exists)
+        XCTAssertLessThan(title.frame.minY, app.frame.midY)
+        capture(app, "pro-vibration-spectrum")
+    }
+
     @MainActor func testInstrumentNavigationAndLargeText() throws {
         let app = launch()
         XCTAssertTrue(app.buttons["instrument.log"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["instrument.record"].exists)
         XCTAssertTrue(app.buttons["instrument.start-flow"].exists)
         capture(app, "pro-live-light")
-        try audit(app)
-        app.swipeUp()
-        try audit(app)
-        app.swipeDown()
-        for kind in ["tilt", "vibration", "rotation", "magnetic", "pressure", "altitude", "heading", "speed", "sound", "battery"] {
-            if !app.buttons["Cancel"].exists {
-                let from = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.32))
-                let to = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.78))
-                from.press(forDuration: 0.05, thenDragTo: to)
-                let chooser = app.buttons["instrument.choose"]
-                XCTAssertTrue(chooser.waitForExistence(timeout: 5))
-                if chooser.isHittable { chooser.tap() }
-                else { chooser.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap() }
-            }
+        for (kind, title) in [("tilt", "Level"), ("vibration", "Vibration"), ("rotation", "Rotation"),
+                              ("magnetic", "Magnetic field"), ("pressure", "Pressure"), ("altitude", "Elevation change"),
+                              ("heading", "Compass"), ("speed", "Speed"), ("sound", "Sound level"),
+                              ("network", "Connection"), ("battery", "Battery")] {
+            app.swipeDown()
+            let chooser = app.buttons["instrument.choose"]
+            XCTAssertTrue(chooser.waitForExistence(timeout: 5)); chooser.tap()
+            let search = app.searchFields["Filter instruments"]
+            XCTAssertTrue(search.waitForExistence(timeout: 5)); search.tap(); search.typeText(title + "\n")
             let choice = app.buttons["instrument.pick.\(kind)"]
-            reveal(choice, in: app)
-            if choice.isHittable { choice.tap() }
-            else { choice.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap() }
-            XCTAssertTrue(app.buttons["instrument.mode.live"].waitForExistence(timeout: 5))
+            XCTAssertTrue(choice.waitForExistence(timeout: 5)); choice.tap()
+            XCTAssertTrue(search.waitForNonExistence(timeout: 5), "Selecting \(title) must dismiss the picker")
+            if kind == "network", app.textFields["endpoint.address"].waitForExistence(timeout: 2) {
+                let endpoint = app.textFields["endpoint.address"]
+                endpoint.tap(); endpoint.typeText("https://example.test")
+                app.buttons["Measure"].tap()
+            }
+            let selected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", title), object: chooser)
+            XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 5), .completed)
+            XCTAssertTrue(app.staticTexts["Sample session"].firstMatch.waitForExistence(timeout: 5))
             capture(app, "pro-\(kind)")
         }
         app.terminate()
@@ -351,14 +412,7 @@ nonisolated final class ProExperienceUITests: XCTestCase {
         XCTAssertTrue(bluetooth.waitForExistence(timeout: 5))
         bluetooth.tap()
         XCTAssertTrue(app.staticTexts["Sample session"].firstMatch.waitForExistence(timeout: 8))
-        let setBaseline = app.buttons["instrument.set-baseline"]
-        let dock = app.buttons["instrument.record"]
-        for _ in 0 ..< 10 {
-            if setBaseline.exists, setBaseline.isHittable, !dock.exists || setBaseline.frame.maxY < dock.frame.minY - 8 { break }
-            app.swipeUp()
-        }
-        XCTAssertTrue(setBaseline.waitForExistence(timeout: 5))
-        setBaseline.tap()
+        openBaselineRecorder(app)
         let name = app.textFields["baseline.name"]
         XCTAssertTrue(name.waitForExistence(timeout: 5))
         name.tap()

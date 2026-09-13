@@ -16,7 +16,7 @@ struct FieldCaptureDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 if let capture {
-                    FieldCaptureEvidence(capture: capture)
+                    FieldCaptureEvidence(capture: capture).instrumentSurface()
                     if let placement = capture.placement {
                         NavigationLink { RoomDetailView(id: placement.revisionID, library: library) } label: {
                             Label("View location in room", systemImage: "mappin.and.ellipse")
@@ -34,7 +34,7 @@ struct FieldCaptureDetailView: View {
                             } }
                         }
                     }.frame(minHeight: 44)
-                    if let comparison { FieldCaptureComparison(current: capture, earlier: comparison) }
+                    if let comparison { FieldCaptureComparison(current: capture, earlier: comparison).instrumentSurface() }
                     if let exportURL { ShareLink(item: exportURL) { Label("Share capture export", systemImage: "square.and.arrow.up") }.frame(minHeight: 44) }
                 } else if failure == nil { ProgressView("Opening capture…") }
                 if let failure { InlineFailure(message: failure) }
@@ -259,7 +259,8 @@ struct NFCEvidenceView: View {
                         Text("TNF \(record.format)\nType: \(record.type.hex)\nIdentifier: \(record.identifier.hex)\nPayload: \(record.payload.prefix(1024).hex)\(record.payload.count > 1024 ? "\n… Preview shows 1,024 bytes. Export retains the full payload." : "")")
                             .font(.caption.monospaced()).textSelection(.enabled).frame(maxWidth: .infinity, alignment: .leading)
                     }
-                }.padding(12).background(ProTheme.signal.opacity(0.04), in: RoundedRectangle(cornerRadius: 12))
+                }.padding(.vertical, 12)
+                Divider()
             }
         }
     }
@@ -300,7 +301,7 @@ struct NetworkEvidenceView: View {
                         Text("\(transaction.protocolName ?? "Protocol unavailable") · \(transaction.cellular ? "Cellular" : "Other route")\(transaction.reused ? " · Reused connection" : "")\(transaction.cached ? " · Cached response" : "")").font(.caption).foregroundStyle(ProTheme.secondary)
                         Chart(transaction.phases) { phase in
                             BarMark(xStart: .value("Start ms", phase.start * 1000), xEnd: .value("End ms", phase.end * 1000), y: .value("Phase", phase.name))
-                                .foregroundStyle(phase.id == "tls" ? ProTheme.band : ProTheme.signal)
+                                .foregroundStyle(phase.id == "tls" ? ProTheme.band : ProTheme.signal).cornerRadius(4)
                         }.frame(height: CGFloat(max(1, transaction.phases.count)) * 28 + 24).chartXAxisLabel("Milliseconds from request start")
                         Text("TLS overlaps connection setup. Missing phases are unavailable or reused; phase bars are not additive.").font(.caption).foregroundStyle(ProTheme.secondary)
                     }

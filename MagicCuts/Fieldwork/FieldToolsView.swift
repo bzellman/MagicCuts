@@ -1,5 +1,6 @@
 import SwiftUI
 import Charts
+import AVFoundation
 
 struct FieldToolsView: View {
     @Bindable var library: ProLibrary
@@ -36,11 +37,11 @@ struct NFCInstrumentView: View {
                 Label(instrument.status, systemImage: "wave.3.right.circle").font(.system(.title2, design: .rounded).weight(.semibold))
                 Text("Read one nearby tag. Inspect supported NDEF records, then keep the useful read.").font(.callout).foregroundStyle(ProTheme.secondary)
                 Button(instrument.active ? "Stop reading" : "Read a tag") { if instrument.active { instrument.stop() } else { instrument.start() } }
-                    .buttonStyle(.borderedProminent).controlSize(.large).tint(MC.action).frame(minHeight: 44).accessibilityIdentifier("nfc.read")
+                    .buttonStyle(ControlStyle()).frame(minHeight: 44).accessibilityIdentifier("nfc.read")
                 if let failure = instrument.failure { InlineFailure(message: failure) }
                 if let capture = instrument.result {
-                    FieldCaptureEvidence(capture: capture)
-                    Button(capture.nfc == nil ? "Save scan diagnostics" : "Save tag read") { saving = capture }.buttonStyle(.borderedProminent).controlSize(.large).tint(MC.action).frame(minHeight: 44)
+                    FieldCaptureEvidence(capture: capture).instrumentSurface()
+                    Button(capture.nfc == nil ? "Save scan diagnostics" : "Save tag read") { saving = capture }.buttonStyle(ControlStyle()).frame(minHeight: 44)
                 } else {
                     ForEach(instrument.diagnostics) { step in LabeledContent(step.step, value: step.outcome).font(.callout) }
                 }
@@ -77,17 +78,17 @@ struct NetworkInstrumentView: View {
                 Button(instrument.running ? "Stop test" : "Start \(mode.title.lowercased()) test") {
                     if instrument.running { instrument.stop() }
                     else { instrument.start(endpoint: endpoint, mode: mode, cellularOnly: cellularOnly) }
-                }.buttonStyle(.borderedProminent).controlSize(.large).tint(MC.action).disabled(!instrument.running && EndpointPolicy.url(endpoint) == nil).frame(minHeight: 44).accessibilityIdentifier("network.start")
+                }.buttonStyle(ControlStyle()).disabled(!instrument.running && EndpointPolicy.url(endpoint) == nil).frame(minHeight: 44).accessibilityIdentifier("network.start")
                 LabeledContent("Test", value: instrument.status)
                 LabeledContent("System path context", value: instrument.path).font(.caption)
                 if let failure = instrument.failure { InlineFailure(message: failure) }
                 if let capture = instrument.capture {
-                    FieldCaptureEvidence(capture: capture)
+                    FieldCaptureEvidence(capture: capture).instrumentSurface()
                     Button("Save test") {
                         var capture = capture
                         if cellularOnly { capture.metadata["reportedTechnologyAtSave"] = cellular.technologies.map { $0.name }.joined(separator: ", ") }
                         saving = capture
-                    }.buttonStyle(.bordered).controlSize(.large).frame(minHeight: 44).disabled(instrument.running)
+                    }.buttonStyle(ControlStyle(primary: false)).frame(minHeight: 44).disabled(instrument.running)
                 }
             }.padding(22).frame(maxWidth: 750).frame(maxWidth: .infinity)
         }.background(MC.canvas).scrollEdgeEffectStyle(.hard, for: .all).navigationTitle(cellularOnly ? "Cellular test" : "Network tests").navigationBarTitleDisplayMode(.inline)
@@ -212,59 +213,115 @@ struct DepthInstrumentView: View {
         default: return true
         }
     }
+    @Environment(\.dynamicTypeSize) private var dynamicType
+    @ScaledMetric(relativeTo: .largeTitle) private var readingSize = 52
+
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
+        SpatialInstrumentStage(session: session) {
+            VStack(alignment: .leading, spacing: 16) {
                 if session.canPin { RoomOrientationBanner() }
+                modePicker
                 if session.cameraActive {
-                    ZStack {
-                        RoomCameraView(session: session).frame(height: 300).clipShape(RoundedRectangle(cornerRadius: 16))
-                        Image(systemName: "plus").font(.title).foregroundStyle(.white).shadow(radius: 2).accessibilityHidden(true)
-                    }
+                    Label(session.confidence == 2 ? "High depth confidence" : session.confidence == 1 ? "Limited depth confidence" : "Waiting for usable depth",
+                          systemImage: session.confidence == 2 ? "checkmark.circle" : "viewfinder")
+                        .font(.callout).foregroundStyle(session.confidence == 2 ? ProTheme.band : ProTheme.secondary)
                 }
-                Picker("LiDAR instrument", selection: $mode) { Text("Distance").tag(0); Text("Two points").tag(1); Text("Surface").tag(2); Text("Depth").tag(3) }.pickerStyle(.menu)
+                measurement
                 Text(session.instruction).font(.callout).foregroundStyle(ProTheme.secondary)
-                if let failure = session.failure { InlineFailure(message: failure) }
-                if !session.cameraActive {
-                    Button("Start LiDAR") { Task { ownSession = true; await session.start(.measurement, archive: library.archive) } }.buttonStyle(.borderedProminent).controlSize(.large).tint(MC.action).frame(minHeight: 44)
+                if let failure = session.failure, session.cameraActive { InlineFailure(message: failure) }
+                if session.phase == .interrupted {
+                    Button("Resume camera") { Task { await openCamera() } }.buttonStyle(ControlStyle())
                 }
-                if mode == 0, let distance = session.distance {
-                    Text("\(distance.formatted(.number.precision(.fractionLength(2)))) m").font(.system(size: 56, weight: .semibold, design: .rounded)).monospacedDigit().minimumScaleFactor(0.6).lineLimit(1)
-                    Text("Camera to reticle surface · \(session.confidence == 2 ? "high" : "limited") depth confidence").font(.callout).foregroundStyle(ProTheme.secondary)
-                    Picker("Distance baseline", selection: $baselineID) {
-                        Text("No baseline").tag(Optional<UUID>.none)
-                        ForEach(library.index.fieldCaptures.filter { $0.metrics.contains(where: { $0.id == "distance" && $0.unit == "m" }) && $0.kind == .depth }) { capture in
-                            Text(capture.title).tag(Optional(capture.id))
-                        }
-                    }
-                    if let baseline = library.index.fieldCaptures.first(where: { $0.id == baselineID }), let previous = baseline.metrics.first(where: { $0.id == "distance" && $0.unit == "m" }) {
-                        LabeledContent("Change from \(baseline.title)", value: "\((distance - previous.value).formatted(.number.precision(.fractionLength(2)).sign(strategy: .always()))) m")
-                        Text("Keep the distance origin and target surface consistent with the baseline.").font(.caption).foregroundStyle(ProTheme.secondary)
-                    }
+                if session.phase == .unavailable, AVCaptureDevice.authorizationStatus(for: .video) == .denied {
+                    Link("Open Settings", destination: URL(string: UIApplication.openSettingsURLString)!).frame(minHeight: 44)
                 }
-                if mode == 1 {
-                    Button(session.firstPoint == nil ? "Set first point" : "Set second point") { session.selectPoint() }
-                        .buttonStyle(.bordered).controlSize(.large).disabled(!session.tracked || (session.confidence ?? 0) < 1).frame(minHeight: 44)
-                    if session.firstPoint != nil || !session.dimensions.isEmpty { Button("Undo last point") { session.undoPoint() }.frame(minHeight: 44) }
-                    ForEach(session.dimensions) { dimension in LabeledContent(dimension.title, value: "\(dimension.meters.formatted(.number.precision(.fractionLength(2)))) m") }
-                }
-                if mode == 2 {
-                    if let fit = session.surfaceFit {
-                        ForEach(fit.metrics) { metric in LabeledContent(metric.title, value: "\(metric.formatted) \(metric.unit)") }
-                        SurfaceEvidenceView(surface: fit)
-                    } else { Text("Point at a broad surface with usable depth. The central patch needs at least 30 well-spread samples.").font(.callout) }
-                    Text("Local best-fit plane from raw depth. Residuals include sensor noise; this is a broad unevenness estimate, not precision flatness metrology.").font(.caption).foregroundStyle(ProTheme.secondary)
-                }
-                if mode == 3, let depth = session.depth { DepthEvidenceView(depth: depth) }
                 if session.cameraActive {
-                    Button("Capture measurement") { saving = makeCapture() }.buttonStyle(.borderedProminent).controlSize(.large).tint(MC.action).frame(minHeight: 44).disabled(!canCapture)
-                    Text("Glass, reflective or dark surfaces, motion, range, and shallow angles can reduce depth quality. Review confidence and check critical dimensions with a physical reference.").font(.caption).foregroundStyle(ProTheme.secondary)
+                    Button("Capture measurement") { saving = makeCapture() }
+                        .buttonStyle(ControlStyle()).disabled(!canCapture)
+                        .accessibilityIdentifier("depth.capture")
+                    if mode == 0 { distanceBaseline }
+                    Text("Glass, reflections, dark surfaces and motion can reduce depth quality. Check critical dimensions with a physical reference.")
+                        .font(.caption).foregroundStyle(ProTheme.secondary)
                 }
-            }.padding(22).frame(maxWidth: 750).frame(maxWidth: .infinity)
-        }.background(MC.canvas).scrollEdgeEffectStyle(.hard, for: .all).navigationTitle("LiDAR measurements").navigationBarTitleDisplayMode(.inline)
-        .onDisappear { if ownSession { session.end() } }
+            }
+        }
+        .navigationTitle("LiDAR measurements").navigationBarTitleDisplayMode(.inline)
+        .task { await openCamera() }
+        .onDisappear {
+            if ownSession { session.end(); ownSession = false }
+        }
         .sheet(item: $saving) { FieldCaptureSaveView(capture: $0, library: library) }
     }
+
+    private var modePicker: some View {
+        Picker("LiDAR instrument", selection: $mode) {
+            Text("Distance").tag(0); Text("Two points").tag(1); Text("Surface").tag(2); Text("Depth").tag(3)
+        }
+        .pickerStyle(.menu)
+        .frame(minHeight: 44)
+        .accessibilityIdentifier("depth.mode")
+    }
+
+    @ViewBuilder private var measurement: some View {
+        switch mode {
+        case 0:
+            if let distance = session.distance {
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    Text(distance.formatted(.number.precision(.fractionLength(2))))
+                        .font(.system(size: readingSize, weight: .semibold, design: .rounded))
+                        .monospacedDigit().minimumScaleFactor(0.5).lineLimit(1)
+                    Text("m").font(.title3).foregroundStyle(ProTheme.secondary)
+                }.accessibilityElement(children: .ignore)
+                    .accessibilityLabel("\(distance.formatted(.number.precision(.fractionLength(2)))) meters")
+                Text("Camera to reticle surface").font(.callout).foregroundStyle(ProTheme.secondary)
+            } else { Text("No distance reading").font(.headline) }
+        case 1:
+            Button(session.firstPoint == nil ? "Set first point" : "Set second point") { session.selectPoint() }
+                .buttonStyle(ControlStyle(primary: false))
+                .disabled(!session.tracked || (session.confidence ?? 0) < 1)
+            if session.firstPoint != nil || !session.dimensions.isEmpty {
+                Button("Undo last point") { session.undoPoint() }.frame(minHeight: 44)
+            }
+            ForEach(session.dimensions) { dimension in
+                LabeledContent(dimension.title, value: "\(dimension.meters.formatted(.number.precision(.fractionLength(2)))) m")
+            }
+        case 2:
+            if let fit = session.surfaceFit {
+                ForEach(fit.metrics) { metric in LabeledContent(metric.title, value: "\(metric.formatted) \(metric.unit)") }
+                SurfaceEvidenceView(surface: fit)
+            } else { Text("Point at a broad surface with usable depth.").font(.callout) }
+            Text("A local plane from raw depth. Residuals include sensor noise; this is an unevenness estimate, not precision flatness metrology.")
+                .font(.caption).foregroundStyle(ProTheme.secondary)
+        default:
+            if let depth = session.depth { DepthEvidenceView(depth: depth) }
+            else { Text("Depth and confidence appear when the camera observes a surface.").font(.callout) }
+        }
+    }
+
+    private var distanceBaseline: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Picker("Distance baseline", selection: $baselineID) {
+                Text("No baseline").tag(Optional<UUID>.none)
+                ForEach(library.index.fieldCaptures.filter { $0.metrics.contains(where: { $0.id == "distance" && $0.unit == "m" }) && $0.kind == .depth }) { capture in
+                    Text(capture.title).tag(Optional(capture.id))
+                }
+            }.frame(minHeight: 44)
+            if let distance = session.distance, let baseline = library.index.fieldCaptures.first(where: { $0.id == baselineID }),
+               let previous = baseline.metrics.first(where: { $0.id == "distance" && $0.unit == "m" }) {
+                LabeledContent("Change from \(baseline.title)", value: "\((distance - previous.value).formatted(.number.precision(.fractionLength(2)).sign(strategy: .always()))) m")
+                Text("Keep the origin and target surface consistent with the baseline.").font(.caption).foregroundStyle(ProTheme.secondary)
+            }
+        }
+    }
+
+    private func openCamera() async {
+        // A located room session belongs to its original owner. Reuse it, retaining
+        // its coordinate frame and never ending it when this tool is dismissed.
+        guard !session.cameraActive, session.phase != .preparing else { return }
+        ownSession = true
+        await session.start(.measurement, archive: library.archive)
+    }
+
     private func makeCapture() -> FieldCapture? {
         guard canCapture, let depth = session.depth else { return nil }
         var metrics: [FieldMetric] = []

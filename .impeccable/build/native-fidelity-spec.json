@@ -1,0 +1,453 @@
+{
+  "tool": "native-specification",
+  "version": 1,
+  "comp": ".impeccable/mocks/native-utility/home-trace.png",
+  "compSize": {
+    "width": 852,
+    "height": 1846
+  },
+  "regions": [
+    {
+      "id": "system-status",
+      "kind": "chrome",
+      "box": {
+        "x": 0.0,
+        "y": 0.0,
+        "w": 1.0,
+        "h": 0.047670639219934995
+      },
+      "snap": false,
+      "note": "Native system status bar",
+      "px": {
+        "x": 0,
+        "y": 0,
+        "w": 852,
+        "h": 88
+      },
+      "medium": "semantic",
+      "plate": null
+    },
+    {
+      "id": "home-title",
+      "kind": "text",
+      "box": {
+        "x": 0.42370892018779344,
+        "y": 0.05579631635969664,
+        "w": 0.16784037558685447,
+        "h": 0.027085590465872156
+      },
+      "snap": false,
+      "note": "Home navigation title",
+      "px": {
+        "x": 361,
+        "y": 103,
+        "w": 143,
+        "h": 50
+      },
+      "medium": "semantic",
+      "plate": null
+    },
+    {
+      "id": "settings",
+      "kind": "control",
+      "box": {
+        "x": 0.8767605633802817,
+        "y": 0.04929577464788732,
+        "w": 0.09389671361502347,
+        "h": 0.04008667388949079
+      },
+      "snap": false,
+      "note": "Native Settings symbol action",
+      "px": {
+        "x": 747,
+        "y": 91,
+        "w": 80,
+        "h": 74
+      },
+      "medium": "semantic",
+      "plate": null
+    },
+    {
+      "id": "source-surface",
+      "kind": "chrome",
+      "box": {
+        "x": 0.03873239436619718,
+        "y": 0.09913326110509209,
+        "w": 0.9225352112676056,
+        "h": 0.11105092091007585
+      },
+      "snap": false,
+      "note": "White continuous rounded source group",
+      "px": {
+        "x": 33,
+        "y": 183,
+        "w": 786,
+        "h": 205
+      },
+      "medium": "semantic",
+      "plate": null
+    },
+    {
+      "id": "instrument-selector",
+      "kind": "control",
+      "box": {
+        "x": 0.06338028169014084,
+        "y": 0.11375947995666305,
+        "w": 0.4107981220657277,
+        "h": 0.035752979414951244
+      },
+      "snap": false,
+      "note": "Bluetooth instrument selector with symbol and chevron",
+      "px": {
+        "x": 54,
+        "y": 210,
+        "w": 350,
+        "h": 66
+      },
+      "medium": "semantic",
+      "plate": null
+    },
+    {
+      "id": "room-selector",
+      "kind": "control",
+      "box": {
+        "x": 0.5258215962441315,
+        "y": 0.11375947995666305,
+        "w": 0.4084507042253521,
+        "h": 0.035752979414951244
+      },
+      "snap": false,
+      "note": "Room capture action with symbol and chevron",
+      "px": {
+        "x": 448,
+        "y": 210,
+        "w": 348,
+        "h": 66
+      },
+      "medium": "semantic",
+      "plate": null
+    },
+    {
+      "id": "source-selector",
+      "kind": "control",
+      "box": {
+        "x": 0.06338028169014084,
+        "y": 0.16251354279523295,
+        "w": 0.8708920187793427,
+        "h": 0.035752979414951244
+      },
+      "snap": false,
+      "note": "Desk sensor source selector",
+      "px": {
+        "x": 54,
+        "y": 300,
+        "w": 742,
+        "h": 66
+      },
+      "medium": "semantic",
+      "plate": null
+    },
+    {
+      "id": "modes",
+      "kind": "control",
+      "box": {
+        "x": 0.03873239436619718,
+        "y": 0.22047670639219935,
+        "w": 0.9225352112676056,
+        "h": 0.043878656554712896
+      },
+      "snap": false,
+      "note": "Gauges Info Compare capsule track with white selected pill",
+      "px": {
+        "x": 33,
+        "y": 407,
+        "w": 786,
+        "h": 81
+      },
+      "medium": "semantic",
+      "plate": null
+    },
+    {
+      "id": "measurement-surface",
+      "kind": "chrome",
+      "box": {
+        "x": 0.03873239436619718,
+        "y": 0.2746478873239437,
+        "w": 0.9225352112676056,
+        "h": 0.261646803900325
+      },
+      "snap": false,
+      "note": "White continuous rounded reading surface",
+      "px": {
+        "x": 33,
+        "y": 507,
+        "w": 786,
+        "h": 483
+      },
+      "medium": "semantic",
+      "plate": null
+    },
+    {
+      "id": "gauge",
+      "kind": "control",
+      "box": {
+        "x": 0.07629107981220658,
+        "y": 0.2898158179848321,
+        "w": 0.8438967136150235,
+        "h": 0.13651137594799567
+      },
+      "snap": false,
+      "note": "Runtime data driven arc scale and sample marker",
+      "px": {
+        "x": 65,
+        "y": 535,
+        "w": 719,
+        "h": 252
+      },
+      "medium": "semantic",
+      "plate": null
+    },
+    {
+      "id": "reading",
+      "kind": "text",
+      "box": {
+        "x": 0.3403755868544601,
+        "y": 0.4068255687973998,
+        "w": 0.37910798122065725,
+        "h": 0.06175514626218852
+      },
+      "snap": false,
+      "note": "Minus 63 dBm rounded tabular measurement",
+      "px": {
+        "x": 290,
+        "y": 751,
+        "w": 323,
+        "h": 114
+      },
+      "medium": "semantic",
+      "plate": null
+    },
+    {
+      "id": "phase",
+      "kind": "text",
+      "box": {
+        "x": 0.36502347417840375,
+        "y": 0.4739978331527627,
+        "w": 0.2828638497652582,
+        "h": 0.020043336944745395
+      },
+      "snap": false,
+      "note": "Sample session phase text",
+      "px": {
+        "x": 311,
+        "y": 875,
+        "w": 241,
+        "h": 37
+      },
+      "medium": "semantic",
+      "plate": null
+    },
+    {
+      "id": "interpretation",
+      "kind": "text",
+      "box": {
+        "x": 0.2992957746478873,
+        "y": 0.49945828819068255,
+        "w": 0.4471830985915493,
+        "h": 0.022210184182015168
+      },
+      "snap": false,
+      "note": "7 dB above threshold interpretation",
+      "px": {
+        "x": 255,
+        "y": 922,
+        "w": 381,
+        "h": 41
+      },
+      "medium": "semantic",
+      "plate": null
+    },
+    {
+      "id": "history-surface",
+      "kind": "chrome",
+      "box": {
+        "x": 0.03873239436619718,
+        "y": 0.5487540628385699,
+        "w": 0.9225352112676056,
+        "h": 0.19230769230769232
+      },
+      "snap": false,
+      "note": "White continuous rounded evidence surface",
+      "px": {
+        "x": 33,
+        "y": 1013,
+        "w": 786,
+        "h": 355
+      },
+      "medium": "semantic",
+      "plate": null
+    },
+    {
+      "id": "history-title",
+      "kind": "text",
+      "box": {
+        "x": 0.06807511737089202,
+        "y": 0.5612134344528711,
+        "w": 0.318075117370892,
+        "h": 0.023293607800650054
+      },
+      "snap": false,
+      "note": "Last 20 seconds",
+      "px": {
+        "x": 58,
+        "y": 1036,
+        "w": 271,
+        "h": 43
+      },
+      "medium": "semantic",
+      "plate": null
+    },
+    {
+      "id": "history",
+      "kind": "control",
+      "box": {
+        "x": 0.057511737089201875,
+        "y": 0.5920910075839654,
+        "w": 0.8697183098591549,
+        "h": 0.13976164680390032
+      },
+      "snap": false,
+      "note": "Runtime data driven history with time scale units and reference line",
+      "px": {
+        "x": 49,
+        "y": 1093,
+        "w": 741,
+        "h": 258
+      },
+      "medium": "semantic",
+      "plate": null
+    },
+    {
+      "id": "baseline",
+      "kind": "control",
+      "box": {
+        "x": 0.03873239436619718,
+        "y": 0.752979414951246,
+        "w": 0.9225352112676056,
+        "h": 0.05417118093174431
+      },
+      "snap": false,
+      "note": "Baseline Choose row",
+      "px": {
+        "x": 33,
+        "y": 1390,
+        "w": 786,
+        "h": 100
+      },
+      "medium": "semantic",
+      "plate": null
+    },
+    {
+      "id": "calibration",
+      "kind": "control",
+      "box": {
+        "x": 0.06690140845070422,
+        "y": 0.8147345612134345,
+        "w": 0.5481220657276995,
+        "h": 0.024918743228602384
+      },
+      "snap": false,
+      "note": "Calibrate nearby and away action",
+      "px": {
+        "x": 57,
+        "y": 1504,
+        "w": 467,
+        "h": 46
+      },
+      "medium": "semantic",
+      "plate": null
+    },
+    {
+      "id": "log",
+      "kind": "control",
+      "box": {
+        "x": 0.03873239436619718,
+        "y": 0.8559046587215602,
+        "w": 0.45305164319248825,
+        "h": 0.051462621885157094
+      },
+      "snap": false,
+      "note": "Blue capsule Log action",
+      "px": {
+        "x": 33,
+        "y": 1580,
+        "w": 386,
+        "h": 95
+      },
+      "medium": "semantic",
+      "plate": null
+    },
+    {
+      "id": "record",
+      "kind": "control",
+      "box": {
+        "x": 0.5117370892018779,
+        "y": 0.8559046587215602,
+        "w": 0.4507042253521127,
+        "h": 0.051462621885157094
+      },
+      "snap": false,
+      "note": "Neutral capsule Record action",
+      "px": {
+        "x": 436,
+        "y": 1580,
+        "w": 384,
+        "h": 95
+      },
+      "medium": "semantic",
+      "plate": null
+    },
+    {
+      "id": "flow",
+      "kind": "control",
+      "box": {
+        "x": 0.38967136150234744,
+        "y": 0.9236186348862405,
+        "w": 0.27230046948356806,
+        "h": 0.027085590465872156
+      },
+      "snap": false,
+      "note": "Quiet Start Flow action",
+      "px": {
+        "x": 332,
+        "y": 1705,
+        "w": 232,
+        "h": 50
+      },
+      "medium": "semantic",
+      "plate": null
+    },
+    {
+      "id": "home-indicator",
+      "kind": "chrome",
+      "box": {
+        "x": 0.3145539906103286,
+        "y": 0.9783315276273022,
+        "w": 0.37089201877934275,
+        "h": 0.014626218851570965
+      },
+      "snap": false,
+      "note": "Native system home indicator",
+      "px": {
+        "x": 268,
+        "y": 1806,
+        "w": 316,
+        "h": 27
+      },
+      "medium": "semantic",
+      "plate": null
+    }
+  ],
+  "platform": "ios",
+  "note": "Exact region rectangles measured from approved comp; native SF typography and safe areas. No fabricated web or font gate pass."
+}

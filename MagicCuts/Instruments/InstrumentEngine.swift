@@ -160,6 +160,18 @@ final class InstrumentEngine: NSObject, CLLocationManagerDelegate {
         demonstration = true; self.kind = kind
         let demo = InstrumentDemo.session(kind: kind)
         source = demo.source; points = demo.points; events = demo.events; metadata = demo.metadata
+        #if DEBUG
+        if kind == .vibration, ProcessInfo.processInfo.arguments.contains("--visualization-demo") {
+            // An explicitly labeled sample waveform exercises the real spectrum
+            // renderer and transform; it is never a live motion observation.
+            let waveform = (0..<128).map { index in
+                let elapsed = Double(index) / 100
+                return MeasurementPoint(elapsed: elapsed, value: 0.02 * sin(2 * .pi * 12.5 * elapsed))
+            }
+            spectrum = MeasurementMath.spectrum(waveform)
+            metadata["spectrumAxis"] = "Illustrative sample waveform"
+        }
+        #endif
         startedAt = demo.startedAt; origin = ProcessInfo.processInfo.systemUptime - 20
         phase = .running; lastPublished = -.infinity
     }
