@@ -7,7 +7,7 @@ nonisolated enum FieldDemo {
     static let frameID = UUID(uuidString: "22222222-ABCD-1234-ABCD-222222222222")!
     static let revisionID = UUID(uuidString: "33333333-ABCD-1234-ABCD-333333333333")!
     static let earlierID = UUID(uuidString: "44444444-ABCD-1234-ABCD-444444444444")!
-    static func room(earlier: Bool = false) -> RoomRevision {
+    static func room(earlier: Bool = false, enclosed: Bool = false) -> RoomRevision {
         let date = Date(timeIntervalSince1970: 1_789_069_800).addingTimeInterval(earlier ? -86400 : 0)
         let width: Float = 4.8, length: Float = 3.84, height: Float = 2.7
         func surface(_ origin: SIMD3<Float>, _ across: SIMD3<Float>, _ up: SIMD3<Float>, nx: Int = 18, ny: Int = 12) -> RoomMeshPatch {
@@ -24,6 +24,12 @@ nonisolated enum FieldDemo {
                       surface(.zero, SIMD3(width, 0, 0), SIMD3(0, height, 0)),
                       surface(.zero, SIMD3(0, 0, depth), SIMD3(0, height, 0)),
                       surface(SIMD3(width, 0, 0), SIMD3(0, 0, depth), SIMD3(0, height, 0))]
+        if enclosed {
+            meshes.append(surface(SIMD3(0, height, 0), SIMD3(width, 0, 0), SIMD3(0, 0, depth)))
+            meshes.append(surface(SIMD3(0, 0, depth), SIMD3(width, 0, 0), SIMD3(0, height, 0)))
+            meshes.append(surface(SIMD3(width, 0, 1), SIMD3(2, 0, 0), SIMD3(0, 0, 1)))
+            meshes.append(surface(SIMD3(width, 0, 1), SIMD3(2, 0, 0), SIMD3(0, height, 0)))
+        }
         let shift: Float = earlier ? 0 : 0.25
         meshes.append(surface(SIMD3(0.7 + shift, 0.75, 0.8), SIMD3(1.4, 0, 0), SIMD3(0, 0, 0.75), nx: 10, ny: 6))
         for x: Float in [0.8 + shift, 2 + shift] {
@@ -65,7 +71,7 @@ nonisolated enum FieldDemo {
     @MainActor static func seed(_ library: ProLibrary) async {
         guard AppRuntime.isUITesting, ProcessInfo.processInfo.arguments.contains("--room-demo"), library.index.roomRevisions.isEmpty else { return }
         do {
-            let earlier = room(earlier: true), latest = room()
+            let earlier = room(earlier: true), latest = room(enclosed: ProcessInfo.processInfo.arguments.contains("--room-enclosed-demo"))
             try await library.save(earlier); try await library.save(latest)
             try await library.save(network(revision: latest))
             let payload = Data([2]) + Data("enStudio sensor".utf8)

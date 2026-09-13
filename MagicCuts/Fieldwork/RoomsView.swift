@@ -96,6 +96,8 @@ struct RoomDetailView: View {
     @State private var locatedEvidence = RoomLocatedEvidence()
     @State private var captureMode: RoomCaptureRoute?
     @State private var comparison: RoomRevision?
+    @State private var trimming: RoomRevision?
+    @State private var savedTrim: RoomTrimDestination?
     @State private var exporting = false
     @State private var orientationUnavailable = false
     @State private var deleting = false
@@ -113,15 +115,19 @@ struct RoomDetailView: View {
                     if session.cameraActive { RoomOrientationBanner() }
                     if dynamicType.isAccessibilitySize { displayPicker.pickerStyle(.menu) }
                     else { displayPicker.pickerStyle(.segmented) }
-                    if mode == 0 { RoomMeshCanvas(room: room, pins: pins, selectedDimension: room.dimensions.first { $0.id == selectedDimensionID }, selectedComponent: room.components.first { $0.id == selectedComponentID }, onSelectPin: { selectedCaptureID = $0 }).frame(minHeight: 340) }
+                    if mode == 0 { RoomMeshCanvas(room: room, isActive: trimming == nil && captureMode == nil && savedTrim == nil && !exporting && selectedCaptureID == nil, pins: pins, selectedDimension: room.dimensions.first { $0.id == selectedDimensionID }, selectedComponent: room.components.first { $0.id == selectedComponentID }, onSelectPin: { selectedCaptureID = $0 }).frame(minHeight: 340) }
+                    if mode == 0 {
+                        Button("Trim room", systemImage: "crop") { trimming = room }
+                            .frame(minHeight: 44).accessibilityIdentifier("room.trim")
+                    }
                     if mode == 1 {
                         RoomPlanCanvas(room: room, pins: pins, samplePositions: locatedEvidence.positions, pose: session.reference?.coordinateFrameID == room.coordinateFrameID ? session.currentPose : nil, selectedDimensionID: selectedDimensionID, selectedComponentID: selectedComponentID, onSelectDimension: { selectedDimensionID = $0; selectedComponentID = nil }, onSelectPin: { selectedCaptureID = $0 }).frame(height: 340)
                     }
                     if mode != 2 {
-                        Text(mode == 0 ? "Observed surfaces only. Blank areas have no captured geometry. Drag to orbit the mesh; pinch to zoom." : "Observed surfaces only. Blank areas have no captured geometry. Tap a numbered pin or a dimension to inspect it.").font(.caption).foregroundStyle(ProTheme.secondary)
+                        Text(mode == 0 ? "Observed surfaces only. Blank areas have no captured geometry." : "Observed surfaces only. Blank areas have no captured geometry. Tap a numbered pin or a dimension to inspect it.").font(.caption).foregroundStyle(ProTheme.secondary)
                         HStack(alignment: .firstTextBaseline, spacing: 24) {
                             VStack(alignment: .leading) {
-                                Text("\(room.triangleCount.formatted())").font(.system(.title2, design: .rounded).weight(.semibold))
+                                Text("\(room.triangleCount.formatted())").accessibilityIdentifier("room.mesh.triangles").font(.system(.title2, design: .rounded).weight(.semibold))
                                 Text("mesh triangles").font(.caption).foregroundStyle(ProTheme.secondary)
                             }
                             if let area = room.floorArea {
@@ -192,6 +198,7 @@ struct RoomDetailView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
+                    Button("Trim room", systemImage: "crop") { trimming = room }.accessibilityIdentifier("room.trim.menu")
                     Button("Export room", systemImage: "square.and.arrow.up") { exporting = true }
                     Button("Delete this revision", systemImage: "trash", role: .destructive) { deleting = true }
                         .disabled(session.cameraActive && session.reference?.id == id)
@@ -210,6 +217,10 @@ struct RoomDetailView: View {
             Button("OK", role: .cancel) { }
         } message: { Text("This revision can be viewed and measured, but it has no saved camera map for locating your phone. Place readings manually, or use Update room to capture a new pass with orientation data.") }
         .navigationDestination(item: $selectedCaptureID) { FieldCaptureDetailView(id: $0, library: library) }
+        .sheet(item: $trimming) { source in
+            RoomTrimView(room: source, library: library, savedRevision: $savedTrim)
+        }
+        .navigationDestination(item: $savedTrim) { RoomDetailView(id: $0.revisionID, library: library) }
         .sheet(isPresented: $exporting) { if let room { RoomExportView(room: room) } }
         .sheet(item: $captureMode) { route in RoomCaptureView(library: library, purpose: route.purpose, reference: room) }
         .confirmationDialog("Delete this room revision?", isPresented: $deleting, titleVisibility: .visible) {

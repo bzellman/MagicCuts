@@ -134,10 +134,17 @@ struct RoomPlanCanvas: View {
 
 struct RoomMeshCanvas: View {
     let room: RoomRevision
+    var isActive = true
     var pins: [FieldCaptureIndex] = []
     var selectedDimension: SpatialDimension?
     var selectedComponent: RoomComponent?
     var onSelectPin: ((UUID) -> Void)?
+    @Environment(\.dynamicTypeSize) private var dynamicType
+    @State private var viewpoint = RoomMeshViewpoint.outside
+    @State private var interiorPosition: SpatialVector?
+    @State private var cameraLayout: RoomMeshCameraLayout?
+    @State private var drawingMesh = true
+    @State private var onScreen = false
     @State private var yaw: Float = 0.6
     @State private var elevation: Float = 0.65
     @State private var zoom: Float = 1
@@ -146,34 +153,71 @@ struct RoomMeshCanvas: View {
     @State private var failure: String?
     var body: some View {
         VStack(spacing: 8) {
-            RoomMeshScene(room: room, pins: pins, selectedDimension: selectedDimension, selectedComponent: selectedComponent, onSelectPin: onSelectPin, yaw: yaw, elevation: elevation, zoom: zoom, failure: $failure)
+            if dynamicType.isAccessibilitySize { viewpointPicker.pickerStyle(.menu) }
+            else { viewpointPicker.pickerStyle(.segmented) }
+            Group {
+                if isActive && onScreen {
+                    RoomMeshScene(room: room, pins: pins, selectedDimension: selectedDimension, selectedComponent: selectedComponent, onSelectPin: onSelectPin, layout: cameraLayout, drawingMesh: $drawingMesh, viewpoint: viewpoint, interiorPosition: interiorPosition, yaw: yaw, elevation: elevation, zoom: zoom, failure: $failure)
+                } else { Rectangle().fill(Color(uiColor: .secondarySystemBackground)) }
+            }
                 .frame(minHeight: 280).clipShape(RoundedRectangle(cornerRadius: 16))
                 .gesture(DragGesture().onChanged { value in
                     if dragOrigin == nil { dragOrigin = SIMD2(yaw, elevation) }
                     yaw = (dragOrigin?.x ?? yaw) - Float(value.translation.width) / 180
-                    elevation = max(0.08, min(1.5, (dragOrigin?.y ?? elevation) + Float(value.translation.height) / 240))
+                    elevation = max(viewpoint == .inside ? -1.4 : -1.5, min(1.5, (dragOrigin?.y ?? elevation) + Float(value.translation.height) / 240))
                 }.onEnded { _ in dragOrigin = nil })
                 .simultaneousGesture(MagnifyGesture().onChanged { value in
                     if pinchOrigin == nil { pinchOrigin = zoom }
                     zoom = max(0.4, min(3, (pinchOrigin ?? 1) / Float(value.magnification)))
                 }.onEnded { _ in pinchOrigin = nil })
-                .accessibilityLabel("Three-dimensional observed room mesh. \(room.vertexCount) vertices, \(pins.count) pins.")
+                .accessibilityLabel("\(viewpoint.rawValue) room mesh. \(room.vertexCount) vertices, \(pins.count) pins.")
+                .accessibilityIdentifier("room.mesh.scene")
+                .accessibilityValue(failure != nil ? "Unavailable" : drawingMesh || cameraLayout == nil ? "Loading" : "Ready")
+                .overlay { if drawingMesh { ProgressView("Drawing room…").padding().background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12)) } }
             ViewThatFits(in: .horizontal) {
                 HStack { navigationButtons; Spacer(); resetButton }
                 VStack { navigationButtons; resetButton }
             }.buttonStyle(.borderless).frame(minHeight: 44)
+            Text(viewpoint == .inside ? "Drag to look around; pinch to change the field of view." : "Drag to orbit; pinch to zoom.")
+                .font(.caption).foregroundStyle(ProTheme.secondary).frame(maxWidth: .infinity, alignment: .leading)
+            if viewpoint == .inside, let cameraLayout {
+                RoomInteriorPositionControl(room: room, layout: cameraLayout, position: $interiorPosition)
+            }
             if let failure { InlineFailure(message: failure) }
         }
+        // Release an obscured viewer's camera and renderer before another mesh is presented.
+        .onAppear { onScreen = true }
+        .onDisappear { onScreen = false }
+        .onChange(of: viewpoint) { resetCamera() }
+        .task(id: room.id) {
+            let layout = await Task.detached(priority: .userInitiated) { RoomMeshCameraLayout(room: room) }.value
+            guard !Task.isCancelled else { return }
+            cameraLayout = layout; interiorPosition = layout.interior
+        }
+    }
+    private var viewpointPicker: some View {
+        Picker("Viewpoint", selection: $viewpoint) {
+            ForEach(RoomMeshViewpoint.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+        }.accessibilityIdentifier("room.mesh.viewpoint")
     }
     private var navigationButtons: some View {
         HStack(spacing: 4) {
             Button { yaw -= .pi / 6 } label: { Image(systemName: "rotate.left").font(.system(size: 22)).frame(width: 44, height: 44) }.accessibilityLabel("Rotate left")
             Button { yaw += .pi / 6 } label: { Image(systemName: "rotate.right").font(.system(size: 22)).frame(width: 44, height: 44) }.accessibilityLabel("Rotate right")
+            if viewpoint == .inside {
+                Button { elevation = min(1.4, elevation + .pi / 12) } label: { Image(systemName: "arrow.up").frame(width: 44, height: 44) }.accessibilityLabel("Look up")
+                Button { elevation = max(-1.4, elevation - .pi / 12) } label: { Image(systemName: "arrow.down").frame(width: 44, height: 44) }.accessibilityLabel("Look down")
+            }
             Button { zoom = max(0.4, zoom * 0.8) } label: { Image(systemName: "plus.magnifyingglass").font(.system(size: 22)).frame(width: 44, height: 44) }.accessibilityLabel("Zoom in")
             Button { zoom = min(3, zoom * 1.25) } label: { Image(systemName: "minus.magnifyingglass").font(.system(size: 22)).frame(width: 44, height: 44) }.accessibilityLabel("Zoom out")
         }
     }
-    private var resetButton: some View { Button("Reset view") { yaw = 0.6; elevation = 0.65; zoom = 1 }.frame(minHeight: 44) }
+    private var resetButton: some View { Button("Reset view", action: resetCamera).frame(minHeight: 44) }
+    private func resetCamera() {
+        yaw = viewpoint == .inside ? -2.4 : 0.6
+        elevation = viewpoint == .inside ? -0.15 : 0.65; zoom = 1
+        interiorPosition = cameraLayout?.interior; dragOrigin = nil; pinchOrigin = nil
+    }
 
 }
 
@@ -183,6 +227,10 @@ private struct RoomMeshScene: UIViewRepresentable {
     var selectedDimension: SpatialDimension?
     var selectedComponent: RoomComponent?
     var onSelectPin: ((UUID) -> Void)?
+    let layout: RoomMeshCameraLayout?
+    @Binding var drawingMesh: Bool
+    let viewpoint: RoomMeshViewpoint
+    let interiorPosition: SpatialVector?
     let yaw: Float
     let elevation: Float
     let zoom: Float
@@ -200,17 +248,17 @@ private struct RoomMeshScene: UIViewRepresentable {
     func updateUIView(_ view: ARView, context: Context) {
         let coordinator = context.coordinator
         coordinator.onSelectPin = onSelectPin
+        coordinator.layout = layout
+        coordinator.viewpoint = viewpoint; coordinator.interiorPosition = interiorPosition
+        coordinator.yaw = yaw; coordinator.elevation = elevation; coordinator.zoom = zoom
         if coordinator.roomID != room.id {
             coordinator.roomID = room.id; coordinator.task?.cancel(); coordinator.geometry.removeFromParent()
             let geometry = Entity(); coordinator.geometry = geometry; coordinator.anchor.addChild(geometry)
             let room = room
             coordinator.task = Task {
                 do {
-                    let bounds = await Task.detached(priority: .userInitiated) { room.bounds }.value
                     try Task.checkCancellation()
-                    coordinator.center = ((bounds?.minimum.simd ?? SIMD3(-2, 0, -2)) + (bounds?.maximum.simd ?? SIMD3(2, 2, 2))) / 2
-                    coordinator.radius = max(2, simd_length((bounds?.maximum.simd ?? SIMD3(2, 2, 2)) - (bounds?.minimum.simd ?? SIMD3(-2, 0, -2))))
-                    coordinator.positionCamera(yaw: yaw, elevation: elevation, zoom: zoom)
+                    drawingMesh = true; failure = nil
                     for patch in room.meshes {
                         try Task.checkCancellation()
                         var descriptor = MeshDescriptor(name: patch.id.uuidString)
@@ -223,8 +271,9 @@ private struct RoomMeshScene: UIViewRepresentable {
                         entity.transform = Transform(matrix: patch.transform.matrix); geometry.addChild(entity)
                         await Task.yield()
                     }
+                    drawingMesh = false
                 } catch is CancellationError { }
-                catch { failure = "The 3D preview couldn't be drawn: \(error.localizedDescription). The plan and saved geometry are still available." }
+                catch { drawingMesh = false; failure = "The 3D preview couldn't be drawn: \(error.localizedDescription). The plan and saved geometry are still available." }
             }
         }
         let signature = pins.map { $0.id.uuidString + String(describing: $0.placement?.pose.elements) }.joined()
@@ -262,9 +311,12 @@ private struct RoomMeshScene: UIViewRepresentable {
                 }
             }
         }
-        coordinator.positionCamera(yaw: yaw, elevation: elevation, zoom: zoom)
+        coordinator.positionCamera()
     }
-    static func dismantleUIView(_ view: ARView, coordinator: Coordinator) { coordinator.task?.cancel(); view.scene.anchors.removeAll() }
+    static func dismantleUIView(_ view: ARView, coordinator: Coordinator) {
+        coordinator.task?.cancel()
+        view.scene.removeAnchor(coordinator.anchor)
+    }
     final class Coordinator: NSObject {
         weak var view: ARView?
         var onSelectPin: ((UUID) -> Void)?
@@ -283,12 +335,18 @@ private struct RoomMeshScene: UIViewRepresentable {
         let camera = PerspectiveCamera()
         let markers = Entity()
         var geometry = Entity()
-        var center = SIMD3<Float>.zero
-        var radius: Float = 5
+        var layout: RoomMeshCameraLayout?
+        var viewpoint = RoomMeshViewpoint.outside
+        var interiorPosition: SpatialVector?
+        var yaw: Float = 0.6
+        var elevation: Float = 0.65
+        var zoom: Float = 1
         var task: Task<Void, Never>?
-        func positionCamera(yaw: Float, elevation: Float, zoom: Float) {
-            let offset = SIMD3(sin(yaw) * cos(elevation), sin(elevation), cos(yaw) * cos(elevation)) * radius * zoom
-            camera.look(at: center, from: center + offset, relativeTo: nil)
+        func positionCamera() {
+            guard let layout else { return }
+            let pose = layout.pose(viewpoint: viewpoint, interior: interiorPosition, yaw: yaw, elevation: elevation, zoom: zoom)
+            camera.camera = PerspectiveCameraComponent(near: 0.01, far: max(100, layout.radius * 10), fieldOfViewInDegrees: pose.fieldOfView)
+            camera.look(at: pose.target, from: pose.position, relativeTo: nil)
         }
         override init() {
             super.init()
