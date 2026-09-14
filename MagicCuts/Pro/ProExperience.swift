@@ -299,8 +299,7 @@ struct InstrumentWorkspaceView: View {
         .sheet(isPresented: $settings) { ProSettingsView(access: access, library: library) }
         .sheet(item: $fieldCapture) { FieldCaptureSaveView(capture: $0, library: library) }
         .sheet(isPresented: $devicesSheet, onDismiss: { if chosenKind == .bluetooth { Task { await start() } } }) {
-            ContentView(radio: radio)
-                .safeAreaInset(edge: .bottom) { Button("Done") { devicesSheet = false }.frame(maxWidth: .infinity, minHeight: 44).background(.bar) }
+            ContentView(radio: radio, onDone: { devicesSheet = false })
         }
         .sheet(isPresented: $endpointSheet) {
             EndpointConfigurationView(endpoint: $endpoint) {
