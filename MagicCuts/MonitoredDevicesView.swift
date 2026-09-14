@@ -3,6 +3,8 @@ import SwiftData
 
 struct MonitoredDevicesView: View {
     let radio: any RadioScanning
+    var onDone: (() -> Void)? = nil
+    var claimsDoneBar: Binding<Bool>? = nil
     @Environment(\.modelContext) private var context
     @Query(sort: \MonitoredDevice.name) private var devices: [MonitoredDevice]
     @Query(sort: \TestRecord.date, order: .reverse) private var records: [TestRecord]
@@ -46,7 +48,7 @@ struct MonitoredDevicesView: View {
                 }
             }
     }
-    private var discovery: some View { DeviceDiscoveryView(bluetoothViewModel: BluetoothViewModel(radio: radio)) }
+    private var discovery: some View { DeviceDiscoveryView(bluetoothViewModel: BluetoothViewModel(radio: radio), onDone: onDone, claimsDoneBar: claimsDoneBar) }
     private func reconcile() { do { try DeviceRepository(context: context).reconcile(); error = nil } catch { self.error = "Shortcuts sync failed. \(error.localizedDescription)" } }
     private func progress(_ device: MonitoredDevice) -> String {
         let evidence = records.filter { $0.deviceID == device.persistentIdentifier }.compactMap(\.evidence).filter { !$0.isDraft && $0.threshold == device.requiredSignalStrength && $0.startedAt >= device.validationResetAt }

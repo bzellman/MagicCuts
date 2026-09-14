@@ -4,20 +4,30 @@ import SwiftData
 struct ContentView: View {
     let radio: any RadioScanning
     var guidanceWarning: String?
+    var onDone: (() -> Void)? = nil
     @State private var warningDismissed = false
     @Query private var devices: [MonitoredDevice]
     @AppStorage("welcomeComplete") private var welcomeComplete = false
     @State private var welcome = false
     @State private var discovery = false
+    @State private var discoveryOwnsDone = false
 
     var body: some View {
         NavigationStack {
-            MonitoredDevicesView(radio: radio)
+            MonitoredDevicesView(radio: radio, onDone: onDone, claimsDoneBar: $discoveryOwnsDone)
                 .navigationDestination(isPresented: $discovery) {
-                    DeviceDiscoveryView(bluetoothViewModel: BluetoothViewModel(radio: radio))
+                    DeviceDiscoveryView(bluetoothViewModel: BluetoothViewModel(radio: radio), onDone: onDone, claimsDoneBar: $discoveryOwnsDone)
                 }
         }
         .tint(MC.action)
+        .safeAreaInset(edge: .bottom) {
+            if let onDone, !discoveryOwnsDone {
+                Button("Done", action: onDone)
+                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .background(.bar)
+                    .accessibilityIdentifier("devices.done")
+            }
+        }
         .safeAreaInset(edge: .top) {
             if let guidanceWarning, !warningDismissed {
                 HStack {

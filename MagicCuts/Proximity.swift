@@ -74,6 +74,60 @@ nonisolated struct RadioDevice: Identifiable, Equatable, Sendable {
     var displayName: String { name.isEmpty ? "Unnamed device · \(id.uuidString.prefix(4))" : name }
 }
 
+nonisolated enum DiscoverySort: String, CaseIterable, Identifiable, Sendable {
+    case found, signal, name
+    var id: String { rawValue }
+    var title: String {
+        switch self {
+        case .found: "Found"
+        case .signal: "Signal"
+        case .name: "Name"
+        }
+    }
+    var accessibilityTitle: String {
+        switch self {
+        case .found: "Found order"
+        case .signal: "Signal strength"
+        case .name: "Name"
+        }
+    }
+}
+
+enum DiscoveryList {
+    static func tracking(_ existing: [UUID], ids: [UUID]) -> [UUID] {
+        let present = Set(ids)
+        var order = existing.filter { present.contains($0) }
+        let known = Set(order)
+        for id in ids where !known.contains(id) { order.append(id) }
+        return order
+    }
+
+    static func ranked(_ devices: [RadioDevice], by sort: DiscoverySort) -> [UUID] {
+        switch sort {
+        case .found: return devices.map(\.id)
+        case .signal:
+            return devices.sorted { lhs, rhs in
+                if lhs.rssi != rhs.rssi { return lhs.rssi > rhs.rssi }
+                return lhs.id.uuidString < rhs.id.uuidString
+            }.map(\.id)
+        case .name:
+            return devices.sorted { lhs, rhs in
+                let names = lhs.displayName.localizedStandardCompare(rhs.displayName)
+                if names != .orderedSame { return names == .orderedAscending }
+                return lhs.id.uuidString < rhs.id.uuidString
+            }.map(\.id)
+        }
+    }
+
+    static func displayed(_ devices: [RadioDevice], search: String, order: [UUID]) -> [RadioDevice] {
+        let matches = devices.filter {
+            search.isEmpty || $0.displayName.localizedCaseInsensitiveContains(search) || $0.id.uuidString.localizedCaseInsensitiveContains(search)
+        }
+        let byID = Dictionary(uniqueKeysWithValues: matches.map { ($0.id, $0) })
+        return order.compactMap { byID[$0] }
+    }
+}
+
 nonisolated enum RadioEvent: Sendable { case ready(Date), device(RadioDevice) }
 
 nonisolated enum ServiceIdentifier {

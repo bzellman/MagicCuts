@@ -54,6 +54,8 @@ nonisolated final class MagicCutsUITests: XCTestCase {
         XCTAssertTrue(app.buttons["welcome.find"].waitForExistence(timeout: 10))
         capture(app, "welcome")
         app.buttons["welcome.find"].tap()
+        XCTAssertTrue(app.buttons["discovery.start"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["discovery.done"].exists)
         app.buttons["discovery.start"].tap()
         let unnamed = app.buttons["device.BBBBBBBB-1111-2222-3333-444444444444"]
         XCTAssertTrue(unnamed.waitForExistence(timeout: 5))
