@@ -162,9 +162,11 @@ nonisolated final class MagicCutsUITests: XCTestCase {
     }
 
     @MainActor private func openSavedDevices(_ app: XCUIApplication) {
+        XCTAssertTrue(app.buttons["instrument.choose"].waitForExistence(timeout: 10))
         let menu = app.buttons["instrument.device-menu"]
         XCTAssertTrue(menu.waitForExistence(timeout: 10))
         menu.tap()
+        XCTAssertTrue(app.buttons["Manage devices"].waitForExistence(timeout: 5))
         app.buttons["Manage devices"].tap()
     }
 
@@ -263,11 +265,13 @@ nonisolated final class MagicCutsUITests: XCTestCase {
 
     @MainActor func testSavedDeviceModesThresholdAndHistory() {
         let app = XCUIApplication()
-        app.launchArguments = ["--uitesting", "--seed-device"]
+        app.launchArguments = ["--uitesting", "--seed-device", "--pro-demo", "-showSessionLiveActivity", "NO"]
         app.launch()
         openSavedDevices(app)
         XCTAssertTrue(app.staticTexts["Desk sensor"].waitForExistence(timeout: 10))
         openFirstSavedDevice(app)
+        XCTAssertTrue(app.buttons["mode.detail"].waitForExistence(timeout: 5))
+        app.buttons["mode.detail"].tap()
         XCTAssertTrue(app.buttons["mode.technical"].waitForExistence(timeout: 5))
         app.buttons["mode.technical"].tap()
         app.buttons["threshold.edit"].tap()

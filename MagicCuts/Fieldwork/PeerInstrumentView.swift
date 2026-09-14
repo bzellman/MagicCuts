@@ -31,7 +31,6 @@ struct PeerInstrumentView: View {
                         .buttonStyle(ControlStyle()).disabled(instrument.locallyConfirmed).frame(minHeight: 44).accessibilityIdentifier("peer.confirm")
                     Button("Cancel connection") { instrument.stop() }.frame(minHeight: 44)
                 } else {
-                    Text("Two devices. One local test.").font(.system(.title2, design: .rounded).weight(.semibold))
                     Text("Open Field tools → Peer instruments on another device. Host on one, then find and connect from the other.").font(.callout).foregroundStyle(ProTheme.secondary)
                     Picker("Connection transport", selection: $transport) { Text("Local network").tag(0); Text("Wi-Fi Aware").tag(1) }.pickerStyle(.segmented)
                         .disabled(instrument.hosting || instrument.browsing || instrument.aware.running)

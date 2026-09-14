@@ -381,7 +381,6 @@ struct BluetoothCalibrationView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 26) {
-                    Text("Teach your setup what nearby means.").font(.system(.title, design: .rounded).bold())
                     Text("Keep the phone and \(source.name) in the positions you actually use. Capture each location for ten seconds.").foregroundStyle(ProTheme.secondary)
                     captureRow(.nearby, title: "1 · Your nearby position", samples: near)
                     captureRow(.away, title: "2 · Your away position", samples: away)

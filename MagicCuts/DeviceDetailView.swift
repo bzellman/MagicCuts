@@ -42,8 +42,6 @@ struct DeviceDetailView: View {
     private var detailContent: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                Text("Proximity").font(.largeTitle.bold())
-                ModeTabs()
                 if !(-100 ... -1).contains(device.requiredSignalStrength) { InlineFailure(message: BluetoothError.invalidThreshold.localizedDescription) }
                 if AppRuntime.isUITesting { Text("Demo readings").font(.caption).foregroundStyle(.secondary) }
                 SignalGauge(threshold: device.requiredSignalStrength, samples: running != nil ? samples : (latest?.samples ?? []), showMeasurements: technical)
@@ -65,7 +63,6 @@ struct DeviceDetailView: View {
                     }
                 }
                 Text("Walls and movement change signal. Test nearby and away.").font(.callout).foregroundStyle(.secondary)
-                testControls
                 if records.isEmpty { TipView(TuneTip()) }
                 else if !validated { TipView(ValidateTip()) }
                 else { TipView(ShortcutTip()) }
@@ -87,7 +84,27 @@ struct DeviceDetailView: View {
                 }
             }.padding(MC.inset).frame(maxWidth: 640).frame(maxWidth: .infinity)
         }.background(MC.canvas).navigationTitle(device.name).navigationBarTitleDisplayMode(.inline)
-            .toolbar { Button("Rename", systemImage: "pencil") { rename = true }.disabled(running != nil) }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        Button { technical = false } label: {
+                            if !technical { Label("Simple", systemImage: "checkmark") } else { Text("Simple") }
+                        }.accessibilityIdentifier("mode.simple")
+                        Button { technical = true } label: {
+                            if technical { Label("Technical", systemImage: "checkmark") } else { Text("Technical") }
+                        }.accessibilityIdentifier("mode.technical")
+                    } label: {
+                        Text(technical ? "Technical" : "Simple")
+                    }
+                    .accessibilityIdentifier("mode.detail")
+                    .accessibilityLabel("Reading detail")
+                    .accessibilityValue(technical ? "Technical" : "Simple")
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Rename", systemImage: "pencil") { rename = true }.disabled(running != nil)
+                }
+            }
+            .safeAreaInset(edge: .top, spacing: 0) { testControls.padding(.horizontal, MC.inset).padding(.vertical, 8).background(MC.canvas) }
             .sheet(isPresented: $edit) { EditDeviceView(device: device, radio: radio) }
             .sheet(isPresented: $rename) { RenameDeviceView(device: device) }
             .onDisappear { cancel() }

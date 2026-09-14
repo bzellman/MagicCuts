@@ -23,9 +23,6 @@ struct WorkflowsView: View {
     var body: some View {
         List {
             Section {
-                Text("Turn measured conditions into a result your Shortcuts can use.").font(.system(.title2, design: .rounded).weight(.semibold)).listRowBackground(Color.clear)
-            }
-            Section {
                 if library.index.workflows.isEmpty {
                     Text("Combine up to eight measurements. For example, check battery charge and response time before starting work.").font(.callout).foregroundStyle(ProTheme.secondary)
                 }
@@ -75,7 +72,7 @@ struct WorkflowsView: View {
             }
             if let error = library.error { InlineFailure(message: error) }
         }
-        .navigationTitle("Workflow management")
+        .navigationTitle("Workflows")
         .sheet(isPresented: $workflowEditor) { WorkflowEditorView(library: library, recipe: editingWorkflow) }
         .sheet(isPresented: $groupEditor) { GroupEditorView(library: library, group: editingGroup) }
         .sheet(isPresented: $showResult, onDismiss: { runner.cancel() }) { WorkflowResultView(runner: runner) }

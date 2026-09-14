@@ -8,7 +8,6 @@ struct FieldReportsView: View {
     var body: some View {
         List {
             Section {
-                Text("Bring a measurement story together.").font(.system(.title2, design: .rounded).weight(.semibold))
                 Text("Group sessions by a project or place, add your protocol and observations, then share one report.").font(.callout).foregroundStyle(ProTheme.secondary)
             }.listRowBackground(Color.clear)
             Section {

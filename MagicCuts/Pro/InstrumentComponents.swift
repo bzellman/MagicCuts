@@ -316,6 +316,7 @@ struct LinearInstrumentScale: View {
         }
         .frame(height: 56)
         .allowsHitTesting(false)
+        .accessibilityElement(children: .ignore)
         .accessibilityHidden(true)
     }
 }

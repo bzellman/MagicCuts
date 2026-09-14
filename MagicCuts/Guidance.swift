@@ -33,7 +33,6 @@ struct ShortcutsSetupView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                Text("Use \(device.name)").font(.title2.bold())
                 Text("1. Open Shortcuts").font(.headline)
                 Text("Find MagicCuts and add “Check if Bluetooth Device is Nearby” to a shortcut.")
                 ShortcutsLink().shortcutsLinkStyle(.automaticOutline)

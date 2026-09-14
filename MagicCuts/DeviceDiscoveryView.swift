@@ -49,7 +49,7 @@ struct DeviceDiscoveryView: View {
                 }
                 if interrupted { InlineFailure(message: "Scan paused. Tap Start scanning when you’re ready.") }
                 if bluetoothViewModel.devices.isEmpty {
-                    ContentUnavailableView(bluetoothViewModel.isScanning ? "Listening for devices" : "Ready to find your device", systemImage: "wave.3.right", description: Text("Wake your device and keep it close. Some Bluetooth devices do not advertise."))
+                    ContentUnavailableView(bluetoothViewModel.isScanning ? "Listening for devices" : "Wake a nearby device", systemImage: "wave.3.right", description: Text("Keep it close. Some Bluetooth devices do not advertise."))
                 } else if results.isEmpty {
                     ContentUnavailableView.search(text: search)
                 }
@@ -63,16 +63,28 @@ struct DeviceDiscoveryView: View {
         }
         .background(MC.canvas).navigationTitle("Find a device").navigationBarTitleDisplayMode(.inline)
         .searchable(text: $search, placement: .navigationBarDrawer(displayMode: .always), prompt: "Name or identifier")
-        .safeAreaInset(edge: .bottom) {
-            HStack(spacing: 12) {
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
                 if bluetoothViewModel.isScanning {
-                    HStack { ProgressView(); Text(bluetoothViewModel.status) }.frame(maxWidth: .infinity).padding().accessibilityElement(children: .combine)
-                    Button("Stop") { bluetoothViewModel.stopScanning() }.buttonStyle(ControlStyle(primary: false))
+                    Button("Stop") { bluetoothViewModel.stopScanning() }
                 } else {
                     Button("Start scanning") { interrupted = false; bluetoothViewModel.startScanning() }
-                        .buttonStyle(ControlStyle()).accessibilityIdentifier("discovery.start")
+                        .accessibilityIdentifier("discovery.start")
                 }
-            }.padding(MC.inset).frame(maxWidth: 640).frame(maxWidth: .infinity).background(.bar)
+            }
+        }
+        .safeAreaInset(edge: .bottom) {
+            if bluetoothViewModel.isScanning {
+                HStack(spacing: 10) {
+                    ProgressView()
+                    Text(bluetoothViewModel.status)
+                }
+                .font(.callout)
+                .frame(maxWidth: .infinity, minHeight: 44)
+                .padding(.horizontal, MC.inset)
+                .background(.bar)
+                .accessibilityElement(children: .combine)
+            }
         }
         .sheet(item: $naming) { device in
             SaveDeviceView(observation: device) { saved in

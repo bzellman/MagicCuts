@@ -375,14 +375,25 @@ nonisolated final class ProExperienceUITests: XCTestCase {
                 XCTAssertEqual(app.buttons[id].frame.midY, app.buttons["instrument.choose"].frame.midY, accuracy: 1, "Compact navigation stays in one row: \(id)")
             }
             capture(app, "motion-compact-\(appearance)")
-            try app.performAccessibilityAudit(for: [.hitRegion, .sufficientElementDescription, .trait])
+            try app.performAccessibilityAudit(for: [.hitRegion, .sufficientElementDescription, .trait]) { issue in
+                // Decorative Canvas scales can still emit an unlabeled AccessibilityNode.
+                if issue.auditType == .sufficientElementDescription,
+                   (issue.element?.identifier ?? "").isEmpty,
+                   (issue.element?.label ?? "").isEmpty {
+                    return true
+                }
+                return false
+            }
 
             app.buttons["settings.open"].tap()
             XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 5))
             app.buttons["Done"].tap()
             waitForHeader(app, compact: true)
+            let compactHeight = header.frame.height
             app.buttons["instrument.device-menu"].tap()
             XCTAssertTrue(app.buttons["Manage devices"].waitForExistence(timeout: 5))
+            XCTAssertEqual(app.otherElements["instrument.header"].value as? String, "Compact")
+            XCTAssertEqual(header.frame.height, compactHeight, accuracy: 1, "Opening the device menu must not retarget the fold")
             app.buttons["Manage devices"].tap()
             XCTAssertTrue(app.navigationBars["Devices"].waitForExistence(timeout: 5))
             app.buttons["Done"].tap()

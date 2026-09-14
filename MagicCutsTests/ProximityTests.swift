@@ -480,3 +480,50 @@ private final class ShortcutTransport: BluetoothTransport {
         emit(.device(RadioDevice(id: id, name: "Sensor", rssi: rssi, services: ["180F"], lastSeen: .now)))
     }
 }
+
+nonisolated final class HeaderFoldTests: XCTestCase {
+    @MainActor func testFittingContentDoesNotFold() {
+        XCTAssertEqual(InstrumentHeaderMetrics.progress(offset: 40, extent: 40), 0)
+        XCTAssertEqual(InstrumentHeaderMetrics.reducedProgress(offset: 40, extent: 40), 0)
+        XCTAssertFalse(InstrumentHeaderMetrics.canFold(extent: 40))
+    }
+
+    @MainActor func testOverflowMapsOffsetOntoTheExtraRow() {
+        let extent = InstrumentHeaderMetrics.extraRow + InstrumentHeaderMetrics.overflowThreshold + 20
+        XCTAssertTrue(InstrumentHeaderMetrics.canFold(extent: extent))
+        XCTAssertEqual(InstrumentHeaderMetrics.progress(offset: 0, extent: extent), 0)
+        XCTAssertEqual(InstrumentHeaderMetrics.progress(offset: InstrumentHeaderMetrics.extraRow / 2, extent: extent), 0.5, accuracy: 0.001)
+        XCTAssertEqual(InstrumentHeaderMetrics.progress(offset: InstrumentHeaderMetrics.extraRow, extent: extent), 1)
+        XCTAssertEqual(InstrumentHeaderMetrics.progress(offset: extent, extent: extent), 1)
+    }
+
+    @MainActor func testReduceMotionKeepsHysteresisInTheMiddle() {
+        let extent = InstrumentHeaderMetrics.extraRow + InstrumentHeaderMetrics.overflowThreshold + 20
+        XCTAssertEqual(InstrumentHeaderMetrics.reducedProgress(offset: 0, extent: extent), 0)
+        XCTAssertNil(InstrumentHeaderMetrics.reducedProgress(offset: 40, extent: extent))
+        XCTAssertEqual(InstrumentHeaderMetrics.reducedProgress(offset: InstrumentHeaderMetrics.overflowThreshold, extent: extent), 1)
+    }
+
+    @MainActor func testFoldApplyDoesNotOscillateOnTinyDeltas() {
+        let fold = InstrumentHeaderFold()
+        fold.progress = 0.4
+        fold.apply(InstrumentHeaderScrollSample(progress: 0.401, reducedProgress: nil, canFold: true), reduceMotion: false)
+        XCTAssertEqual(fold.progress, 0.4)
+        fold.apply(InstrumentHeaderScrollSample(progress: 0.45, reducedProgress: nil, canFold: true), reduceMotion: false)
+        XCTAssertEqual(fold.progress, 0.45)
+        XCTAssertFalse(fold.collapsed)
+        fold.apply(InstrumentHeaderScrollSample(progress: 0.95, reducedProgress: 1, canFold: true), reduceMotion: false)
+        XCTAssertTrue(fold.collapsed)
+    }
+
+    @MainActor func testReduceMotionHoldsProgressInTheDeadBand() {
+        let fold = InstrumentHeaderFold()
+        fold.progress = 0.4
+        fold.canFold = true
+        fold.apply(InstrumentHeaderScrollSample(progress: 0.9, reducedProgress: nil, canFold: true), reduceMotion: true)
+        XCTAssertEqual(fold.progress, 0.4)
+        XCTAssertTrue(fold.canFold)
+        fold.apply(InstrumentHeaderScrollSample(progress: 0.0, reducedProgress: 0, canFold: true), reduceMotion: true)
+        XCTAssertEqual(fold.progress, 0)
+    }
+}
