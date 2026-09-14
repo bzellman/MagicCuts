@@ -3,12 +3,18 @@ import UIKit
 import AppIntents
 
 nonisolated final class MagicCutsUITests: XCTestCase {
+    /// Home’s overlay header plus Live Activity make XCTest snapshot queries stall
+    /// unless the instrument demo is pinned and the session activity is off.
+    private func homeArguments(_ extra: [String] = []) -> [String] {
+        ["--uitesting", "--pro-demo", "-showSessionLiveActivity", "NO"] + extra
+    }
+
     @MainActor func testReducedMotionJourneyWhenEnabled() throws {
         guard UIAccessibility.isReduceMotionEnabled else {
             throw XCTSkip("Enable Reduce Motion in the test device settings for this acceptance check")
         }
         let app = XCUIApplication()
-        app.launchArguments = ["--uitesting", "--pro-demo", "--seed-device"]
+        app.launchArguments = homeArguments(["--seed-device"])
         app.launch()
         for mode in ["inspect", "compare", "live"] {
             let button = app.buttons["instrument.mode.\(mode)"]
@@ -48,7 +54,7 @@ nonisolated final class MagicCutsUITests: XCTestCase {
 
     @MainActor func testWelcomeUnnamedIdentificationAndExplicitSave() {
         let app = XCUIApplication()
-        app.launchArguments = ["--uitesting", "-welcomeComplete", "NO"]
+        app.launchArguments = homeArguments(["-welcomeComplete", "NO"])
         app.launch()
         openSavedDevices(app)
         XCTAssertTrue(app.buttons["welcome.find"].waitForExistence(timeout: 10))
@@ -94,7 +100,7 @@ nonisolated final class MagicCutsUITests: XCTestCase {
 
     @MainActor func testExistingUserSkipsWelcomeAndResumesEvidence() {
         let app = XCUIApplication()
-        app.launchArguments = ["--uitesting", "--persistent-test-store", "--reset-test-store", "--seed-device", "-welcomeComplete", "NO"]
+        app.launchArguments = homeArguments(["--persistent-test-store", "--reset-test-store", "--seed-device", "-welcomeComplete", "NO"])
         app.launch()
         openSavedDevices(app)
         XCTAssertTrue(app.staticTexts["Desk sensor"].waitForExistence(timeout: 10))
@@ -103,7 +109,7 @@ nonisolated final class MagicCutsUITests: XCTestCase {
         app.buttons["test.nearby"].tap()
         XCTAssertTrue(app.staticTexts["All samples above threshold"].waitForExistence(timeout: 5))
         app.terminate()
-        app.launchArguments = ["--uitesting", "--persistent-test-store"]
+        app.launchArguments = homeArguments(["--persistent-test-store"])
         app.launch()
         openSavedDevices(app)
         XCTAssertTrue(app.staticTexts["Desk sensor"].waitForExistence(timeout: 10))
@@ -112,13 +118,13 @@ nonisolated final class MagicCutsUITests: XCTestCase {
         app.buttons["threshold.edit"].tap()
         app.buttons["Increase threshold"].tap()
         app.buttons["threshold.apply"].tap()
-        XCTAssertTrue(app.staticTexts["Threshold changed. Test again."].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Setup changed. Test again."].waitForExistence(timeout: 5))
     }
 
     @MainActor func testDiscoveryPermissionFailureAndEmptyScan() {
         let app = XCUIApplication()
         for scenario in ["--radio-denied", "--radio-off", "--radio-empty", "--radio-stale"] {
-            app.launchArguments = ["--uitesting", scenario, "-welcomeComplete", "YES"]
+            app.launchArguments = homeArguments([scenario, "-welcomeComplete", "YES"])
             app.launch()
             openSavedDevices(app)
             XCTAssertTrue(app.buttons["saved-devices.find"].waitForExistence(timeout: 10))
@@ -185,7 +191,7 @@ nonisolated final class MagicCutsUITests: XCTestCase {
 
     @MainActor func testInterruptedTestRecoversControls() {
         let app = XCUIApplication()
-        app.launchArguments = ["--uitesting", "--seed-device", "--radio-interrupted"]
+        app.launchArguments = homeArguments(["--seed-device", "--radio-interrupted"])
         app.launch()
         openSavedDevices(app)
         XCTAssertTrue(app.staticTexts["Desk sensor"].waitForExistence(timeout: 10))
@@ -201,7 +207,7 @@ nonisolated final class MagicCutsUITests: XCTestCase {
 
     @MainActor func testLargeTextAndAccessibility() throws {
         let app = XCUIApplication()
-        app.launchArguments = ["--uitesting", "--seed-device", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        app.launchArguments = homeArguments(["--seed-device", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
         app.launch()
         openSavedDevices(app)
         XCTAssertTrue(app.staticTexts["Desk sensor"].waitForExistence(timeout: 10))
@@ -238,7 +244,7 @@ nonisolated final class MagicCutsUITests: XCTestCase {
     @MainActor func testCaptureApprovedScreens() {
         for appearance in ["Light", "Dark"] {
             let app = XCUIApplication()
-            app.launchArguments = ["--uitesting", "--seed-device", "-AppleInterfaceStyle", appearance, "-technicalMode", "NO"]
+            app.launchArguments = homeArguments(["--seed-device", "-AppleInterfaceStyle", appearance, "-technicalMode", "NO"])
             if appearance == "Dark" { app.launchArguments.append("--dark-appearance") }
             app.launch()
             openSavedDevices(app)
@@ -267,7 +273,7 @@ nonisolated final class MagicCutsUITests: XCTestCase {
 
     @MainActor func testSavedDeviceModesThresholdAndHistory() {
         let app = XCUIApplication()
-        app.launchArguments = ["--uitesting", "--seed-device", "--pro-demo", "-showSessionLiveActivity", "NO"]
+        app.launchArguments = homeArguments(["--seed-device"])
         app.launch()
         openSavedDevices(app)
         XCTAssertTrue(app.staticTexts["Desk sensor"].waitForExistence(timeout: 10))

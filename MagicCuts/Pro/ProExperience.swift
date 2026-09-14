@@ -355,6 +355,14 @@ struct InstrumentWorkspaceView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .top)
                 .fixedSize(horizontal: false, vertical: true)
+                .background {
+                    if deviceMenu {
+                        Color.clear
+                            .contentShape(Rectangle())
+                            .onTapGesture { deviceMenu = false }
+                            .accessibilityHidden(true)
+                    }
+                }
                 .animation(deviceMenuMotion, value: deviceMenu)
             }
         }
@@ -696,6 +704,12 @@ struct InstrumentWorkspaceView: View {
                 VStack(spacing: 0) {
                     if devices.isEmpty {
                         EdgeDropMenuRow(title: "Find a device", detail: "Save a Bluetooth source, then measure it here.", symbol: "plus") {
+                            deviceMenu = false
+                            engine.pause()
+                            devicesSheet = true
+                        }
+                        Divider().padding(.horizontal, 16)
+                        EdgeDropMenuRow(title: "Manage devices", detail: "Rename, test nearby and away, or add another.", symbol: "slider.horizontal.3", identifier: "Manage devices") {
                             deviceMenu = false
                             engine.pause()
                             devicesSheet = true
