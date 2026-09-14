@@ -52,8 +52,6 @@ struct DeviceDetailView: View {
     private var detailContent: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                Text("Proximity").font(.largeTitle.bold())
-                ModeTabs()
                 if editor == .name {
                     TextField("Device name", text: $draftName).textFieldStyle(.roundedBorder).disabled(running != nil).accessibilityIdentifier("device.name")
                     Text("Choose a name you’ll recognize in Shortcuts.").font(.callout).foregroundStyle(.secondary)
@@ -96,8 +94,6 @@ struct DeviceDetailView: View {
                     Button("Apply threshold") { applyThreshold() }
                         .buttonStyle(ControlStyle()).disabled(running != nil).accessibilityIdentifier("threshold.apply")
                     Text("Signal is not an exact distance.").font(.caption).foregroundStyle(.secondary)
-                } else {
-                    testControls
                 }
                 if records.isEmpty { TipView(TuneTip()) }
                 else if !validated { TipView(ValidateTip()) }
@@ -122,7 +118,30 @@ struct DeviceDetailView: View {
                 }
             }.padding(MC.inset).frame(maxWidth: 640).frame(maxWidth: .infinity)
         }.background(MC.canvas).navigationTitle(device.name).navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        Button { technical = false } label: {
+                            if !technical { Label("Simple", systemImage: "checkmark") } else { Text("Simple") }
+                        }.accessibilityIdentifier("mode.simple")
+                        Button { technical = true } label: {
+                            if technical { Label("Technical", systemImage: "checkmark") } else { Text("Technical") }
+                        }.accessibilityIdentifier("mode.technical")
+                    } label: {
+                        Text(technical ? "Technical" : "Simple")
+                    }
+                    .accessibilityIdentifier("mode.detail")
+                    .accessibilityLabel("Reading detail")
+                    .accessibilityValue(technical ? "Technical" : "Simple")
+                    .disabled(editor != .none)
+                }
+            }
             .toolbar { toolbar }
+            .safeAreaInset(edge: .top, spacing: 0) {
+                if editor == .none {
+                    testControls.padding(.horizontal, MC.inset).padding(.vertical, 8).background(MC.canvas)
+                }
+            }
             .onDisappear { cancel() }
             .onChange(of: phase) { _, value in if value == .background && running != nil { cancel(); error = "Test interrupted. Keep MagicCuts open and try again." } }
     }
@@ -148,7 +167,7 @@ struct DeviceDetailView: View {
         let layout = dynamicType.isAccessibilitySize ? AnyLayout(VStackLayout(spacing: 1)) : AnyLayout(HStackLayout(spacing: 1))
         return layout {
             if let running, running != .draft {
-                HStack { ProgressView().tint(.white); Text("Testing \(running.title.lowercased())…") }.font(.headline).foregroundStyle(.white).padding().frame(maxWidth: .infinity).background(MC.action)
+                HStack { ProgressView().tint(MC.onAction); Text("Testing \(running.title.lowercased())…") }.font(.headline).foregroundStyle(MC.onAction).padding().frame(maxWidth: .infinity).background(MC.action)
                 Button("Stop") { cancel() }.buttonStyle(ControlStyle(primary: false)).accessibilityIdentifier("test.stop")
             } else {
                 Button { run(.nearby) } label: { Label("Test nearby", systemImage: "arrow.left.and.right.righttriangle.left.righttriangle.right") }.buttonStyle(ControlStyle(radius: 0)).accessibilityIdentifier("test.nearby")

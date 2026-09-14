@@ -240,3 +240,143 @@ nonisolated final class RoomInstrumentTests: XCTestCase {
         let second = try a.seal(Data([9])); XCTAssertEqual(try b.open(second), Data([9]))
     }
 }
+
+// Geometry and archive regressions for reversible editing use Swift Testing alongside
+// the existing XCTest suite. Every archive test owns its temporary directory.
+import Testing
+
+nonisolated struct RoomMeshEditingTests {
+    private func square() -> RoomRevision {
+        let date = Date(timeIntervalSince1970: 100)
+        let patch = RoomMeshPatch(id: UUID(), transform: SpatialTransform(), vertices: [
+            .init(x: 0, y: 0, z: 0), .init(x: 4, y: 0, z: 0),
+            .init(x: 4, y: 0, z: 4), .init(x: 0, y: 0, z: 4)
+        ], triangleIndices: [0, 1, 2, 0, 2, 3], classifications: [2, 2], observedAt: date)
+        return RoomRevision(roomID: UUID(), roomName: "Crop fixture", coordinateFrameID: UUID(), startedAt: date, endedAt: date,
+                            installationID: "test", meshes: [patch], alignment: .tracked)
+    }
+    private func area(_ room: RoomRevision) -> Float {
+        room.meshes.reduce(0) { total, patch in
+            total + stride(from: 0, to: patch.triangleIndices.count, by: 3).reduce(Float(0)) { sum, i in
+                let p = (0..<3).map { patch.transform.worldPoint(patch.vertices[Int(patch.triangleIndices[i + $0])]).simd }
+                return sum + simd_length(simd_cross(p[1] - p[0], p[2] - p[0])) / 2
+            }
+        }
+    }
+    @Test(arguments: [false, true])
+    func boundaryClippingPreservesAreaAndClassifications(keep: Bool) throws {
+        let original = square()
+        let trim = RoomMeshTrim(minX: 1, maxX: 3, minZ: 1, maxZ: 3, keepSelection: keep)
+        let edited = try RoomMeshTrimmer.trim(original, selection: trim)
+        #expect(edited.isValid)
+        #expect(abs(area(edited) - (keep ? 4 : 12)) < 0.0001)
+        #expect(edited.meshes.allSatisfy { $0.classifications.count == $0.triangleIndices.count / 3 && $0.classifications.allSatisfy { $0 == 2 } })
+        #expect(edited.id != original.id)
+        #expect(edited.parentRevisionID == original.id)
+        #expect(edited.roomID == original.roomID)
+        #expect(edited.coordinateFrameID == original.coordinateFrameID)
+        #expect(original.triangleCount == 2)
+        #expect(abs(area(original) - 16) < 0.0001)
+        // A floor quad crosses the entire selected rectangle even with no vertex inside.
+        // A vertex/centroid-only delete would fail this assertion.
+        for patch in edited.meshes {
+            for i in stride(from: 0, to: patch.triangleIndices.count, by: 3) {
+                let points = (0..<3).map { patch.transform.worldPoint(patch.vertices[Int(patch.triangleIndices[i + $0])]).simd }
+                let center = SpatialVector((points[0] + points[1] + points[2]) / 3)
+                #expect(trim.contains(center) == keep)
+            }
+        }
+    }
+    @Test func fullResolutionScanTrimsWithoutDroppingUnselectedGeometry() throws {
+        var room = square()
+        let side = 342
+        var vertices: [SpatialVector] = [], indices: [UInt32] = []
+        for z in 0...side { for x in 0...side {
+            vertices.append(.init(x: Float(x) / Float(side) * 4, y: 0, z: Float(z) / Float(side) * 4))
+        } }
+        for z in 0..<side { for x in 0..<side {
+            let a = UInt32(z * (side + 1) + x), b = a + 1, c = a + UInt32(side + 1), d = c + 1
+            indices += [a, b, d, a, d, c]
+        } }
+        room.meshes[0].vertices = vertices; room.meshes[0].triangleIndices = indices; room.meshes[0].classifications = []
+        #expect(room.triangleCount == 233_928)
+        let edited = try RoomMeshTrimmer.trim(room, selection: .init(minX: 2.13, maxX: 5, minZ: -1, maxZ: 5))
+        let bounds = try #require(edited.bounds)
+        #expect(edited.isValid)
+        #expect(abs(bounds.maximum.x - 2.13) < 0.0001)
+        #expect(abs(area(edited) - 8.52) < 0.02)
+        #expect(room.triangleCount == 233_928)
+    }
+    @Test func touchingTheBoundaryDoesNotTrimSurfacesOrMeasurements() throws {
+        let original = square()
+        let trim = RoomMeshTrim(minX: 4, maxX: 5, minZ: -1, maxZ: 5)
+        #expect(throws: (any Error).self) { try RoomMeshTrimmer.trim(original, selection: trim) }
+        #expect(trim.retainsEntireSegment(from: .init(x: 0, y: 0, z: 2), to: .init(x: 4, y: 0, z: 2)))
+        #expect(!trim.retainsEntireSegment(from: .init(x: 0, y: 0, z: 2), to: .init(x: 5, y: 0, z: 2)))
+    }
+    @Test func transformedPatchesClipInRoomCoordinates() throws {
+        var room = square()
+        var transform = simd_float4x4(simd_quatf(angle: .pi / 2, axis: SIMD3(0, 1, 0)))
+        transform.columns.3 = SIMD4(10, 2, 20, 1)
+        room.meshes[0].transform = SpatialTransform(transform)
+        let edited = try RoomMeshTrimmer.trim(room, selection: .init(minX: 10, maxX: 12, minZ: 15, maxZ: 21, keepSelection: true))
+        #expect(abs(area(edited) - 8) < 0.0001)
+        let bounds = try #require(edited.bounds)
+        #expect(abs(bounds.minimum.y - 2) < 0.0001)
+        #expect(abs(bounds.maximum.x - 12) < 0.0001)
+    }
+    @Test func rejectsEmptyInvalidAndUnchangedTrims() throws {
+        let room = square()
+        #expect(throws: (any Error).self) { try RoomMeshTrimmer.trim(room, selection: .init(minX: -1, maxX: 5, minZ: -1, maxZ: 5)) }
+        #expect(throws: (any Error).self) { try RoomMeshTrimmer.trim(room, selection: .init(minX: 10, maxX: 12, minZ: 10, maxZ: 12)) }
+        #expect(throws: (any Error).self) { try RoomMeshTrimmer.trim(room, selection: .init(minX: .nan, maxX: 2, minZ: 0, maxZ: 2)) }
+        #expect(throws: (any Error).self) { try RoomMeshTrimmer.trim(room, selection: .init(minX: 10, maxX: 12, minZ: 10, maxZ: 12, keepSelection: true)) }
+    }
+    @Test func trimmedRevisionDoesNotPresentStaleRoomEstimatesOrCrossingDimensions() throws {
+        var room = square()
+        room.components = [.init(id: UUID(), category: "Floor", transform: SpatialTransform(), dimensions: .init(x: 4, y: 0, z: 4), confidence: "High", outline: room.meshes[0].vertices, complete: true)]
+        room.dimensions = [.init(title: "Across the cut", start: .init(x: 0, y: 1, z: 2), end: .init(x: 4, y: 1, z: 2)),
+                           .init(title: "Unchanged", start: .init(x: 0, y: 1, z: 0), end: .init(x: 4, y: 1, z: 0))]
+        room.semanticData = Data([1, 2]); room.worldMapData = Data([3, 4])
+        #expect(room.floorArea == 16)
+        let edited = try RoomMeshTrimmer.trim(room, selection: .init(minX: 1, maxX: 3, minZ: 1, maxZ: 3))
+        #expect(edited.floorArea == nil)
+        #expect(edited.estimatedVolume == nil)
+        #expect(edited.semanticData == nil)
+        #expect(edited.worldMapData == room.worldMapData)
+        #expect(edited.dimensions.map(\.title) == ["Unchanged"])
+    }
+    @Test func trimRoundTripsWithoutChangingOriginalAndExportsEditedGeometry() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let archive = InstrumentArchive(root: root)
+        let original = square()
+        _ = try await archive.saveRoomRevision(original)
+        let originalBytes = try Data(contentsOf: root.appendingPathComponent("room-\(original.id).json"))
+        let edited = try RoomMeshTrimmer.trim(original, selection: .init(minX: 2, maxX: 5, minZ: -1, maxZ: 5))
+        _ = try await archive.saveRoomRevision(edited)
+        let reopened = try await InstrumentArchive(root: root).loadRoomRevision(edited.id)
+        #expect(reopened == edited)
+        #expect(try Data(contentsOf: root.appendingPathComponent("room-\(original.id).json")) == originalBytes)
+        let exported = try await FieldExport.room(edited)
+        let imported = try await FieldExport.importRoom(exported)
+        #expect(imported == edited)
+        #expect(abs(area(imported) - 8) < 0.0001)
+        #expect(try await archive.loadRoomRevision(original.id) == original)
+    }
+    @Test func insideCameraStaysInsideWhenLookingOrZooming() throws {
+        let room = FieldDemo.room()
+        let layout = RoomMeshCameraLayout(room: room)
+        let inside = layout.pose(viewpoint: .inside, interior: nil, yaw: 0, elevation: 0, zoom: 1)
+        let zoomed = layout.pose(viewpoint: .inside, interior: nil, yaw: .pi, elevation: -1, zoom: 0.4)
+        #expect(inside.position == zoomed.position)
+        #expect(inside.position.x > layout.minimum.x && inside.position.x < layout.maximum.x)
+        #expect(inside.position.y > layout.minimum.y && inside.position.y < layout.maximum.y)
+        #expect(inside.position.z > layout.minimum.z && inside.position.z < layout.maximum.z)
+        #expect(zoomed.fieldOfView < inside.fieldOfView)
+        let outside = layout.pose(viewpoint: .outside, interior: nil, yaw: 0, elevation: 0.65, zoom: 1)
+        #expect(simd_distance(outside.position, layout.center) >= layout.radius - 0.0001)
+        let moved = SpatialVector(x: 1, y: 1.2, z: 1)
+        #expect(layout.pose(viewpoint: .inside, interior: moved, yaw: 0, elevation: 0, zoom: 1).position == moved.simd)
+    }
+}

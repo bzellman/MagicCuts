@@ -1,16 +1,19 @@
-# MagicCuts Pro native specification
+# Native Utility implementation specification
 
-Authority: approved Live / Inspect / Compare compositions in `.impeccable/mocks/pro/`, with the September 9 user override to use the existing blue and rounded segment labels. Approval is recorded in all three sidecars. The previous Bluetooth component boards remain the specification for the retained setup flow.
+Approved on September 12, 2026: C · Soft forms (`home-trace.png`). Preserve the real Home/Settings journey from `v1-home-instrument-sheet`, plus Bluetooth and mesh fixes merged from current main.
 
-- iOS/iPadOS 26, native SwiftUI with SF text, SF Symbols, Swift Charts, Canvas instruments, native sheets/navigation, StoreKit and ActivityKit.
-- Source controls and rounded mode segments precede one dominant instrument. RSSI maps to a truthful linear -100 to -40 dBm default; the scale expands to preserve outside observations and shows an interquartile band and saved threshold.
-- Live reading, interpretation, quiet history, paired record/baseline controls, native Instruments/Sessions/Workflows tabs. Inspect promotes the chart; Compare aligns references on the same range.
-- At accessibility text sizes, a native menu retains all three view modes, source controls and statistics reflow vertically, recording actions join the scroll, and chart axes scale up to 22pt inside a minimum 240pt plot.
-- System safe areas and large-text reflow supersede literal mockup pixels. Labels remain accessible text; decorative scales have fixed readable ticks and expose data through the main reading/chart.
-- Dark ground is matte ink; light ground uses the existing Canvas asset. Action blue: #0052C7 light and #1F66D9 dark. Signal text on dark uses #61B8FF for contrast. Secondary interval ink uses adaptive teal.
-- SF rounded values and semibold mode labels. Native body text. 44pt minimum controls, 46pt segments, 52pt primary controls. No generated rasters ship in instrument UI.
-- Pinning a chart sample persists until Return to live; stale readings, missing segments and incompatible baselines remain explicit. Sensor permissions stay lazy. Local sample fixtures require DEBUG and an explicit UI-test flag.
-- Baselines store their source, segment and input settings. Session drafts preserve recoverable partial recordings. Field reports retain every attached recording and user-confirmed protocol step.
-- Every usable feature and App Intent requires verified Pro. Purchase, restore and legal information remain accessible when locked. Local test price is not a live commercial decision.
+The 852×1846 concept represents a 393×852-point phone. Native system chrome, safe areas and 44-point touch regions determine final layout. `native-exact-regions.json` records the measured concept rectangles. The generic grid helper includes overlapping crops (notably phase overlaps the numeral), so its font measurements and generated CSS are advisory; its Google Fonts ranking cannot supply the user-pinned San Francisco. The SwiftUI implementation uses SF body styles and SF Rounded scaled tabular readings. No CSS or Google font is shipped.
 
-Native evidence: iPhone/iPad captures, actual accessibility and interaction checks, measurement/recording/export tests, fresh independent native finish review and system documentation. Web CSS/font-ranking and raster-plate gates cannot score native SF controls and are not claimed as passes.
+- Canvas: existing adaptive cool pale canvas. Content: secondary system grouped background, continuous 24pt corners, 12pt Home reading/history insets and 18pt field evidence insets. White selected capsule uses a black 10% contact shadow, radius 2, y=1.
+- Source: compound two-row group, two equal actions followed by source. 44pt minimum rows. Large type stacks the actions.
+- Modes: 44pt interactive segments, 3pt selected-shape inset; neutral track and white selected capsule. At accessibility sizes, native menu. Native sheet transitions and Reduce Motion-aware selection are the authored motion.
+- Scalar: 140-degree open upper arc, 7pt track, seven ticks, 14pt reading marker plus 2pt separation. Threshold region or observed middle interval has a defined data meaning. No decorative needle.
+- Level: true two-axis gravity bubble; Compass: circular magnetic bearing; elevation: signed ruler around session zero; battery: charge and categorical system state. Runtime charts retain unavailable gaps, circular segmentation, genuine units, baselines and source provenance.
+- Reading: 66pt SF Rounded semibold, ScaledMetric, tabular; unit uses callout. Phase and interpretation are separate callout lines.
+- History: separate white evidence group, true elapsed time and reading units. The title is Recent readings instead of the concept's Last 20 seconds because retained session duration varies. Compact phone Bluetooth Gauges use a 75pt chart and 6pt chapter spacing; its reading shares the arc's lower interior so Baseline and the full 44pt calibration action fit above the dock. Other phone instruments use 90pt history; accessibility sizes retain scrolling reflow.
+- Baseline: single 50pt grouped row. Log and Record use matched 52pt capsules; Start Flow is a 44pt quiet action.
+- iPad: reading and evidence side by side, maximum content width 1040pt; actions cap at 720pt. Accessibility sizes restore a vertical scrolling composition.
+- Spatial tools: camera immediately on entry, native navigation, 28pt top-corner light tray; tablet side panel 360pt. Modes do not restart the camera. Owned sessions stop on dismissal; already-located room sessions are reused. Normal camera permission, denial, unsupported hardware and interruption stay explicit. A simulator fallback is not live-camera acceptance.
+- Assets: native SwiftUI, Charts, Canvas and SF Symbols only. Zero raster plates ship. The camera concept is illustrative; production uses RoomCameraView.
+
+Verification: native simulator captures, behavior tests, accessibility audits, independent Impeccable finish review. Generic HTML/CSS detection does not judge SwiftUI. Evidence and final disposition are recorded in the native build state and review report.

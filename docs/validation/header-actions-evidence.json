@@ -1,0 +1,648 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-13T03:10:10.392789+00:00",
+  "scope": "Native source header and adaptive action refinement approved by the user marked screenshots.",
+  "baseCommit": "c130ef8f7232968fe9301448ea4c2351c647a28e",
+  "branch": "codex/native-utility-redesign",
+  "sourceSha256": {
+    "MagicCuts/Assets.xcassets/Action.colorset/Contents.json": "f193a92d8969ce0c123b21f82d3fe0e95f4db49b3c12c1f96b714ac96d0dd17f",
+    "MagicCuts/Assets.xcassets/ActionInk.colorset/Contents.json": "f1a7014459e9da3f3057e8327aa1d2e6cf4fc3bc26d5aa01c4fdb7ca08ee9122",
+    "MagicCuts/DesignSystem.swift": "e98f839c937fa12b82389c809bd31608a40169f138b6a0519b820e2a2bffabf4",
+    "MagicCuts/DeviceDetailView.swift": "9cd52f03aadfd3afbed78d1e9fc7ce7eed5b96d86d00326daf1d95a3c3789dd7",
+    "MagicCuts/Fieldwork/FieldToolsView.swift": "5d10ea796d77b6e7a80a2f2b656ebbd3eeec4282ecdbbca41f64541941effdef",
+    "MagicCuts/Fieldwork/RoomCanvas.swift": "f36cc4dedf8c4dd90d7c4c7d725329fa358423ee9ff88f621c8a00380019754a",
+    "MagicCuts/Fieldwork/RoomsView.swift": "5ea070bbafdae28d05996e5cc5a79184c19111e94a3deed69efb0c26eaa4388c",
+    "MagicCuts/Pro/InstrumentForms.swift": "2b0554f17f12f358fef12b8f858b261ea3a554452eb5e0dcf20a5a968ebcd744",
+    "MagicCuts/Pro/ProExperience.swift": "8d52dc311edb1a4e286b1d1ae747f215dcce7e8e667f01b74c8e8224e3bf893d",
+    "MagicCuts/Pro/SessionsView.swift": "7c08e1fc88ee51f66ff4e05d2b15d6fa4fad3149aa4b56c3a3f7100a10567a00",
+    "MagicCuts/Pro/WorkflowsView.swift": "7928984805c422f5bd7fe376346cec584d0af9a9e8f1d042ab1577216649e2b6",
+    "MagicCutsUITests/ProExperienceUITests.swift": "7c7b1c2ef696dc09a8d8aa7418ff25188ac08fbc0f665b134e72d914d8217673",
+    "DESIGN.md": "79efa23aecfbca6f0b456461a5354ad236e7be1b2597c269ed76b11673b48a23",
+    ".impeccable/design.json": "0ec16fb13de7bb834211365e291b7c11599519fa4f5e9c7f81d7dc641b749515",
+    "PRODUCT.md": "0a3029d31b3d94b798a1ac5947dd068bdb4224d684584578585967bf59305373",
+    ".impeccable/surfaces/magiccuts-pro-proexperience-swift.md": "0b11d5e275e237b1e8eb2ee1582095cbf26fe3f40195b8d7350c21c8385e7293",
+    "docs/design/2026-09-12-native-utility.md": "efb01928801678b2cee086a266c571e78c177bc3a729a1e767342b2679d9e9a3"
+  },
+  "runtime": {
+    "phone": "iPhone 17 Pro / iOS 26.5 Simulator",
+    "tablet": "iPad Air 11-inch M3 / iPadOS 26.5 Simulator",
+    "phoneOrientation": "Portrait, as configured by the shipping target",
+    "tabletEvidence": "Portrait Home and landscape Home/header plus large Dynamic Type"
+  },
+  "passedCases": [
+    {
+      "device": "phone",
+      "test": "testHomeAccessibility()",
+      "result": "Passed",
+      "caseEvidence": ".impeccable/review/header-actions/tests/phone-final-cases.json",
+      "resultBundle": "/tmp/magiccuts-header-actions/phone-final.xcresult"
+    },
+    {
+      "device": "phone",
+      "test": "testLargestTextAndControlsReflow()",
+      "result": "Passed",
+      "caseEvidence": ".impeccable/review/header-actions/tests/phone-final-cases.json",
+      "resultBundle": "/tmp/magiccuts-header-actions/phone-final.xcresult"
+    },
+    {
+      "device": "phone",
+      "test": "testStartFlowPromptOpensChooser()",
+      "result": "Passed",
+      "caseEvidence": ".impeccable/review/header-actions/tests/phone-first-cases.json",
+      "resultBundle": "/tmp/magiccuts-header-actions/phone-first.xcresult"
+    },
+    {
+      "device": "phone",
+      "test": "testSourceHeaderKeepsContextAndSettingsReachable()",
+      "result": "Passed",
+      "caseEvidence": ".impeccable/review/header-actions/tests/phone-header-filter-cases.json",
+      "resultBundle": "/tmp/magiccuts-header-actions/phone-header-filter.xcresult"
+    },
+    {
+      "device": "tablet",
+      "test": "testHomeAccessibility()",
+      "result": "Passed",
+      "caseEvidence": ".impeccable/review/header-actions/tests/tablet-capture-cases.json",
+      "resultBundle": "/tmp/magiccuts-header-actions/tablet-capture.xcresult"
+    },
+    {
+      "device": "tablet",
+      "test": "testLargestTextAndControlsReflow()",
+      "result": "Passed",
+      "caseEvidence": ".impeccable/review/header-actions/tests/tablet-capture-cases.json",
+      "resultBundle": "/tmp/magiccuts-header-actions/tablet-capture.xcresult"
+    },
+    {
+      "device": "tablet",
+      "test": "testStartFlowPromptOpensChooser()",
+      "result": "Passed",
+      "caseEvidence": ".impeccable/review/header-actions/tests/tablet-cases.json",
+      "resultBundle": "/tmp/magiccuts-header-actions/tablet.xcresult"
+    },
+    {
+      "device": "tablet",
+      "test": "testCameraToolsOpenWithoutAnExtraStartStep()",
+      "result": "Passed",
+      "caseEvidence": ".impeccable/review/header-actions/tests/tablet-cases.json",
+      "resultBundle": "/tmp/magiccuts-header-actions/tablet.xcresult"
+    },
+    {
+      "device": "tablet",
+      "test": "testSourceHeaderKeepsContextAndSettingsReachable()",
+      "result": "Passed",
+      "caseEvidence": ".impeccable/review/header-actions/tests/tablet-header-filter-cases.json",
+      "resultBundle": "/tmp/magiccuts-header-actions/tablet-header-filter.xcresult"
+    }
+  ],
+  "supersededTestAssumptions": [
+    "An early header case expected iPhone landscape despite portrait-only shipping configuration.",
+    "iPad native search can be collapsed in landscape; final header case uses the visible Motion filter.",
+    "XCTest app.screenshot() used a stale app frame after iPad rotation. Captures now use XCUIScreen.main; malformed images are excluded from the review packet."
+  ],
+  "compiler": {
+    "appWarnings": 0,
+    "evidence": ".review/header-actions/tablet-header-filter.log",
+    "platformNotices": "Xcode LLDB-version lookup and Simulator duplicate UIAccessibilityLoader messages are platform diagnostics, not app compiler diagnostics."
+  },
+  "contrast": [
+    {
+      "role": "primary light",
+      "foreground": "#FFFFFF",
+      "background": "#242A2F",
+      "ratio": 14.51
+    },
+    {
+      "role": "primary dark",
+      "foreground": "#242A2F",
+      "background": "#E7F542",
+      "ratio": 12.12
+    },
+    {
+      "role": "supporting light",
+      "foreground": "#242A2F",
+      "background": "#F2F5F7",
+      "ratio": 13.25
+    },
+    {
+      "role": "supporting dark",
+      "foreground": "#E7F542",
+      "background": "#0F141A",
+      "ratio": 15.45
+    },
+    {
+      "role": "header light",
+      "foreground": "#242A2F",
+      "background": "#FFFFFF",
+      "ratio": 14.51
+    },
+    {
+      "role": "header dark",
+      "foreground": "#E7F542",
+      "background": "#1C1C1E",
+      "ratio": 14.21
+    }
+  ],
+  "designValidation": {
+    "yaml": "valid",
+    "json": "valid",
+    "sourcePointers": "all exist",
+    "independentReview": "ship",
+    "review": ".impeccable/review/header-actions/finish-review.md",
+    "documentation": ".impeccable/review/header-actions/documentation.md",
+    "roleSubstitution": "Fresh independent default agents used shipped Impeccable fallback reviewer/documenter contracts.",
+    "nativeDetector": "Not applicable; detector parses HTML/CSS."
+  },
+  "captures": [
+    {
+      "path": ".impeccable/review/header-actions/phone/header-calibration-dark.png",
+      "sha256": "f448e5cd34b7ed94e25269e8d17cb4ca53131806409923d8ed8d57a877e2a034",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/phone-header-attachments/0DCFEF44-BFB3-4464-B086-9061F18D49A6.png",
+          "attachment": "header-calibration-dark_0_4AA50660-8F2D-4761-8A1C-93E529AC632A.png",
+          "run": "phone-header"
+        }
+      ],
+      "observedLayout": "portrait"
+    },
+    {
+      "path": ".impeccable/review/header-actions/phone/header-calibration-light.png",
+      "sha256": "bf700fb99d3118afb917652bfcabfeb1cea251b865f24d38f93ded484a6c65fb",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/phone-header-attachments/8F36F9E9-5431-4290-BE7C-DE15CF79A5F3.png",
+          "attachment": "header-calibration-light_0_EC7FEAE2-3976-497A-AB9A-78DFA0D3395B.png",
+          "run": "phone-header"
+        }
+      ],
+      "observedLayout": "portrait"
+    },
+    {
+      "path": ".impeccable/review/header-actions/phone/header-magnetic-dark.png",
+      "sha256": "e4ae123d40c3333a344ab1f8ddd80faa2bb27e8634a0edf7fb11a298341b5655",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/phone-header-attachments/E8E3F7E5-4C43-4427-896D-471FCF2BFFD4.png",
+          "attachment": "header-magnetic-dark_0_BAC9BF27-1215-433A-8ACA-D99266A40775.png",
+          "run": "phone-header"
+        }
+      ],
+      "observedLayout": "portrait"
+    },
+    {
+      "path": ".impeccable/review/header-actions/phone/header-magnetic-light.png",
+      "sha256": "fb29c9de96c32551c9c0a0bf9007c4383bb271811df25816e3266dcc62181904",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/phone-header-attachments/AD0A4FF3-7E7F-4F1B-B909-17F975452CF6.png",
+          "attachment": "header-magnetic-light_0_5CBA8148-0367-4374-875C-C9511A6A14C3.png",
+          "run": "phone-header"
+        }
+      ],
+      "observedLayout": "portrait"
+    },
+    {
+      "path": ".impeccable/review/header-actions/phone/header-portrait-rotation-dark.png",
+      "sha256": "324579840141eb5d7cd18f338f4fa36b8d1f51d8e44401b086efd504d778d610",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/phone-header-attachments/7D77B3D1-9195-46A3-9D50-AE884BF8DCD3.png",
+          "attachment": "header-portrait-rotation-dark_0_F3F944A3-1A58-44D1-AB34-5CA7B7634B77.png",
+          "run": "phone-header"
+        }
+      ],
+      "observedLayout": "portrait"
+    },
+    {
+      "path": ".impeccable/review/header-actions/phone/header-portrait-rotation-light.png",
+      "sha256": "1c8ad0f76efa6b70e1d6d416044768635edbe34e36b3dd194e912926799eeb3b",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/phone-header-attachments/35C88569-96D0-4CB8-89B5-37BF781CB0C2.png",
+          "attachment": "header-portrait-rotation-light_0_0E4CBEBE-9D66-4C18-9F6E-EE5CD39BF6CD.png",
+          "run": "phone-header"
+        }
+      ],
+      "observedLayout": "portrait"
+    },
+    {
+      "path": ".impeccable/review/header-actions/phone/header-settings-dark.png",
+      "sha256": "52d005caab6509f6bd17e96c50480b48fbc4dd62400f4740a659c612bacc4c8c",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/phone-header-attachments/DE1F34CD-5AA5-4CFC-BA51-0C79B4D14005.png",
+          "attachment": "header-settings-dark_0_8E68963E-BA48-4053-AE07-27DA1456F617.png",
+          "run": "phone-header"
+        }
+      ],
+      "observedLayout": "portrait"
+    },
+    {
+      "path": ".impeccable/review/header-actions/phone/header-settings-light.png",
+      "sha256": "7bd2e6598187d17564bfe1f42729ad649380f759d02c3b2b63f50c82a938cb91",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/phone-header-attachments/B38BF5E7-09E8-4126-A3E3-7E6CCF04F040.png",
+          "attachment": "header-settings-light_0_64A53A7A-DCD1-49B4-89C6-9AC6E904035F.png",
+          "run": "phone-header"
+        }
+      ],
+      "observedLayout": "portrait"
+    },
+    {
+      "path": ".impeccable/review/header-actions/phone/pro-largest-controls.png",
+      "sha256": "242fb82cc3f7e4f9e9ec09689a1cf3e744112cbd98c45e49dc32b71e86635ecb",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/phone-final-attachments/5FB47A1B-159C-4F5F-9F56-8E03B356F39B.png",
+          "attachment": "pro-largest-controls_0_CDE3D41A-1283-48B3-AB90-F00557E90610.png",
+          "run": "phone-final"
+        }
+      ],
+      "observedLayout": "portrait"
+    },
+    {
+      "path": ".impeccable/review/header-actions/phone/pro-largest-text.png",
+      "sha256": "285b35c35f2922f44488676cc1018c4222e9690a9ef127d87da7bfe74ca9a1a8",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/phone-final-attachments/728DF970-76E7-4E9A-A56D-577D8993475D.png",
+          "attachment": "pro-largest-text_0_E0B089B0-5103-48BB-B010-A57641A95EDC.png",
+          "run": "phone-final"
+        }
+      ],
+      "observedLayout": "portrait"
+    },
+    {
+      "path": ".impeccable/review/header-actions/phone/pro-live-dark.png",
+      "sha256": "5edcb50b714d3145bf54082c2b6ead7824c18aad8561acbfc98c5292187ed698",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/phone-final-attachments/A0DB15CA-0798-4DFB-96CF-F76FDEDE6823.png",
+          "attachment": "pro-live-dark_0_0ED9CD55-06A9-4E6A-9FAC-836C23C8B5B9.png",
+          "run": "phone-final"
+        }
+      ],
+      "observedLayout": "portrait"
+    },
+    {
+      "path": ".impeccable/review/header-actions/phone/pro-live-light.png",
+      "sha256": "299601298d059ca2d742f6ae9dc429f55464dd45988c4678fe752e783686f8b6",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/phone-final-attachments/28FB1C68-1A58-4886-BBDE-825D055F697A.png",
+          "attachment": "pro-live-light_0_44DAD83D-3D78-46DD-B4A7-6EA441AA2FE9.png",
+          "run": "phone-final"
+        }
+      ],
+      "observedLayout": "portrait"
+    },
+    {
+      "path": ".impeccable/review/header-actions/phone/pro-start-flow.png",
+      "sha256": "8552aaeda0f30400d1cec4a76a7615bd42e47ae0379f9c25c9747cdc8fed7473",
+      "pngPixelDimensions": [
+        1206,
+        2622
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/phone-first-attachments/FBDBE88C-C0B4-4864-B9F7-DDF9BE078460.png",
+          "attachment": "pro-start-flow_0_FA50E3CB-8A88-49F9-8D53-9EAA8BD265CB.png",
+          "run": "phone-first"
+        }
+      ],
+      "observedLayout": "portrait"
+    },
+    {
+      "path": ".impeccable/review/header-actions/request/marked-home.png",
+      "sha256": "b2063208784a19547639203badd4faac4151758df6aacbb2fcb785923a101a8a",
+      "pngPixelDimensions": [
+        1206,
+        2619
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "User attached screenshot, September 12, 2026; pixel content unchanged."
+    },
+    {
+      "path": ".impeccable/review/header-actions/request/source-header.png",
+      "sha256": "42266e0c1deb02bd0547074c3a271e03b309cdd2a455ead70374425212bfd462",
+      "pngPixelDimensions": [
+        673,
+        193
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "User attached screenshot, September 12, 2026; pixel content unchanged."
+    },
+    {
+      "path": ".impeccable/review/header-actions/tablet/header-calibration-light.png",
+      "sha256": "deaf0187fc22cd6c2043519989709753f69656849819d0b3564a3bd02c5ae1bc",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/tablet-capture-attachments/0EEED5A2-5268-4012-BA84-2C5F85C50D77.png",
+          "attachment": "header-calibration-light_0_8C0EFF54-0ED3-48CA-BB9F-43AF7EAE8C0F.png",
+          "run": "tablet-capture"
+        }
+      ],
+      "observedLayout": "landscape"
+    },
+    {
+      "path": ".impeccable/review/header-actions/tablet/header-landscape-dark.png",
+      "sha256": "d897142002babd2e42b7b3716f4984d3861255b66b509f8a353ba9a59ffec249",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/tablet-capture-attachments/C8C26FEB-3F98-4532-A86D-78D6B5DA1065.png",
+          "attachment": "pro-live-dark_0_1A3065DA-64BB-40D8-B8F1-FCE22EC7CE6C.png",
+          "run": "tablet-capture"
+        }
+      ],
+      "observedLayout": "landscape"
+    },
+    {
+      "path": ".impeccable/review/header-actions/tablet/header-landscape-light.png",
+      "sha256": "b3e03cb322fdcc32154428fc6f1016d3d09fbcde27ceeeef29b61df0deabf607",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/tablet-capture-attachments/A5C3FD29-2099-45CD-A8FD-4F2B1C52B45D.png",
+          "attachment": "pro-live-light_0_8A7BBF47-0015-422B-A24A-96223E427ECE.png",
+          "run": "tablet-capture"
+        },
+        {
+          "export": "/tmp/magiccuts-header-actions/tablet-capture-attachments/3F0F2DDA-2EC2-4902-AF75-F83F61B1E14E.png",
+          "attachment": "header-landscape-light_0_5B4B6647-71F4-4816-915A-3938E40C2C68.png",
+          "run": "tablet-capture"
+        }
+      ],
+      "observedLayout": "landscape"
+    },
+    {
+      "path": ".impeccable/review/header-actions/tablet/header-settings-light.png",
+      "sha256": "f0452474ec1a2a23ce7597c9a73223898fcabadb637f7c5a9725e77c397a5b45",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/tablet-capture-attachments/A67F9942-F256-4B7E-9B2C-E3B11DF248F6.png",
+          "attachment": "header-settings-light_0_D4F90035-F468-4EDA-8C28-50E5572893B2.png",
+          "run": "tablet-capture"
+        }
+      ],
+      "observedLayout": "landscape"
+    },
+    {
+      "path": ".impeccable/review/header-actions/tablet/native-camera-distance.png",
+      "sha256": "de63772df9f8e803cb21a1a3851a11feca1706c28815d0a28851afe4989eb50b",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/tablet-attachments/4BCDD5B4-9960-4C31-A8D4-09BD7B92F09F.png",
+          "attachment": "native-camera-modes_0_1C9CE14D-A094-4B5C-89DA-41A59C862839.png",
+          "run": "tablet"
+        },
+        {
+          "export": "/tmp/magiccuts-header-actions/tablet-attachments/F714780F-9904-4D50-B648-8AFE302A8038.png",
+          "attachment": "native-camera-distance_0_80322F18-C954-4DDB-8820-290C3B22C224.png",
+          "run": "tablet"
+        }
+      ],
+      "observedLayout": "portrait"
+    },
+    {
+      "path": ".impeccable/review/header-actions/tablet/native-camera-modes.png",
+      "sha256": "348d28930f8127f75a8c453c452b0c3bf0d9c119b082863ba76ffecf17f96cc4",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/tablet-attachments/4BCDD5B4-9960-4C31-A8D4-09BD7B92F09F.png",
+          "attachment": "native-camera-modes_0_1C9CE14D-A094-4B5C-89DA-41A59C862839.png",
+          "run": "tablet"
+        },
+        {
+          "export": "/tmp/magiccuts-header-actions/tablet-attachments/F714780F-9904-4D50-B648-8AFE302A8038.png",
+          "attachment": "native-camera-distance_0_80322F18-C954-4DDB-8820-290C3B22C224.png",
+          "run": "tablet"
+        }
+      ],
+      "observedLayout": "portrait"
+    },
+    {
+      "path": ".impeccable/review/header-actions/tablet/native-room-camera.png",
+      "sha256": "09dfe1cef5c1f977fbac635b0187c94b2bd316cec233af946935ccd8018a142a",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/tablet-attachments/EAA667CB-6EC4-4819-A897-FA8555FFD849.png",
+          "attachment": "native-room-camera_0_89B77299-066B-4243-B913-1E61399909AB.png",
+          "run": "tablet"
+        }
+      ],
+      "observedLayout": "portrait"
+    },
+    {
+      "path": ".impeccable/review/header-actions/tablet/pro-largest-controls.png",
+      "sha256": "f839cef5098d93f030076edf8e28a1983d2941a6c2547480d9e27a2abb85bd8d",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/tablet-capture-attachments/36BD7069-3266-49CE-9AAA-426AC3C707F4.png",
+          "attachment": "pro-largest-controls_0_E1355BF5-E021-4616-8BE9-7B3D540E0204.png",
+          "run": "tablet-capture"
+        }
+      ],
+      "observedLayout": "landscape"
+    },
+    {
+      "path": ".impeccable/review/header-actions/tablet/pro-largest-text.png",
+      "sha256": "2ac6849f4387b48e593a15c77b5aa34e391a19777438febeab637bc1658a1655",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/tablet-capture-attachments/B2841AF9-BA26-4D72-B9CE-C1C30AB8A549.png",
+          "attachment": "pro-largest-text_0_703EFA81-8E38-4AE1-81C0-110DF19AF1DF.png",
+          "run": "tablet-capture"
+        }
+      ],
+      "observedLayout": "landscape"
+    },
+    {
+      "path": ".impeccable/review/header-actions/tablet/pro-live-dark.png",
+      "sha256": "2604dfa01adefbf6b00d27eceb2fc2a9ed09ff416365f86d3449bd3e907f7394",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/tablet-attachments/434AEAEE-B3CA-4A71-A81E-A20A7B54987E.png",
+          "attachment": "pro-live-dark_0_99B59FD8-E097-4613-B204-F9F5E3AE253E.png",
+          "run": "tablet"
+        }
+      ],
+      "observedLayout": "portrait"
+    },
+    {
+      "path": ".impeccable/review/header-actions/tablet/pro-live-light.png",
+      "sha256": "ac45bd94b31d2fc213b8a8e4c0920906ac1d87d4c1506ba409b9fd65dc1b2c83",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/tablet-attachments/3F78BE85-62F2-4DDA-8D7D-031CC0FA180E.png",
+          "attachment": "pro-live-light_0_EC04F47C-08B3-463C-B4D0-B5B1CA16B7B7.png",
+          "run": "tablet"
+        }
+      ],
+      "observedLayout": "portrait"
+    },
+    {
+      "path": ".impeccable/review/header-actions/tablet/pro-start-flow.png",
+      "sha256": "d51020b36751a295ce66ba8f8e931ab8f13deda312dfb7771030bacd79bc8261",
+      "pngPixelDimensions": [
+        1640,
+        2360
+      ],
+      "originMetadataEmbedded": true,
+      "origin": "Native XCTest simulator screenshot; no pixel edits.",
+      "matchingOriginalExports": [
+        {
+          "export": "/tmp/magiccuts-header-actions/tablet-attachments/0E772FEF-5F99-4457-A29D-23E1D38F90D3.png",
+          "attachment": "pro-start-flow_0_2AAF07F4-5FE2-48B2-8842-35E9504B097D.png",
+          "run": "tablet"
+        }
+      ],
+      "observedLayout": "portrait"
+    }
+  ],
+  "provenanceScan": ".impeccable/review/header-actions/provenance-scan.txt",
+  "limits": [
+    "Simulator evidence does not establish physical sensor accuracy, live camera frames or LiDAR acceptance.",
+    "Measurement, persistence and commerce code are unchanged. Prior core and commerce evidence remains historical; it was not rerun in this UI refinement."
+  ],
+  "preservedPreexistingChange": ".impeccable/review/native-utility/phone/pro-live-light.png"
+}

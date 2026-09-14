@@ -1,0 +1,69 @@
+{
+  "platform": "ios",
+  "direction": "C \u00b7 Soft forms",
+  "approval": "User: lets go with it, September 12, 2026",
+  "stage": "complete",
+  "phases": {
+    "comp": "approved",
+    "spec": "native-spec.md; exact region measurements in native-fidelity-spec.json",
+    "plates": "none: native geometry and system symbols",
+    "hero": "verified on phone and tablet; phone baseline/calibration correction passed in light and dark",
+    "sections": "all visualization families retain data-specific forms and shared surfaces",
+    "motion": "native transitions and Reduce Motion-aware selection",
+    "responsive": "verified phone/tablet, light/dark and largest Dynamic Type; floating-sheet viewport audits passed",
+    "review": "complete: independent native review; ship for scored correction, no introduced regressions",
+    "documentation": "complete: DESIGN.md and .impeccable/design.json; JSON, YAML, source pointers and whitespace validated"
+  },
+  "toolLimitations": [
+    "Generic fixed-region comp matching fails at 77% after native safe-area and layout translation. The generic hero phase remains open; the native review supplies the applicable visual verdict.",
+    "The generic font matcher cannot rank the user-pinned San Francisco; the native specification retains SF and SF Rounded.",
+    "No HTML/CSS detector applies to native SwiftUI.",
+    "A result finalization hang during an earlier run was superseded by completed xcresult reruns; final captures and result summaries are retained.",
+    "StoreKit 26.5 fails before purchase when SKTestSession configures its local environment. Commerce source and configuration are unchanged.",
+    "The registered Impeccable reviewer and documenter roles were unavailable; fresh independent default agents followed the shipped fallback contracts."
+  ],
+  "physicalAcceptance": "Live LiDAR, spatial accuracy and camera interruption on physical hardware are not established by simulator evidence.",
+  "updatedAt": "2026-09-13T01:32:28.463183+00:00",
+  "evidence": {
+    "validation": "docs/NATIVE_UTILITY_VALIDATION.md",
+    "portableReceipt": "docs/validation/native-utility-evidence.json",
+    "review": ".impeccable/review/native-utility/finish-review.md",
+    "verdict": ".impeccable/review/native-utility/finish-verdict.md",
+    "finalPhoneTests": {
+      "passed": 89,
+      "failed": 0,
+      "scope": "88 core cases and light/dark Home accessibility; separate StoreKit purchase class excluded after environment failure"
+    },
+    "fidelity": {
+      "score": 0.77,
+      "automatedGatePassed": false,
+      "nativeAdaptationsReviewed": true
+    }
+  },
+  "followUp": {
+    "name": "Source header and adaptive actions",
+    "stage": "complete",
+    "updatedAt": "2026-09-13T03:10:10.392789+00:00",
+    "authority": "User marked Home screenshot and source-header crop, September 12, 2026",
+    "review": "ship",
+    "documentation": "complete",
+    "validation": "docs/HEADER_ACTIONS_VALIDATION.md",
+    "receipt": "docs/validation/header-actions-evidence.json",
+    "note": "The original native-utility evidence above remains historical; follow-up evidence is separate."
+  },
+  "scrollMotion": {
+    "name": "Source header scroll motion",
+    "stage": "complete",
+    "updatedAt": "2026-09-13T05:53:12.677076+00:00",
+    "authority": "User: do one more pass; latest rejected compact screenshot: This is a no go.",
+    "review": "ship",
+    "correctionRoundsCompleted": 3,
+    "openFindings": [],
+    "documentation": "complete: DESIGN.md, .impeccable/design.json, and final documentation report",
+    "validation": "docs/HEADER_MOTION_VALIDATION.md",
+    "receipt": "docs/validation/header-motion-evidence.json",
+    "nextStep": "Local reviewable handoff; no push or merge requested.",
+    "note": "Original native-utility and source-header follow-up records remain historical; neither closes this motion amendment.",
+    "verdict": ".impeccable/review/header-motion/rejection-verdict.md"
+  }
+}

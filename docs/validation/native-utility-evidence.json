@@ -1,0 +1,701 @@
+{
+  "date": "2026-09-12",
+  "direction": "C \u00b7 Soft forms",
+  "branch": "codex/native-utility-redesign",
+  "baselineCommit": "2547937",
+  "sourceHashes": [
+    {
+      "path": "MagicCuts/DesignSystem.swift",
+      "sha256": "9bcc1168fe09e967f67a95bc7fb15f2981fe9ff423536408a4075030b21a2dc7"
+    },
+    {
+      "path": "MagicCuts/Fieldwork/FieldCaptureViews.swift",
+      "sha256": "aaa05e4eee331c5ba48923101035b02d54faf7310f1aaa8b55abc7adfa34e481"
+    },
+    {
+      "path": "MagicCuts/Fieldwork/FieldDemo.swift",
+      "sha256": "0b5c0d2bc7d77409bc5c81e901618727a03a2735231ee61d0450ceecaa0db265"
+    },
+    {
+      "path": "MagicCuts/Fieldwork/FieldToolsView.swift",
+      "sha256": "8fcd27e8b8ffb6750aeb360897b6998db47e59528bfd181c5484d987bcc215fb"
+    },
+    {
+      "path": "MagicCuts/Fieldwork/PeerInstrumentView.swift",
+      "sha256": "f53acc11482d37e2a5b66c504eef036730bd4da2d3dfb8a605e07c757931f045"
+    },
+    {
+      "path": "MagicCuts/Fieldwork/RoomsView.swift",
+      "sha256": "e0dab34aac8a0e35237a3f0d03a9fe24edefd6504e51ec04ae7f83ab95d6401f"
+    },
+    {
+      "path": "MagicCuts/Fieldwork/SpatialInstrumentStage.swift",
+      "sha256": "2e0fc7ee399472a738f98dc173cfcc7faee08d6988affc7af9c7816f2da56abc"
+    },
+    {
+      "path": "MagicCuts/Instruments/InstrumentEngine.swift",
+      "sha256": "0eae13e496fcfc756d4310339dafe75ac9e7e232f44641dce4e70cffb5d7a9bc"
+    },
+    {
+      "path": "MagicCuts/Pro/InstrumentComponents.swift",
+      "sha256": "7ba18fea95df9a3d38a2f32f38226e8cdab247cc5685b01182e8859556c422e1"
+    },
+    {
+      "path": "MagicCuts/Pro/ProExperience.swift",
+      "sha256": "d46e220001b143e375d27c62ee169aea5f8d5eb5c1f1a2b3093715ed94d11996"
+    },
+    {
+      "path": "MagicCutsUITests/ProExperienceUITests.swift",
+      "sha256": "15aeb60ab5d645166dd7933e53babd209730cadb73a1ae25b0a1cbf5ca217a14"
+    },
+    {
+      "path": "MagicCutsUITests/RoomFieldworkUITests.swift",
+      "sha256": "3aa5c12a13e4568793ec4866e4ffa798233b4c3c85173741b01b33577e97ce6c"
+    }
+  ],
+  "captures": [
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-live-light.png",
+      "sha256": "7316a4e427d4285436e2c59fbe13f348c3b01bc9741c990ab50bf08978237d57",
+      "captureStage": "after final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-live-dark.png",
+      "sha256": "2eb5b17936c6e5130c442e1549b69cd94d5f000a72957614374b122eba003d17",
+      "captureStage": "after final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-inspect-dark.png",
+      "sha256": "659e063c537b0d6388359f923353f4211ccad76025396a67700466bc800ad35d",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-compare-dark.png",
+      "sha256": "254a3bceca44814522e08996abda455125052d5fe211a0ea274b2cd4a52c841f",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-tilt.png",
+      "sha256": "bdd135b79194dd6e1c221c778c758bc0fc0a71902f1a84f3d8f17f2113ec238b",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-vibration.png",
+      "sha256": "142c75f138f2689fd43ed3039b48552a304fa720d56fe94fceb0844c8048271b",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-rotation.png",
+      "sha256": "a8faae89a7a3f9c476b45be345c6aa45b5b69fa7293fed3b22d1000defc475a1",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-magnetic.png",
+      "sha256": "a5ef8fac450d991c558f08d4a6e596e4db2da13520de08fb6e92979c9cdf307d",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-pressure.png",
+      "sha256": "df29b17a6ab5f533bc3ca56e44032cf94ceb291fea7b77434d8e61fdd50a34df",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-altitude.png",
+      "sha256": "cb2828c52a124c9839bef0274b6ff0ec2ab3c7c2e30f8b7103aa8a9a6f35fb69",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-heading.png",
+      "sha256": "1a0aab07937fbc87059012dad6bbc3ab4fef5fb3c8159c898ef644dd4d281e60",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-speed.png",
+      "sha256": "5afb68ef9c32f086c8a0c6db16fdce7e361fb2274b4482e4e287e600184c96b5",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-sound.png",
+      "sha256": "40ef95d9a158b2e74beee5242e6f3274a68f8a4b9778d6fdef03cdf02e57fc63",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-network.png",
+      "sha256": "690d5b32cea467c857418fdeb4ab7c9754190bc2478082b2970987cb1b420278",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-battery.png",
+      "sha256": "db559a0130d3786a25fb16783a5e53b7436802cfd7eed0c6e73bc88f319c84a0",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-largest-text.png",
+      "sha256": "83323a67eb1a2cfd3e5fda4489045a7971b65ea47c441381a8f452e6cf80eea4",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-largest-reading.png",
+      "sha256": "6c2d69613627dca5e4894511aebb4487248a60cca583ce85aab9252deae289ec",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-largest-chart.png",
+      "sha256": "c41592b5086c63ba3a6aa9553e5f32b7e5c73fbd920dac474fe25fb596d7ad0b",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-largest-controls.png",
+      "sha256": "cce85b50abfcd75b52e51527da06de06dff28bfeeb0aed506b1cef4ce23181d3",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/native-camera-distance.png",
+      "sha256": "d4497a8ffbb4805aff71e589479118e74d823b04e0ae9b6ccb9fcecef24e153f",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/native-room-camera.png",
+      "sha256": "1b9af292057066f75afc625e512f9fab4c893fe627888659628aa8fcd157a5ad",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/room-mesh-dark.png",
+      "sha256": "3224da9e29a969045b5f205bdd9a2818dc6d561ba23b497e94f3959c8ba17a7c",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/room-plan-dark.png",
+      "sha256": "07041a32e19051df2eb84244b22b1359d0aa38406b78c97484072fbf18ee57f6",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/family-Depth patch.png",
+      "sha256": "7e7f2557d71d6dd2c764a8d2d0574cb7627f0f79f5f694926c8f56a3b1174f62",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/family-depth-confidence.png",
+      "sha256": "a835b787e9fb93662fd0ca46d17f5984f36b1c7ea1e6ce09f786385ebc71b450",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/family-Surface patch.png",
+      "sha256": "31833e4ba774d44c8395a84c8d6964954c10498128f828dab61329b79c56eec3",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/family-Cellular outlook.png",
+      "sha256": "fd1a30e7690e442d5468d87fa20672e22098755086b2a77776016be649543d82",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/family-Cellular history.png",
+      "sha256": "68cb89fb026f608e983944ba3c683e338b96754cf319e45661f2c21a86bd2438",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/family-Peer range.png",
+      "sha256": "ad146cf45cb144c32791d860a8e6bc36d5ce757f0d17e6ad9f5c9273c1b7dde9",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/family-At the window.png",
+      "sha256": "20963225d47de573834743ab32a2812131ca35260604e059a61f6cab6315df83",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/family-At the window-detail.png",
+      "sha256": "1c68edb3a361a427f33203fc470db50d3857b60ac2c26ebcbca588e80e07bb85",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/family-Desk tag.png",
+      "sha256": "4cea6673065e39fcf0540ee38d79b7a94ee31169d9aa2274bfd814259214e79b",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/tablet/home-light.png",
+      "sha256": "033540eee464eed8cdaf9db5bf93260fd507fe6bdc71441cc005c977893cab18",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/tablet/home-dark.png",
+      "sha256": "97c13c9c89a43a285c9879b77801c9dc56c064ed91f790d2afe93b31fff47238",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/tablet/home-largest.png",
+      "sha256": "46ce1728f8e51050667978be2c07bbe0bf7fb83102fb302996ee8466e0cd9167",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-vibration-spectrum.png",
+      "sha256": "213d261582363e77d9d6de2adc2d92e6abe132e97e0e8ddd4da9bd2ebb09c8b7",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-recording-dark.png",
+      "sha256": "dc0ccf349f55279db5332b41d669d576d6ceadf529e3d805ce631788aa0d1045",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-export.png",
+      "sha256": "e742671b46703e0b18ae9319ecac0d062010e8434df209454fe8089da7160180",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-field-reports.png",
+      "sha256": "72cf5914faf1b0cdeaffe4c985321417d947bf2d88455cf822a61921ec397948",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/phone/pro-start-flow.png",
+      "sha256": "a8aa3f85e09fbd320e3ab8e57b107d9b2db4634beb99e838e95300354502dd33",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/tablet/pro-largest-text.png",
+      "sha256": "09d29592fc0bb139b31f36cf572f1eaffea24185689d3030873bd106c1e66bb4",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/tablet/pro-largest-controls.png",
+      "sha256": "d3912efe74e5613862ccd5d3161a739426d3ef835aec87df861d482d1923671c",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/tablet/native-camera-distance.png",
+      "sha256": "02d0c4521b3e960f07b89ba8427657a3d9d5ba0c31d10e38134b489dc205d027",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/tablet/native-room-camera.png",
+      "sha256": "e4640cacc716a12bd9b861ad9a6bb4d9c49cf7e7d4edc7fc46e216cb90673e50",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/tablet/room-largest-text.png",
+      "sha256": "f7c4d8fecd4271d1e35b33e77d0091d830feb318dbe1c4a99404dcdea173767c",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/tablet/field-tool-NFC inspector.png",
+      "sha256": "2c4fb5891bd8395a641cd876631211ac9ff07a193b0b8a4f15b4e0d8d0bc0c2d",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/tablet/field-tool-Network tests.png",
+      "sha256": "5787c5cb2480e91fbb728d049976fbef89491d31c21553cfbc3973c0ea9ada4b",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/tablet/field-tool-Cellular.png",
+      "sha256": "208c934b0bc0164f5444d99e36c765ba1952cdc9b6e31eef5858ca82ecbae1cb",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/tablet/field-tool-Peer instruments.png",
+      "sha256": "a0d9b326139e00e3226ee82bb4b46c4ddfb7bd329404837b3ef687d697323e08",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/tablet/field-tool-LiDAR measurements.png",
+      "sha256": "483b2f51552d7651bcbbaf5d329a5ab0e33c6b7dddd70b5fa277bd45e3ab462d",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/tablet/field-tool-Cellular-details.png",
+      "sha256": "ea2a173b636a1e755b1fab6feacb00f39562a37e429127f2dfb8be86970e8508",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    },
+    {
+      "path": ".impeccable/review/native-utility/tablet/room-measurements-largest-text.png",
+      "sha256": "c6353283f551752c89ec17139fb1ec19f481dad7787ed22e25f1744f1fae27f3",
+      "captureStage": "native family or workflow verification before final compact Bluetooth correction"
+    }
+  ],
+  "testRuns": [
+    {
+      "name": "phone-reviewed",
+      "localResultBundle": "/tmp/magiccuts-native-utility/phone-reviewed.xcresult",
+      "summary": {
+        "devicesAndConfigurations": [
+          {
+            "device": {
+              "architecture": "arm64",
+              "deviceId": "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+              "deviceName": "MagicCuts Review iPhone",
+              "modelName": "iPhone 17 Pro",
+              "osBuildNumber": "23F77",
+              "osVersion": "26.5",
+              "platform": "iOS Simulator"
+            },
+            "expectedFailures": 0,
+            "failedTests": 1,
+            "passedTests": 5,
+            "skippedTests": 0,
+            "testPlanConfiguration": {
+              "configurationId": "1",
+              "configurationName": "Test Scheme Action"
+            }
+          }
+        ],
+        "environmentDescription": "MagicCuts \u00b7 Built with macOS 26.6.2",
+        "expectedFailures": 0,
+        "failedTests": 1,
+        "finishTime": 1789261428.479,
+        "passedTests": 5,
+        "result": "Failed",
+        "skippedTests": 0,
+        "startTime": 1789261075.029,
+        "statistics": [],
+        "testFailures": [
+          {
+            "failureText": "Failed to tap \"reports.open\" Button: No matches found for Elements matching predicate '\"reports.open\" IN identifiers' from input {(\n    Button, identifier: 'settings.open', label: 'Settings',\n    Button, identifier: 'BackButton', label: 'Sessions',\n    Button, identifier: 'instrument.start', label: 'Start measuring',\n    Button, identifier: 'instrument.log', label: 'Log',\n    Button, identifier: 'instrument.record', label: 'Record',\n    Button, identifier: 'instrument.start-flow', label: 'Start Flow',\n    Button, identifier: 'instrument.choose', label: 'Instruments', value: Bluetooth,\n    Button, identifier: 'rooms.capture', label: 'New room',\n    Button, identifier: 'instrument.device-menu', label: 'Desk sensor',\n    Button, identifier: 'instrument.mode.live', label: 'Gauges',\n    Button, identifier: 'instrument.mode.inspect', label: 'Info', Selected,\n    Button, identifier: 'instrument.mode.compare', label: 'Compare',\n    Button, label: 'Bluetooth',\n    Button, label: 'Room',\n    Button,\n    Button, identifier: 'session.export', label: 'Export session'\n)}\nPossibly caused by runtime issues:\nAutomation type mismatch: computed Button from legacy attributes vs PopUpButton from modern attribute. Input attributes and values: {\n    \"XC_kAXXCAttributeAutomationType\" = 14;\n    \"XC_kAXXCAttributeElementBaseType\" = UIResponder;\n    \"XC_kAXXCAttributeElementType\" = \"SwiftUI.AccessibilityNode\";\n    \"XC_kAXXCAttributeTraits\" = 1108101562369;\n}\nSee test report attachments for more detail.",
+            "targetName": "MagicCutsUITests",
+            "testIdentifier": 1,
+            "testIdentifierString": "ProExperienceUITests/testBaselineInspectRecordExportAndFieldReport()",
+            "testIdentifierURL": "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testBaselineInspectRecordExportAndFieldReport",
+            "testName": "testBaselineInspectRecordExportAndFieldReport()"
+          }
+        ],
+        "title": "Test - MagicCuts",
+        "topInsights": [],
+        "totalTestCount": 6
+      }
+    },
+    {
+      "name": "phone-completion",
+      "localResultBundle": "/tmp/magiccuts-native-utility/phone-completion.xcresult",
+      "summary": {
+        "devicesAndConfigurations": [
+          {
+            "device": {
+              "architecture": "arm64",
+              "deviceId": "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+              "deviceName": "MagicCuts Review iPhone",
+              "modelName": "iPhone 17 Pro",
+              "osBuildNumber": "23F77",
+              "osVersion": "26.5",
+              "platform": "iOS Simulator"
+            },
+            "expectedFailures": 0,
+            "failedTests": 0,
+            "passedTests": 3,
+            "skippedTests": 0,
+            "testPlanConfiguration": {
+              "configurationId": "1",
+              "configurationName": "Test Scheme Action"
+            }
+          }
+        ],
+        "environmentDescription": "MagicCuts \u00b7 Built with macOS 26.6.2",
+        "expectedFailures": 0,
+        "failedTests": 0,
+        "finishTime": 1789261610.19,
+        "passedTests": 3,
+        "result": "Passed",
+        "skippedTests": 0,
+        "startTime": 1789261531.669,
+        "statistics": [],
+        "testFailures": [],
+        "title": "Test - MagicCuts",
+        "topInsights": [],
+        "totalTestCount": 3
+      }
+    },
+    {
+      "name": "phone-finish",
+      "localResultBundle": "/tmp/magiccuts-native-utility/phone-finish.xcresult",
+      "summary": {
+        "devicesAndConfigurations": [
+          {
+            "device": {
+              "architecture": "arm64",
+              "deviceId": "5CD82575-3A5C-4D70-954C-71B20D58DB72",
+              "deviceName": "MagicCuts Review iPhone",
+              "modelName": "iPhone 17 Pro",
+              "osBuildNumber": "23F77",
+              "osVersion": "26.5",
+              "platform": "iOS Simulator"
+            },
+            "expectedFailures": 0,
+            "failedTests": 0,
+            "passedTests": 103,
+            "skippedTests": 0,
+            "testPlanConfiguration": {
+              "configurationId": "1",
+              "configurationName": "Test Scheme Action"
+            }
+          }
+        ],
+        "environmentDescription": "MagicCuts \u00b7 Built with macOS 26.6.2",
+        "expectedFailures": 0,
+        "failedTests": 0,
+        "finishTime": 1789262452.6,
+        "passedTests": 89,
+        "result": "Passed",
+        "skippedTests": 0,
+        "startTime": 1789262389.561,
+        "statistics": [
+          {
+            "subtitle": "21 test runs",
+            "title": "7 tests ran with dynamic parameters"
+          }
+        ],
+        "testFailures": [],
+        "title": "Test - MagicCuts",
+        "topInsights": [
+          {
+            "category": "Longest Test Runs",
+            "impact": "76% of duration",
+            "text": "2 longest test runs with outlier durations exceeding 5.35s (three standard deviations)"
+          }
+        ],
+        "totalTestCount": 89
+      }
+    },
+    {
+      "name": "tablet-reviewed",
+      "localResultBundle": "/tmp/magiccuts-native-utility/tablet-reviewed.xcresult",
+      "summary": {
+        "devicesAndConfigurations": [
+          {
+            "device": {
+              "architecture": "arm64",
+              "deviceId": "EEF203AE-DF4A-4C0B-B6AD-DFE8F4C3E62C",
+              "deviceName": "MagicCuts Review iPad",
+              "modelName": "iPad Air 11-inch (M3)",
+              "osBuildNumber": "23F77",
+              "osVersion": "26.5",
+              "platform": "iOS Simulator"
+            },
+            "expectedFailures": 0,
+            "failedTests": 3,
+            "passedTests": 1,
+            "skippedTests": 0,
+            "testPlanConfiguration": {
+              "configurationId": "1",
+              "configurationName": "Test Scheme Action"
+            }
+          }
+        ],
+        "environmentDescription": "MagicCuts \u00b7 Built with macOS 26.6.2",
+        "expectedFailures": 0,
+        "failedTests": 3,
+        "finishTime": 1789261790.735,
+        "passedTests": 1,
+        "result": "Failed",
+        "skippedTests": 0,
+        "startTime": 1789261658.361,
+        "statistics": [],
+        "testFailures": [
+          {
+            "failureText": "XCTAssertTrue failed - Query chain:\n \u2192Find: Target Application 'com.bradZellman.MagicCuts'\n  \u21aa\ufe0eFind: Descendants matching type Button\n    \u21aa\ufe0eFind: Elements matching predicate '\"instruments.field-tools\" IN identifiers'\nNo matches found for Elements matching predicate '\"instruments.field-tools\" IN identifiers' from input {(\n    Button, {{758.0, 36.0}, {48.0, 36.0}}, identifier: 'settings.open', label: 'Settings',\n    Button, {{66.0, 1058.0}, {339.0, 52.0}}, identifier: 'instrument.log', label: 'Log',\n    Button, {{415.0, 1058.0}, {339.0, 52.0}}, identifier: 'instrument.record', label: 'Record',\n    Button, {{66.0, 1114.0}, {688.0, 44.0}}, identifier: 'instrument.start-flow', label: 'Start Flow',\n    Button, {{28.0, 94.0}, {382.0, 44.0}}, identifier: 'instrument.choose', label: 'Instruments', value: Bluetooth,\n    Button, {{410.5, 94.0}, {381.5, 44.0}}, identifier: 'rooms.capture', label: 'New room',\n    Button, {{28.0, 138.5}, {764.0, 44.0}}, identifier: 'instrument.device-menu', label: 'Desk sensor',\n    Button, {{28.0, 190.5}, {254.5, 44.0}}, identifier: 'instrument.mode.live', label: 'Gauges', Selected,\n    Button, {{282.5, 190.5}, {255.0, 44.0}}, identifier: 'instrument.mode.inspect', label: 'Info',\n    Button, {{537.5, 190.5}, {254.5, 44.0}}, identifier: 'instrument.mode.compare', label: 'Compare',\n    Button, {{28.0, 520.5}, {372.0, 50.0}}, identifier: 'instrument.baseline', label: 'Baseline, Choose',\n    Button, {{28.0, 582.5}, {372.0, 44.0}}, label: 'Calibrate nearby and away',\n    Button, {{620.0, 274.0}, {66.0, 36.0}}, label: 'Done',\n    Button, {{28.0, 94.0}, {382.0, 44.0}}, label: 'Bluetooth',\n    Button, {{410.5, 94.0}, {381.5, 44.0}}, label: 'Room',\n    Button, {{28.0, 138.5}, {764.0, 44.0}},\n    Button, {{28.0, 520.5}, {372.0, 50.0}},\n    Button, {{140.0, 468.5}, {540.0, 52.0}}, label: 'Restore purchases',\n    Button, {{140.0, 688.0}, {540.0, 52.0}}, identifier: 'icloud.setups', label: 'Bluetooth setups from iCloud'\n)}\n",
+            "targetName": "MagicCutsUITests",
+            "testIdentifier": 2,
+            "testIdentifierString": "RoomFieldworkUITests/testCameraToolsOpenWithoutAnExtraStartStep()",
+            "testIdentifierURL": "test://com.apple.xcode/MagicCuts/MagicCutsUITests/RoomFieldworkUITests/testCameraToolsOpenWithoutAnExtraStartStep",
+            "testName": "testCameraToolsOpenWithoutAnExtraStartStep()"
+          },
+          {
+            "failureText": "XCTAssertTrue failed - Query chain:\n \u2192Find: Target Application 'com.bradZellman.MagicCuts'\n  \u21aa\ufe0eFind: Descendants matching type Button\n    \u21aa\ufe0eFind: Elements matching predicate '\"instruments.field-tools\" IN identifiers'\nNo matches found for Elements matching predicate '\"instruments.field-tools\" IN identifiers' from input {(\n    Button, {{758.0, 36.0}, {48.0, 36.0}}, identifier: 'settings.open', label: 'Settings',\n    Button, {{66.0, 1058.0}, {339.0, 52.0}}, identifier: 'instrument.log', label: 'Log',\n    Button, {{415.0, 1058.0}, {339.0, 52.0}}, identifier: 'instrument.record', label: 'Record',\n    Button, {{66.0, 1114.0}, {688.0, 44.0}}, identifier: 'instrument.start-flow', label: 'Start Flow',\n    Button, {{28.0, 94.0}, {382.0, 44.0}}, identifier: 'instrument.choose', label: 'Instruments', value: Bluetooth,\n    Button, {{410.5, 94.0}, {381.5, 44.0}}, identifier: 'rooms.capture', label: 'New room',\n    Button, {{28.0, 138.5}, {764.0, 44.0}}, identifier: 'instrument.device-menu', label: 'Desk sensor',\n    Button, {{28.0, 190.5}, {254.5, 44.0}}, identifier: 'instrument.mode.live', label: 'Gauges', Selected,\n    Button, {{282.5, 190.5}, {255.0, 44.0}}, identifier: 'instrument.mode.inspect', label: 'Info',\n    Button, {{537.5, 190.5}, {254.5, 44.0}}, identifier: 'instrument.mode.compare', label: 'Compare',\n    Button, {{28.0, 520.5}, {372.0, 50.0}}, identifier: 'instrument.baseline', label: 'Baseline, Choose',\n    Button, {{28.0, 582.5}, {372.0, 44.0}}, label: 'Calibrate nearby and away',\n    Button, {{620.0, 274.0}, {66.0, 36.0}}, label: 'Done',\n    Button, {{28.0, 94.0}, {382.0, 44.0}}, label: 'Bluetooth',\n    Button, {{410.5, 94.0}, {381.5, 44.0}}, label: 'Room',\n    Button, {{28.0, 138.5}, {764.0, 44.0}},\n    Button, {{28.0, 520.5}, {372.0, 50.0}},\n    Button, {{140.0, 468.5}, {540.0, 52.0}}, label: 'Restore purchases',\n    Button, {{140.0, 688.0}, {540.0, 52.0}}, identifier: 'icloud.setups', label: 'Bluetooth setups from iCloud'\n)}\n",
+            "targetName": "MagicCutsUITests",
+            "testIdentifier": 3,
+            "testIdentifierString": "RoomFieldworkUITests/testFieldToolsReadyStatesAndNativeControls()",
+            "testIdentifierURL": "test://com.apple.xcode/MagicCuts/MagicCutsUITests/RoomFieldworkUITests/testFieldToolsReadyStatesAndNativeControls",
+            "testName": "testFieldToolsReadyStatesAndNativeControls()"
+          },
+          {
+            "failureText": "XCTAssertTrue failed - Query chain:\n \u2192Find: Target Application 'com.bradZellman.MagicCuts'\n  \u21aa\ufe0eFind: Descendants matching type Button\n    \u21aa\ufe0eFind: Elements matching predicate '\"settings.rooms\" IN identifiers'\nNo matches found for Elements matching predicate '\"settings.rooms\" IN identifiers' from input {(\n    Button, {{758.0, 36.0}, {48.0, 36.0}}, identifier: 'settings.open', label: 'Settings',\n    Button, {{28.0, 94.0}, {764.0, 79.5}}, identifier: 'instrument.choose', label: 'Instruments', value: Bluetooth,\n    Button, {{28.0, 173.5}, {764.0, 71.5}}, identifier: 'rooms.capture', label: 'New room',\n    Button, {{28.0, 246.0}, {764.0, 71.5}}, identifier: 'instrument.device-menu', label: 'Desk sensor',\n    Button, {{28.0, 325.5}, {764.0, 63.5}}, identifier: 'instrument.mode-menu', label: 'View mode', value: Gauges,\n    Button, {{28.0, 1272.5}, {764.0, 71.5}}, identifier: 'instrument.baseline', label: 'Baseline, Choose',\n    Button, {{28.0, 1352.0}, {764.0, 61.0}}, label: 'Calibrate nearby and away',\n    Button, {{66.0, 1429.0}, {688.0, 91.5}}, identifier: 'instrument.log', label: 'Log',\n    Button, {{66.0, 1530.5}, {688.0, 89.0}}, identifier: 'instrument.record', label: 'Record',\n    Button, {{66.0, 1623.5}, {688.0, 61.0}}, identifier: 'instrument.start-flow', label: 'Start Flow',\n    Button, {{611.5, 274.0}, {74.5, 36.0}}, label: 'Done',\n    Button, {{28.0, 94.0}, {764.0, 79.5}}, label: 'Bluetooth',\n    Button, {{28.0, 173.5}, {764.0, 71.5}}, label: 'Room',\n    Button, {{28.0, 246.0}, {764.0, 71.5}},\n    Button, {{28.0, 325.5}, {764.0, 63.5}},\n    Button, {{28.0, 1272.5}, {764.0, 71.5}},\n    Button, {{140.0, 636.0}, {540.0, 93.5}}, label: 'Restore purchases'\n)}\n",
+            "targetName": "MagicCutsUITests",
+            "testIdentifier": 4,
+            "testIdentifierString": "RoomFieldworkUITests/testLargestRoomTextAndNativeControls()",
+            "testIdentifierURL": "test://com.apple.xcode/MagicCuts/MagicCutsUITests/RoomFieldworkUITests/testLargestRoomTextAndNativeControls",
+            "testName": "testLargestRoomTextAndNativeControls()"
+          }
+        ],
+        "title": "Test - MagicCuts",
+        "topInsights": [
+          {
+            "category": "Common Failures",
+            "impact": "66% of failures",
+            "text": "2 runs of 2 tests failed with XCTAssertTrue failed - Query chain:"
+          }
+        ],
+        "totalTestCount": 4
+      }
+    },
+    {
+      "name": "tablet-completion",
+      "localResultBundle": "/tmp/magiccuts-native-utility/tablet-completion.xcresult",
+      "summary": {
+        "devicesAndConfigurations": [
+          {
+            "device": {
+              "architecture": "arm64",
+              "deviceId": "EEF203AE-DF4A-4C0B-B6AD-DFE8F4C3E62C",
+              "deviceName": "MagicCuts Review iPad",
+              "modelName": "iPad Air 11-inch (M3)",
+              "osBuildNumber": "23F77",
+              "osVersion": "26.5",
+              "platform": "iOS Simulator"
+            },
+            "expectedFailures": 0,
+            "failedTests": 2,
+            "passedTests": 1,
+            "skippedTests": 0,
+            "testPlanConfiguration": {
+              "configurationId": "1",
+              "configurationName": "Test Scheme Action"
+            }
+          }
+        ],
+        "environmentDescription": "MagicCuts \u00b7 Built with macOS 26.6.2",
+        "expectedFailures": 0,
+        "failedTests": 2,
+        "finishTime": 1789262090.265,
+        "passedTests": 1,
+        "result": "Failed",
+        "skippedTests": 0,
+        "startTime": 1789261995.615,
+        "statistics": [],
+        "testFailures": [
+          {
+            "failureText": "Contrast failed",
+            "targetName": "MagicCutsUITests",
+            "testIdentifier": 2,
+            "testIdentifierString": "RoomFieldworkUITests/testFieldToolsReadyStatesAndNativeControls()",
+            "testIdentifierURL": "test://com.apple.xcode/MagicCuts/MagicCutsUITests/RoomFieldworkUITests/testFieldToolsReadyStatesAndNativeControls",
+            "testName": "testFieldToolsReadyStatesAndNativeControls()"
+          },
+          {
+            "failureText": "Contrast failed",
+            "targetName": "MagicCutsUITests",
+            "testIdentifier": 3,
+            "testIdentifierString": "RoomFieldworkUITests/testLargestRoomTextAndNativeControls()",
+            "testIdentifierURL": "test://com.apple.xcode/MagicCuts/MagicCutsUITests/RoomFieldworkUITests/testLargestRoomTextAndNativeControls",
+            "testName": "testLargestRoomTextAndNativeControls()"
+          }
+        ],
+        "title": "Test - MagicCuts",
+        "topInsights": [
+          {
+            "category": "Common Failures",
+            "impact": "100% of failures",
+            "text": "2 runs of 2 tests failed with Contrast failed"
+          }
+        ],
+        "totalTestCount": 3
+      }
+    },
+    {
+      "name": "tablet-a11y-completion",
+      "localResultBundle": "/tmp/magiccuts-native-utility/tablet-a11y-completion.xcresult",
+      "summary": {
+        "devicesAndConfigurations": [
+          {
+            "device": {
+              "architecture": "arm64",
+              "deviceId": "EEF203AE-DF4A-4C0B-B6AD-DFE8F4C3E62C",
+              "deviceName": "MagicCuts Review iPad",
+              "modelName": "iPad Air 11-inch (M3)",
+              "osBuildNumber": "23F77",
+              "osVersion": "26.5",
+              "platform": "iOS Simulator"
+            },
+            "expectedFailures": 0,
+            "failedTests": 0,
+            "passedTests": 2,
+            "skippedTests": 0,
+            "testPlanConfiguration": {
+              "configurationId": "1",
+              "configurationName": "Test Scheme Action"
+            }
+          }
+        ],
+        "environmentDescription": "MagicCuts \u00b7 Built with macOS 26.6.2",
+        "expectedFailures": 0,
+        "failedTests": 0,
+        "finishTime": 1789262311.323,
+        "passedTests": 2,
+        "result": "Passed",
+        "skippedTests": 0,
+        "startTime": 1789262243.63,
+        "statistics": [],
+        "testFailures": [],
+        "title": "Test - MagicCuts",
+        "topInsights": [],
+        "totalTestCount": 2
+      }
+    },
+    {
+      "name": "storekit-validation",
+      "localResultBundle": "/tmp/magiccuts-native-utility/storekit-validation.xcresult",
+      "summary": {
+        "devicesAndConfigurations": [
+          {
+            "device": {
+              "architecture": "arm64",
+              "deviceId": "EEF203AE-DF4A-4C0B-B6AD-DFE8F4C3E62C",
+              "deviceName": "MagicCuts Review iPad",
+              "modelName": "iPad Air 11-inch (M3)",
+              "osBuildNumber": "23F77",
+              "osVersion": "26.5",
+              "platform": "iOS Simulator"
+            },
+            "expectedFailures": 0,
+            "failedTests": 1,
+            "passedTests": 0,
+            "skippedTests": 0,
+            "testPlanConfiguration": {
+              "configurationId": "1",
+              "configurationName": "Test Scheme Action"
+            }
+          }
+        ],
+        "environmentDescription": "MagicCuts StoreKit Tests \u00b7 Built with macOS 26.6.2",
+        "expectedFailures": 0,
+        "failedTests": 1,
+        "finishTime": 1789260301.232,
+        "passedTests": 0,
+        "result": "Failed",
+        "skippedTests": 0,
+        "startTime": 1789260286.184,
+        "statistics": [],
+        "testFailures": [
+          {
+            "failureText": "failed - StoreKit Test could not configure its local environment. Stop before purchase; run the StoreKit scheme in a working Xcode test session.",
+            "targetName": "MagicCutsTests",
+            "testIdentifier": 1,
+            "testIdentifierString": "ProPurchaseTests/testPurchaseRestoreRefundAndPendingApprovalUseVerifiedEntitlements()",
+            "testIdentifierURL": "test://com.apple.xcode/MagicCuts/MagicCutsTests/ProPurchaseTests/testPurchaseRestoreRefundAndPendingApprovalUseVerifiedEntitlements",
+            "testName": "testPurchaseRestoreRefundAndPendingApprovalUseVerifiedEntitlements()"
+          }
+        ],
+        "title": "Test - MagicCuts StoreKit Tests",
+        "topInsights": [],
+        "totalTestCount": 1
+      }
+    }
+  ],
+  "review": {
+    "report": ".impeccable/review/native-utility/finish-review.md",
+    "verdict": ".impeccable/review/native-utility/finish-verdict.md",
+    "disposition": "ship",
+    "scope": "Scored first-viewport correction resolved; no introduced regressions",
+    "substitution": "Fresh independent default agent followed shipped finish-reviewer fallback because registered role was unavailable"
+  },
+  "fidelity": {
+    "report": ".impeccable/review/diff/final/report.json",
+    "score": 0.77,
+    "automatedGatePassed": false,
+    "nativeAdaptationsReviewed": true
+  },
+  "limits": [
+    "Physical LiDAR and camera correctness not established by simulator captures",
+    "StoreKit 26.5 local test environment failed before purchase; commerce source unchanged",
+    "No production or storefront release acceptance"
+  ]
+}

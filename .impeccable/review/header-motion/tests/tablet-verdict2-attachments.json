@@ -1,0 +1,128 @@
+[
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "EEF203AE-DF4A-4C0B-B6AD-DFE8F4C3E62C",
+        "deviceName" : "MagicCuts Review iPad",
+        "exportedFileName" : "526D9558-71C8-4D7F-8853-EFC39E5327B1.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "pro-live-dark_0_AA561E20-01A2-4352-995B-D139CE812794.png",
+        "timestamp" : 1789273172.876
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "EEF203AE-DF4A-4C0B-B6AD-DFE8F4C3E62C",
+        "deviceName" : "MagicCuts Review iPad",
+        "exportedFileName" : "A9E91BEB-D08E-4657-86FD-1A5349C3B0F0.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "pro-live-light_0_7405A7FE-CEEE-4567-9BF2-BC52E7519AD6.png",
+        "timestamp" : 1789273163.284
+      }
+    ],
+    "testIdentifier" : "ProExperienceUITests/testHomeAccessibility()",
+    "testIdentifierURL" : "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testHomeAccessibility"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "EEF203AE-DF4A-4C0B-B6AD-DFE8F4C3E62C",
+        "deviceName" : "MagicCuts Review iPad",
+        "exportedFileName" : "6D9BCA42-DB62-4668-90B4-260965C1796B.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "pro-largest-controls_0_65A93FE5-DCAC-4B11-96F5-5378C6A5BC43.png",
+        "timestamp" : 1789273200.237
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "EEF203AE-DF4A-4C0B-B6AD-DFE8F4C3E62C",
+        "deviceName" : "MagicCuts Review iPad",
+        "exportedFileName" : "BDC86FD7-0AEB-4B5C-B97E-8BB4E0F2F2B9.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "pro-largest-text_0_F2C8AFA3-A142-475F-91F0-E90E545AC917.png",
+        "timestamp" : 1789273182.583
+      }
+    ],
+    "testIdentifier" : "ProExperienceUITests/testLargestTextAndControlsReflow()",
+    "testIdentifierURL" : "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testLargestTextAndControlsReflow"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "EEF203AE-DF4A-4C0B-B6AD-DFE8F4C3E62C",
+        "deviceName" : "MagicCuts Review iPad",
+        "exportedFileName" : "3D249B2E-325F-4430-83E9-1827E86A910E.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-restored-dark_0_680FEEDE-99D0-4ED9-B8D5-5E6FC546A708.png",
+        "timestamp" : 1789273274.914
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "EEF203AE-DF4A-4C0B-B6AD-DFE8F4C3E62C",
+        "deviceName" : "MagicCuts Review iPad",
+        "exportedFileName" : "03FBE5CC-0B24-4483-8CAD-3D4D2EF603BC.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-long-title-dark_0_96D0DBAD-D0DD-42C4-9375-42D6DB696661.png",
+        "timestamp" : 1789273273.021
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "EEF203AE-DF4A-4C0B-B6AD-DFE8F4C3E62C",
+        "deviceName" : "MagicCuts Review iPad",
+        "exportedFileName" : "D8F35BE5-8100-422D-B237-8B1905D8DE37.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-compact-dark_0_2D43FFF7-E381-485E-AAA0-ABEAD0A32DB3.png",
+        "timestamp" : 1789273252.252
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "EEF203AE-DF4A-4C0B-B6AD-DFE8F4C3E62C",
+        "deviceName" : "MagicCuts Review iPad",
+        "exportedFileName" : "CE44B93C-80ED-4CD4-B3E0-7DC967773076.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-expanded-dark_0_AAD378AC-449E-47E9-999D-B2295B30D6A7.png",
+        "timestamp" : 1789273249.612
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "EEF203AE-DF4A-4C0B-B6AD-DFE8F4C3E62C",
+        "deviceName" : "MagicCuts Review iPad",
+        "exportedFileName" : "3AB39A80-F23B-4744-BA53-6D72B81AEB5D.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-restored-light_0_E9B72D6D-7C68-4CEE-A2E1-BDF30FC8B7B3.png",
+        "timestamp" : 1789273233.319
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "EEF203AE-DF4A-4C0B-B6AD-DFE8F4C3E62C",
+        "deviceName" : "MagicCuts Review iPad",
+        "exportedFileName" : "7D230488-90D9-4939-82C6-A2CB02DB1A8F.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-long-title-light_0_A8C516F1-62C1-4DA0-8040-5AEA6BF1FB3D.png",
+        "timestamp" : 1789273231.421
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "EEF203AE-DF4A-4C0B-B6AD-DFE8F4C3E62C",
+        "deviceName" : "MagicCuts Review iPad",
+        "exportedFileName" : "0190E161-20F4-4D42-B86B-15BC820D9878.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-compact-light_0_F76F6097-6FA1-43D1-AA40-307C2DDA0097.png",
+        "timestamp" : 1789273210.983
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "EEF203AE-DF4A-4C0B-B6AD-DFE8F4C3E62C",
+        "deviceName" : "MagicCuts Review iPad",
+        "exportedFileName" : "0B60E7AC-4C37-497E-A0F8-3F9E42B0185F.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-expanded-light_0_C84ABDF5-B6E1-4983-8D57-C2BCF64C8BF4.png",
+        "timestamp" : 1789273208.292
+      }
+    ],
+    "testIdentifier" : "ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation()",
+    "testIdentifierURL" : "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testSourceHeaderFoldsOnScrollWithoutLosingNavigation"
+  }
+]

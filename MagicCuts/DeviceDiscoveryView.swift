@@ -41,7 +41,7 @@ struct DeviceDiscoveryView: View {
                 }
                 if interrupted { InlineFailure(message: "Scan paused. Tap Start scanning when you’re ready.") }
                 if bluetoothViewModel.devices.isEmpty {
-                    ContentUnavailableView(bluetoothViewModel.isScanning ? "Listening for devices" : "Ready to find your device", systemImage: "wave.3.right", description: Text("Wake your device and keep it close. Some Bluetooth devices do not advertise."))
+                    ContentUnavailableView(bluetoothViewModel.isScanning ? "Listening for devices" : "Wake a nearby device", systemImage: "wave.3.right", description: Text("Keep it close. Some Bluetooth devices do not advertise."))
                 } else if results.isEmpty {
                     ContentUnavailableView.search(text: search)
                 }
@@ -55,7 +55,43 @@ struct DeviceDiscoveryView: View {
         }
         .background(MC.canvas).navigationTitle("Find a device").navigationBarTitleDisplayMode(.inline)
         .searchable(text: $search, placement: .navigationBarDrawer(displayMode: .always), prompt: "Name or identifier")
-        .safeAreaInset(edge: .bottom, content: actionBar)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                if bluetoothViewModel.isScanning {
+                    Button("Stop") { bluetoothViewModel.stopScanning() }
+                        .accessibilityIdentifier("discovery.stop")
+                } else {
+                    Button("Start scanning") { interrupted = false; bluetoothViewModel.startScanning() }
+                        .accessibilityIdentifier("discovery.start")
+                }
+            }
+        }
+        .safeAreaInset(edge: .bottom) {
+            if bluetoothViewModel.isScanning || onDone != nil {
+                VStack(spacing: 12) {
+                    if bluetoothViewModel.isScanning {
+                        HStack(spacing: 10) {
+                            ProgressView()
+                            Text(bluetoothViewModel.status)
+                        }
+                        .font(.callout)
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                        .accessibilityElement(children: .combine)
+                    }
+                    if let onDone {
+                        Button("Done", action: onDone)
+                            .buttonStyle(ControlStyle(primary: false))
+                            .frame(maxWidth: .infinity)
+                            .accessibilityIdentifier("discovery.done")
+                    }
+                }
+                .padding(.horizontal, MC.inset)
+                .padding(.vertical, 8)
+                .frame(maxWidth: 640)
+                .frame(maxWidth: .infinity)
+                .background(.bar)
+            }
+        }
         .onAppear { if onDone != nil { claimsDoneBar?.wrappedValue = true } }
         .navigationDestination(item: $added) { device in DeviceDetailView(device: device, radio: bluetoothViewModel.radio) }
         .onDisappear {
@@ -82,47 +118,6 @@ struct DeviceDiscoveryView: View {
                 bluetoothViewModel.stopScanning()
                 interrupted = true
             }
-        }
-    }
-
-    private func actionBar() -> some View {
-        let stacked = dynamicType.isAccessibilitySize
-        let layout = stacked ? AnyLayout(VStackLayout(spacing: 12)) : AnyLayout(HStackLayout(spacing: 12))
-        return VStack(spacing: 12) {
-            if bluetoothViewModel.isScanning {
-                HStack(spacing: 8) {
-                    ProgressView()
-                    Text(bluetoothViewModel.status)
-                }
-                .font(.callout)
-                .frame(maxWidth: .infinity)
-                .accessibilityElement(children: .combine)
-            }
-            layout {
-                scanButton.frame(maxWidth: .infinity)
-                if let onDone {
-                    Button("Done", action: onDone)
-                        .buttonStyle(ControlStyle(primary: false))
-                        .frame(maxWidth: .infinity)
-                        .accessibilityIdentifier("discovery.done")
-                }
-            }
-        }
-        .padding(MC.inset)
-        .frame(maxWidth: 640)
-        .frame(maxWidth: .infinity)
-        .background(.bar)
-    }
-
-    @ViewBuilder private var scanButton: some View {
-        if bluetoothViewModel.isScanning {
-            Button("Stop") { bluetoothViewModel.stopScanning() }
-                .buttonStyle(ControlStyle(primary: false))
-                .accessibilityIdentifier("discovery.stop")
-        } else {
-            Button("Start scanning") { interrupted = false; bluetoothViewModel.startScanning() }
-                .buttonStyle(ControlStyle())
-                .accessibilityIdentifier("discovery.start")
         }
     }
 

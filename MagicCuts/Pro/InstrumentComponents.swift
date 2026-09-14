@@ -107,25 +107,27 @@ struct InstrumentSegments: View {
                     Text(selection.title).font(.system(.headline, design: .rounded))
                     Spacer()
                     Image(systemName: "chevron.up.chevron.down").font(.body)
-                }.padding(.horizontal, 14).frame(maxWidth: .infinity, minHeight: 46)
-                    .background(.primary.opacity(0.055), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                }.padding(.horizontal, 14).frame(maxWidth: .infinity, minHeight: 44)
+                    .background(.primary.opacity(0.055), in: RoundedRectangle(cornerRadius: 26, style: .continuous))
             }
             .accessibilityLabel("View mode")
             .accessibilityValue(selection.title)
             .accessibilityIdentifier("instrument.mode-menu")
         } else {
-            HStack(spacing: 3) {
+            HStack(spacing: 0) {
                 ForEach(InstrumentViewMode.allCases) { mode in
                     Button { selection = mode } label: {
                         Text(mode.title)
                             .font(.system(.subheadline, design: .rounded).weight(.semibold))
-                            .frame(maxWidth: .infinity, minHeight: 46)
+                            .frame(maxWidth: .infinity, minHeight: 44)
                             .contentShape(Rectangle())
-                            .foregroundStyle(selection == mode ? Color.white : ProTheme.secondary)
+                            .foregroundStyle(selection == mode ? Color.primary : ProTheme.secondary)
                             .background {
                                 if selection == mode {
-                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(MC.action)
+                                    Capsule().fill(ProTheme.face)
+                                        .shadow(color: .black.opacity(0.10), radius: 2, x: 0, y: 1)
                                         .matchedGeometryEffect(id: "selection", in: highlight)
+                                        .padding(3)
                                 }
                             }
                     }
@@ -134,8 +136,7 @@ struct InstrumentSegments: View {
                     .accessibilityIdentifier("instrument.mode.\(mode.id.lowercased())")
                 }
             }
-            .padding(4)
-            .background(.primary.opacity(0.055), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .background(.primary.opacity(0.055), in: RoundedRectangle(cornerRadius: 26, style: .continuous))
             .animation(reduceMotion ? nil : .snappy(duration: 0.2), value: selection)
             .sensoryFeedback(.selection, trigger: selection)
         }
@@ -195,65 +196,56 @@ struct InstrumentArc: View {
     var threshold: Double?
     @Environment(\.colorScheme) private var scheme
     @Environment(\.horizontalSizeClass) private var sizeClass
-    @ScaledMetric(relativeTo: .caption2) private var tickSize = 10
+    @ScaledMetric(relativeTo: .caption2) private var tickSize = 11
 
     var body: some View {
         Canvas { context, size in
-            let radius = min(size.width / 2 - 32, size.height * 0.46)
-            let center = CGPoint(x: size.width / 2, y: radius + 22)
+            let span = range.upperBound - range.lowerBound
+            guard span > 0 else { return }
+            // Only the upper 140 degrees are visible; fitting a full circle here
+            // would shrink the arc away from the panel's edges.
+            let radius = min(size.width / 2 - 34, (size.height - 35) / (1 - sin(.pi / 9)))
+            let center = CGPoint(x: size.width / 2, y: radius + 35)
             func angle(_ value: Double) -> Double {
-                150 + min(1, max(0, (value - range.lowerBound) / (range.upperBound - range.lowerBound))) * 240
+                200 + min(1, max(0, (value - range.lowerBound) / span)) * 140
             }
             func point(_ degrees: Double, radius: Double) -> CGPoint {
-                CGPoint(x: center.x + cos(degrees * .pi / 180) * radius, y: center.y + sin(degrees * .pi / 180) * radius)
+                CGPoint(x: center.x + cos(degrees * .pi / 180) * radius,
+                        y: center.y + sin(degrees * .pi / 180) * radius)
             }
-            let tickColor = scheme == .dark ? Color.white.opacity(0.5) : Color.black.opacity(0.34)
-            var rail = Path()
-            rail.addArc(center: center, radius: radius, startAngle: .degrees(150), endAngle: .degrees(390), clockwise: false)
-            context.stroke(rail, with: .color(tickColor.opacity(0.35)), style: StrokeStyle(lineWidth: 1.2, lineCap: .round))
-            for index in 0 ... 48 {
-                let degrees = 150 + Double(index) / 48 * 240
-                let major = index % 8 == 0
-                var path = Path()
-                path.move(to: point(degrees, radius: radius - (major ? 11 : 5)))
-                path.addLine(to: point(degrees, radius: radius))
-                context.stroke(path, with: .color(tickColor), lineWidth: major ? 1.25 : 0.6)
-                if major {
-                    let label = range.lowerBound + Double(index) / 48 * (range.upperBound - range.lowerBound)
-                    context.draw(
-                        Text(MeasurementMath.scaleLabel(label, range: range))
-                            .font(.system(size: min(tickSize, 13), design: .rounded).weight(.medium))
-                            .monospacedDigit()
-                            .foregroundStyle(ProTheme.secondary),
-                        at: point(degrees, radius: radius + 13)
-                    )
-                }
+            func arc(_ lower: Double, _ upper: Double) -> Path {
+                Path { $0.addArc(center: center, radius: radius, startAngle: .degrees(angle(lower)),
+                                endAngle: .degrees(angle(upper)), clockwise: false) }
             }
-            if let band {
-                var arc = Path()
-                arc.addArc(center: center, radius: radius, startAngle: .degrees(angle(band.lowerBound)), endAngle: .degrees(angle(band.upperBound)), clockwise: false)
-                context.stroke(arc, with: .color(ProTheme.band), style: StrokeStyle(lineWidth: 3, lineCap: .butt))
-            }
+            let railColor = scheme == .dark ? Color.white.opacity(0.18) : Color(red: 0.82, green: 0.84, blue: 0.86)
+            context.stroke(arc(range.lowerBound, range.upperBound), with: .color(railColor),
+                           style: StrokeStyle(lineWidth: 7, lineCap: .butt))
             if let threshold, range.contains(threshold) {
-                var marker = Path()
-                marker.move(to: point(angle(threshold), radius: radius - 16))
-                marker.addLine(to: point(angle(threshold), radius: radius + 3))
-                context.stroke(marker, with: .color(scheme == .dark ? .white : .black), lineWidth: 1.25)
+                // The colored segment denotes the configured threshold, never a decorative score.
+                context.stroke(arc(threshold, range.upperBound), with: .color(ProTheme.band), lineWidth: 7)
+            } else if let band {
+                context.stroke(arc(band.lowerBound, band.upperBound), with: .color(ProTheme.band), lineWidth: 7)
+            }
+            for index in 0 ... 6 {
+                let value = range.lowerBound + Double(index) / 6 * span
+                let degrees = angle(value)
+                var tick = Path()
+                tick.move(to: point(degrees, radius: radius - 5))
+                tick.addLine(to: point(degrees, radius: radius + 10))
+                context.stroke(tick, with: .color(railColor), lineWidth: 1)
+                context.draw(Text(MeasurementMath.scaleLabel(value, range: range))
+                    .font(.system(size: min(tickSize, 15))).monospacedDigit()
+                    .foregroundStyle(ProTheme.secondary), at: point(degrees, radius: radius + 22))
             }
             if let value {
-                let degrees = angle(value)
-                var needle = Path()
-                needle.move(to: point(degrees, radius: radius - 4))
-                needle.addLine(to: point(degrees + 92, radius: 3.2))
-                needle.addLine(to: point(degrees + 180, radius: 10))
-                needle.addLine(to: point(degrees - 92, radius: 3.2))
-                needle.closeSubpath()
-                context.fill(needle, with: .color(ProTheme.signal))
-                context.fill(Path(ellipseIn: CGRect(x: center.x - 5, y: center.y - 5, width: 10, height: 10)), with: .color(ProTheme.signal))
-                context.fill(Path(ellipseIn: CGRect(x: center.x - 2, y: center.y - 2, width: 4, height: 4)), with: .color(MC.canvas))
+                let position = point(angle(value), radius: radius)
+                let marker = CGRect(x: position.x - 7, y: position.y - 7, width: 14, height: 14)
+                context.fill(Path(ellipseIn: marker.insetBy(dx: -2, dy: -2)), with: .color(ProTheme.face))
+                let tint = threshold.map { value >= $0 ? ProTheme.band : ProTheme.signal } ?? ProTheme.signal
+                context.fill(Path(ellipseIn: marker), with: .color(tint))
             }
         }
-        .frame(height: sizeClass == .regular ? 280 : 236)
+        .frame(height: sizeClass == .regular ? 168 : 144)
         .allowsHitTesting(false)
         .accessibilityHidden(true)
     }
@@ -324,6 +316,7 @@ struct LinearInstrumentScale: View {
         }
         .frame(height: 56)
         .allowsHitTesting(false)
+        .accessibilityElement(children: .ignore)
         .accessibilityHidden(true)
     }
 }
@@ -333,21 +326,21 @@ struct LevelInstrument: View {
     var reference: MeasurementPoint?
     @Environment(\.colorScheme) private var scheme
     @Environment(\.horizontalSizeClass) private var sizeClass
-    @ScaledMetric(relativeTo: .caption2) private var tickSize = 10
+    @ScaledMetric(relativeTo: .caption2) private var tickSize = 11
     var body: some View {
         let pitch = (point?.auxiliary["pitch"] ?? 0) - (reference?.auxiliary["pitch"] ?? 0)
         let roll = (point?.auxiliary["roll"] ?? 0) - (reference?.auxiliary["roll"] ?? 0)
-        let leveled = abs(pitch) < 0.5 && abs(roll) < 0.5
+        let leveled = point != nil && abs(pitch) < 0.5 && abs(roll) < 0.5
         Canvas { context, size in
-            let center = CGPoint(x: size.width / 2, y: size.height * 0.46)
+            let center = CGPoint(x: size.width / 2, y: size.height / 2)
             let radius = min(size.width / 2 - 28, size.height * 0.38)
             let tickColor = scheme == .dark ? Color.white.opacity(0.5) : Color.black.opacity(0.34)
             func point(at degrees: Double, radius: Double) -> CGPoint {
                 CGPoint(x: center.x + cos(degrees * .pi / 180) * radius, y: center.y + sin(degrees * .pi / 180) * radius)
             }
-            var rail = Path(ellipseIn: CGRect(x: center.x - radius, y: center.y - radius, width: radius * 2, height: radius * 2))
+            let rail = Path(ellipseIn: CGRect(x: center.x - radius, y: center.y - radius, width: radius * 2, height: radius * 2))
             context.stroke(rail, with: .color(tickColor.opacity(0.35)), style: StrokeStyle(lineWidth: 1.2, lineCap: .round))
-            var inner = Path(ellipseIn: CGRect(x: center.x - radius * 0.5, y: center.y - radius * 0.5, width: radius, height: radius))
+            let inner = Path(ellipseIn: CGRect(x: center.x - radius * 0.5, y: center.y - radius * 0.5, width: radius, height: radius))
             context.stroke(inner, with: .color(leveled ? ProTheme.band : tickColor.opacity(0.28)), lineWidth: leveled ? 1.5 : 0.8)
             var axes = Path()
             axes.move(to: point(at: 180, radius: radius + 6)); axes.addLine(to: point(at: 0, radius: radius + 6))
@@ -369,29 +362,20 @@ struct LevelInstrument: View {
                     at: point(at: degrees, radius: radius + 14)
                 )
             }
-            if point != nil {
+            if self.point != nil {
                 let x = center.x + min(1, max(-1, roll / 10)) * (radius - 8)
                 let y = center.y - min(1, max(-1, pitch / 10)) * (radius - 8)
-                let degrees = atan2(y - center.y, x - center.x) * 180 / .pi
-                if !leveled {
-                    var needle = Path()
-                    needle.move(to: point(at: degrees, radius: radius - 4))
-                    needle.addLine(to: point(at: degrees + 92, radius: 3.2))
-                    needle.addLine(to: point(at: degrees + 180, radius: 10))
-                    needle.addLine(to: point(at: degrees - 92, radius: 3.2))
-                    needle.closeSubpath()
-                    context.fill(needle, with: .color(ProTheme.signal))
-                }
-                context.stroke(Path(ellipseIn: CGRect(x: x - 14, y: y - 14, width: 28, height: 28)), with: .color(ProTheme.signal), style: StrokeStyle(lineWidth: 1.5, lineCap: .round))
-                context.fill(Path(ellipseIn: CGRect(x: x - 5, y: y - 5, width: 10, height: 10)), with: .color(ProTheme.signal))
-                context.fill(Path(ellipseIn: CGRect(x: x - 2, y: y - 2, width: 4, height: 4)), with: .color(MC.canvas))
+                let bubble = Path(ellipseIn: CGRect(x: x - 13, y: y - 13, width: 26, height: 26))
+                context.fill(bubble, with: .color(leveled ? ProTheme.band : ProTheme.signal))
+                context.stroke(bubble, with: .color(ProTheme.face), lineWidth: 3)
+
             }
         }
-        .frame(height: sizeClass == .regular ? 280 : 236)
+        .frame(height: sizeClass == .regular ? 236 : 180)
         .allowsHitTesting(false)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Level")
-        .accessibilityValue("Roll \(roll.formatted()) degrees, pitch \(pitch.formatted()) degrees")
+        .accessibilityValue(point == nil ? "No reading" : "Roll \(roll.formatted()) degrees, pitch \(pitch.formatted()) degrees")
     }
 }
 
@@ -409,7 +393,7 @@ struct CompassInstrument: View {
             func point(at degrees: Double, radius: Double) -> CGPoint {
                 CGPoint(x: center.x + cos(degrees * .pi / 180) * radius, y: center.y + sin(degrees * .pi / 180) * radius)
             }
-            var rail = Path(ellipseIn: CGRect(x: center.x - radius, y: center.y - radius, width: radius * 2, height: radius * 2))
+            let rail = Path(ellipseIn: CGRect(x: center.x - radius, y: center.y - radius, width: radius * 2, height: radius * 2))
             context.stroke(rail, with: .color(tickColor.opacity(0.35)), style: StrokeStyle(lineWidth: 1.2, lineCap: .round))
             let rotation = -(heading ?? 0) - 90
             for tick in 0 ..< 72 {
@@ -435,6 +419,7 @@ struct CompassInstrument: View {
                 mark.addLine(to: point(at: degrees, radius: radius + 3))
                 context.stroke(mark, with: .color(ProTheme.band), style: StrokeStyle(lineWidth: 3, lineCap: .butt))
             }
+            if heading != nil {
             var lubber = Path()
             lubber.move(to: CGPoint(x: center.x, y: center.y - radius + 4))
             lubber.addLine(to: CGPoint(x: center.x, y: center.y - radius - 6))
@@ -448,8 +433,9 @@ struct CompassInstrument: View {
             context.fill(needle, with: .color(ProTheme.signal))
             context.fill(Path(ellipseIn: CGRect(x: center.x - 5, y: center.y - 5, width: 10, height: 10)), with: .color(ProTheme.signal))
             context.fill(Path(ellipseIn: CGRect(x: center.x - 2, y: center.y - 2, width: 4, height: 4)), with: .color(MC.canvas))
+            }
         }
-        .frame(height: sizeClass == .regular ? 280 : 236)
+        .frame(height: sizeClass == .regular ? 236 : 180)
         .allowsHitTesting(false)
         .accessibilityHidden(true)
     }
@@ -473,6 +459,8 @@ struct InstrumentHistoryChart: View {
     }
     var body: some View {
         plotted
+            // Header layout motion must never interpolate observations or units.
+            .transaction { $0.animation = nil }
             .frame(height: dynamicType.isAccessibilitySize ? max(height, 240) : height)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel("\(kind.title) history")
@@ -487,7 +475,7 @@ struct InstrumentHistoryChart: View {
     }
 
     private var yMarkValues: [Double] {
-        let steps = dynamicType.isAccessibilitySize ? 2 : 3
+        let steps = 2
         return (0 ... steps).map { step in
             range.lowerBound + Double(step) / Double(steps) * (range.upperBound - range.lowerBound)
         }
@@ -501,13 +489,13 @@ struct InstrumentHistoryChart: View {
             }
             ForEach(MeasurementMath.plotPoints(points, kind: kind, limit: 220)) { point in
                 LineMark(x: .value("Seconds", point.elapsed), y: .value(kind.unit, point.value), series: .value("Segment", "current-\(point.segment)"))
-                    .foregroundStyle(ProTheme.signal).lineStyle(StrokeStyle(lineWidth: 1.6))
+                    .foregroundStyle(ProTheme.signal).lineStyle(StrokeStyle(lineWidth: 2))
             }
             if points.count == 1, let point = points.first {
                 PointMark(x: .value("Seconds", point.elapsed), y: .value(kind.unit, point.value)).foregroundStyle(ProTheme.signal)
             }
             if let threshold, range.contains(threshold) {
-                RuleMark(y: .value("Threshold", threshold)).lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 3])).foregroundStyle(ProTheme.secondary)
+                RuleMark(y: .value("Threshold", threshold)).lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 3])).foregroundStyle(ProTheme.band)
             }
             if let selected {
                 RuleMark(x: .value("Selected time", selected.elapsed)).foregroundStyle(ProTheme.signal.opacity(0.45))
@@ -537,7 +525,7 @@ struct InstrumentHistoryChart: View {
     }
 
     @AxisContentBuilder private var yMarks: some AxisContent {
-        AxisMarks(preset: .inset, position: .leading, values: yMarkValues) { value in
+        AxisMarks(position: .leading, values: yMarkValues) { value in
             AxisGridLine().foregroundStyle(.secondary.opacity(0.12))
             AxisValueLabel {
                 if let number = value.as(Double.self) {

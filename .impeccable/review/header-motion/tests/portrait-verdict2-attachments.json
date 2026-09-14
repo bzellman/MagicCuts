@@ -1,0 +1,44 @@
+[
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "870AC203-DADE-4F1B-A469-1AFD05F0F254",
+        "deviceName" : "MagicCuts Header Motion Portrait",
+        "exportedFileName" : "E697402E-CA5A-4219-AFA4-781531D2ED80.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-tablet-portrait-compact-dark_0_01ABACBE-D5A2-43F8-AF2D-D48C2A5244B3.png",
+        "timestamp" : 1789273346.239
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "870AC203-DADE-4F1B-A469-1AFD05F0F254",
+        "deviceName" : "MagicCuts Header Motion Portrait",
+        "exportedFileName" : "C66F8B60-1FBC-4E5C-A741-457C8E73F664.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-tablet-portrait-expanded-dark_0_198431DA-8ED4-4655-B0A7-83239BDCB545.png",
+        "timestamp" : 1789273338.108
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "870AC203-DADE-4F1B-A469-1AFD05F0F254",
+        "deviceName" : "MagicCuts Header Motion Portrait",
+        "exportedFileName" : "DB74F8CA-E8B7-4A21-904A-BC2DE37F1481.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-tablet-portrait-compact-light_0_52054F0C-9D14-4A93-BE9E-2BF2694F5B00.png",
+        "timestamp" : 1789273329.412
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "870AC203-DADE-4F1B-A469-1AFD05F0F254",
+        "deviceName" : "MagicCuts Header Motion Portrait",
+        "exportedFileName" : "1275EB47-A7EA-45F1-AD83-342CDC3E3104.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "motion-tablet-portrait-expanded-light_0_1C4B9961-EB5E-47CC-A463-08F60BE6D852.png",
+        "timestamp" : 1789273321.452
+      }
+    ],
+    "testIdentifier" : "ProExperienceUITests/testSourceHeaderInPortraitTablet()",
+    "testIdentifierURL" : "test://com.apple.xcode/MagicCuts/MagicCutsUITests/ProExperienceUITests/testSourceHeaderInPortraitTablet"
+  }
+]

@@ -2,6 +2,7 @@ import SwiftUI
 
 enum MC {
     static let action = Color("Action")
+    static let onAction = Color("ActionInk")
     static let canvas = Color("Canvas")
     static let instrument = Color("Instrument")
     static let ink = Color.primary
@@ -12,13 +13,49 @@ enum MC {
 
 struct ControlStyle: ButtonStyle {
     var primary = true
-    var radius: CGFloat = 12
+    var radius: CGFloat = 28
+    @Environment(\.isEnabled) private var isEnabled
     func makeBody(configuration: Configuration) -> some View {
         configuration.label.font(.headline).padding(.horizontal, 16).padding(.vertical, 14)
             .frame(maxWidth: .infinity, minHeight: 52)
-            .foregroundStyle(primary ? Color.white : MC.ink)
-            .background(primary ? MC.action : Color.primary.opacity(0.07), in: RoundedRectangle(cornerRadius: radius))
-            .opacity(configuration.isPressed ? 0.75 : 1)
+            .foregroundStyle(primary ? MC.onAction : MC.action)
+            .background(primary ? MC.action : Color.primary.opacity(0.055), in: RoundedRectangle(cornerRadius: radius, style: .continuous))
+            .opacity(!isEnabled ? 0.4 : configuration.isPressed ? 0.75 : 1)
+    }
+}
+
+/// Supporting actions keep a defined hit area without competing with capture.
+struct UtilityControlStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.callout.weight(.semibold))
+            .padding(.horizontal, 16).padding(.vertical, 10)
+            .frame(maxWidth: .infinity, minHeight: 44)
+            .foregroundStyle(MC.action)
+            .background(Color.primary.opacity(0.025), in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .overlay { RoundedRectangle(cornerRadius: 22, style: .continuous).strokeBorder(MC.action.opacity(0.22), lineWidth: 1) }
+            .contentShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .opacity(!isEnabled ? 0.4 : configuration.isPressed ? 0.65 : 1)
+    }
+}
+
+/// The instrument and evidence surfaces share one quiet, adaptive material.
+/// Elevation belongs to selected controls; the reading panels sit on the canvas.
+struct InstrumentSurface: ViewModifier {
+    var inset: CGFloat = 18
+    func body(content: Content) -> some View {
+        content
+            .padding(inset)
+            .frame(maxWidth: .infinity)
+            .background(ProTheme.face, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+    }
+}
+
+extension View {
+    func instrumentSurface(inset: CGFloat = 18) -> some View {
+        modifier(InstrumentSurface(inset: inset))
     }
 }
 

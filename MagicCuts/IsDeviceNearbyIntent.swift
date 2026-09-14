@@ -18,7 +18,8 @@ struct IsDeviceNearbyIntent: AppIntent {
     static func check(id: UUID, storage: SharedDeviceStorage, radio: any RadioScanning, duration: Duration = .seconds(10)) async throws -> Bool {
         guard let saved = try storage.getDevice(id: id.uuidString) else { throw BluetoothError.deletedDevice }
         guard (-100 ... -1).contains(saved.requiredSignalStrength) else { throw BluetoothError.invalidThreshold }
-        let samples = try await ProximitySampler(radio: radio).collect(id: id, services: saved.serviceUUIDs, duration: duration)
+        guard let radioID = saved.radioUUID else { throw BluetoothError.storage }
+        let samples = try await ProximitySampler(radio: radio).collect(id: radioID, services: saved.serviceUUIDs, duration: duration, stoppingAtThreshold: saved.requiredSignalStrength)
         return samples.contains { $0.rssi >= saved.requiredSignalStrength }
     }
 }

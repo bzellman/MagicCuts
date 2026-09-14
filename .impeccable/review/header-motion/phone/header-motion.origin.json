@@ -1,0 +1,14 @@
+{
+  "origin": "Native iPhone simulator recording with explicit sample data; no synthetic frames or retiming.",
+  "path": ".impeccable/review/header-motion/phone/header-motion.mp4",
+  "sha256": "a8423907adeeaf399ce34cc5faa23818385c61ad039abd4ffaa36e7486e2e872",
+  "rawPath": "/tmp/magiccuts-header-motion-phone-verdict3.mp4",
+  "rawSha256": "b9c8170a176220aa6d1e96537fe3f1339731723bf5acd653f5527c5563522960",
+  "trimStartSecond": 106,
+  "trimEndSecond": 114,
+  "encoding": "H.264, CRF 18, native variable frame timing; no audio, interpolation or retiming. Decode then trim seconds 106\u2013114; shift timestamps by a constant to start at zero.",
+  "durationSeconds": 7.62,
+  "frameCount": 142,
+  "firstSourceFrameSecond": 106.206667,
+  "lastSourceFrameSecond": 113.823333
+}

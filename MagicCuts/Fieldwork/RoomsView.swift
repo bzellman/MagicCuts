@@ -96,6 +96,8 @@ struct RoomDetailView: View {
     @State private var locatedEvidence = RoomLocatedEvidence()
     @State private var captureMode: RoomCaptureRoute?
     @State private var comparison: RoomRevision?
+    @State private var trimming: RoomRevision?
+    @State private var savedTrim: RoomTrimDestination?
     @State private var exporting = false
     @State private var orientationUnavailable = false
     @State private var deleting = false
@@ -113,15 +115,19 @@ struct RoomDetailView: View {
                     if session.cameraActive { RoomOrientationBanner() }
                     if dynamicType.isAccessibilitySize { displayPicker.pickerStyle(.menu) }
                     else { displayPicker.pickerStyle(.segmented) }
-                    if mode == 0 { RoomMeshCanvas(room: room, pins: pins, selectedDimension: room.dimensions.first { $0.id == selectedDimensionID }, selectedComponent: room.components.first { $0.id == selectedComponentID }, onSelectPin: { selectedCaptureID = $0 }).frame(minHeight: 340) }
+                    if mode == 0 { RoomMeshCanvas(room: room, isActive: trimming == nil && captureMode == nil && savedTrim == nil && !exporting && selectedCaptureID == nil, pins: pins, selectedDimension: room.dimensions.first { $0.id == selectedDimensionID }, selectedComponent: room.components.first { $0.id == selectedComponentID }, onSelectPin: { selectedCaptureID = $0 }).frame(minHeight: 340) }
+                    if mode == 0 {
+                        Button("Trim room", systemImage: "crop") { trimming = room }
+                            .frame(minHeight: 44).accessibilityIdentifier("room.trim")
+                    }
                     if mode == 1 {
                         RoomPlanCanvas(room: room, pins: pins, samplePositions: locatedEvidence.positions, pose: session.reference?.coordinateFrameID == room.coordinateFrameID ? session.currentPose : nil, selectedDimensionID: selectedDimensionID, selectedComponentID: selectedComponentID, onSelectDimension: { selectedDimensionID = $0; selectedComponentID = nil }, onSelectPin: { selectedCaptureID = $0 }).frame(height: 340)
                     }
                     if mode != 2 {
-                        Text(mode == 0 ? "Observed surfaces only. Blank areas have no captured geometry. Drag to orbit the mesh; pinch to zoom." : "Observed surfaces only. Blank areas have no captured geometry. Tap a numbered pin or a dimension to inspect it.").font(.caption).foregroundStyle(ProTheme.secondary)
+                        Text(mode == 0 ? "Observed surfaces only. Blank areas have no captured geometry." : "Observed surfaces only. Blank areas have no captured geometry. Tap a numbered pin or a dimension to inspect it.").font(.caption).foregroundStyle(ProTheme.secondary)
                         HStack(alignment: .firstTextBaseline, spacing: 24) {
                             VStack(alignment: .leading) {
-                                Text("\(room.triangleCount.formatted())").font(.system(.title2, design: .rounded).weight(.semibold))
+                                Text("\(room.triangleCount.formatted())").accessibilityIdentifier("room.mesh.triangles").font(.system(.title2, design: .rounded).weight(.semibold))
                                 Text("mesh triangles").font(.caption).foregroundStyle(ProTheme.secondary)
                             }
                             if let area = room.floorArea {
@@ -192,6 +198,7 @@ struct RoomDetailView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
+                    Button("Trim room", systemImage: "crop") { trimming = room }.accessibilityIdentifier("room.trim.menu")
                     Button("Export room", systemImage: "square.and.arrow.up") { exporting = true }
                     Button("Delete this revision", systemImage: "trash", role: .destructive) { deleting = true }
                         .disabled(session.cameraActive && session.reference?.id == id)
@@ -210,6 +217,10 @@ struct RoomDetailView: View {
             Button("OK", role: .cancel) { }
         } message: { Text("This revision can be viewed and measured, but it has no saved camera map for locating your phone. Place readings manually, or use Update room to capture a new pass with orientation data.") }
         .navigationDestination(item: $selectedCaptureID) { FieldCaptureDetailView(id: $0, library: library) }
+        .sheet(item: $trimming) { source in
+            RoomTrimView(room: source, library: library, savedRevision: $savedTrim)
+        }
+        .navigationDestination(item: $savedTrim) { RoomDetailView(id: $0.revisionID, library: library) }
         .sheet(isPresented: $exporting) { if let room { RoomExportView(room: room) } }
         .sheet(item: $captureMode) { route in RoomCaptureView(library: library, purpose: route.purpose, reference: room) }
         .confirmationDialog("Delete this room revision?", isPresented: $deleting, titleVisibility: .visible) {
@@ -259,7 +270,7 @@ struct RoomDetailView: View {
             ForEach(Array(pins.enumerated()), id: \.element.id) { index, pin in
                 NavigationLink { FieldCaptureDetailView(id: pin.id, library: library) } label: {
                     HStack(alignment: .top) {
-                        Text("\(index + 1)").font(.caption.bold()).foregroundStyle(.white).frame(width: 26, height: 26).background(MC.action, in: Circle())
+                        Text("\(index + 1)").font(.caption.bold()).foregroundStyle(MC.onAction).frame(width: 26, height: 26).background(MC.action, in: Circle())
                         VStack(alignment: .leading, spacing: 4) {
                             Text(pin.title).font(.headline)
                             if let metric = pin.metrics.first { Text("\(metric.formatted) \(metric.unit)").monospacedDigit() }
@@ -332,53 +343,12 @@ struct RoomCaptureView: View {
     @State private var showObservedMesh = true
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    if session.cameraActive {
-                        ZStack {
-                            RoomCameraView(session: session, showObservedMesh: purpose != .localize && showObservedMesh).frame(height: 340).clipShape(RoundedRectangle(cornerRadius: 16))
-                            Image(systemName: "plus").font(.title).foregroundStyle(.white).shadow(radius: 2).accessibilityHidden(true)
-                        }
-                    }
-                    if session.cameraActive && purpose != .localize {
-                        Toggle("Show observed surfaces", isOn: $showObservedMesh)
-                        Text("The mesh overlay shows observed geometry. Its surface colors are not accuracy scores.").font(.caption).foregroundStyle(ProTheme.secondary)
-                    }
-                    Label(session.phase.title, systemImage: session.canPin ? "location.fill" : "viewfinder").font(.system(.title2, design: .rounded).weight(.semibold))
-                    Text(session.instruction).font(.callout)
-                    if let failure = session.failure { InlineFailure(message: failure) }
-                    if session.phase == .locating, let data = reference?.referenceImage, let image = UIImage(data: data) {
-                        Text("Match this saved view").font(.headline)
-                        Image(uiImage: image).resizable().scaledToFit().frame(maxHeight: 220).clipShape(RoundedRectangle(cornerRadius: 12)).accessibilityLabel("Reference camera photo from the saved room scan")
-                    }
-                    if purpose == .update, session.phase == .locating || session.phase == .unavailable {
-                        Button("Capture a separate pass") { Task { await session.start(.update, reference: reference, archive: library.archive, unaligned: true) } }.frame(minHeight: 44)
-                        Text("A separate pass preserves this room's history, but its measurements use a new coordinate frame.").font(.caption).foregroundStyle(ProTheme.secondary)
-                    }
-                    if session.cameraActive {
-                        LabeledContent("Observed vertices", value: session.vertexCount.formatted())
-                        if let distance = session.distance {
-                            LabeledContent("Surface at reticle", value: "\(distance.formatted(.number.precision(.fractionLength(2)))) m")
-                            Text("Depth estimate · \(session.confidence == 2 ? "high" : "limited") confidence").font(.caption).foregroundStyle(ProTheme.secondary)
-                        }
-                        if purpose != .localize {
-                            Button(session.firstPoint == nil ? "Set first dimension point" : "Set second dimension point") { session.selectPoint() }
-                                .buttonStyle(.bordered).controlSize(.large).disabled(!session.tracked || (session.confidence ?? 0) < 1).frame(minHeight: 44)
-                            if session.firstPoint != nil || !session.dimensions.isEmpty { Button("Undo last point") { session.undoPoint() }.frame(minHeight: 44) }
-                            ForEach(session.dimensions) { dimension in LabeledContent(dimension.title, value: "\(dimension.meters.formatted(.number.precision(.fractionLength(2)))) m") }
-                        }
-                    }
-                    if session.phase == .processing { ProgressView("Preparing saved geometry…") }
-                    if session.phase == .review, let room = session.draft {
-                        RoomMeshCanvas(room: room)
-                        Button("Review and save room") { saving = true }.buttonStyle(.borderedProminent).controlSize(.large).tint(MC.action).frame(minHeight: 44)
-                    }
-                    if session.canFinish { Button("Finish scan") { session.finish() }.buttonStyle(.borderedProminent).controlSize(.large).tint(MC.action).frame(minHeight: 44) }
-                    if session.canPin {
-                        Button("Use this orientation") { keepOrientation = true; dismiss() }.buttonStyle(.borderedProminent).controlSize(.large).tint(MC.action).frame(minHeight: 44)
-                        Text("Keep the camera unobstructed while you capture readings. Tracking ends when you close MagicCuts or choose End room orientation.").font(.caption).foregroundStyle(ProTheme.secondary)
-                    }
-                }.padding(22).frame(maxWidth: 800).frame(maxWidth: .infinity)
+            Group {
+                if session.phase == .review || session.phase == .processing {
+                    ScrollView { controls.padding(22).frame(maxWidth: 800).frame(maxWidth: .infinity) }
+                } else {
+                    SpatialInstrumentStage(session: session, showObservedMesh: purpose != .localize && showObservedMesh) { controls }
+                }
             }.background(MC.canvas).navigationTitle(purpose == .localize ? "Locate in room" : "Capture room").navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Close") {
                 if session.cameraActive && purpose != .localize { cancelConfirmation = true } else { dismiss() }
@@ -393,6 +363,49 @@ struct RoomCaptureView: View {
         }.interactiveDismissDisabled(session.cameraActive && purpose != .localize)
         .onDisappear { if !keepOrientation { session.end() } }
     }
+    private var controls: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            if session.cameraActive && purpose != .localize {
+                Toggle("Show observed surfaces", isOn: $showObservedMesh)
+                Text("The mesh overlay shows observed geometry. Its surface colors are not accuracy scores.").font(.caption).foregroundStyle(ProTheme.secondary)
+            }
+            Label(session.phase.title, systemImage: session.canPin ? "location.fill" : "viewfinder").font(.system(.title2, design: .rounded).weight(.semibold))
+            Text(session.instruction).font(.callout)
+            if let failure = session.failure, session.cameraActive { InlineFailure(message: failure) }
+            if session.phase == .locating, let data = reference?.referenceImage, let image = UIImage(data: data) {
+                Text("Match this saved view").font(.headline)
+                Image(uiImage: image).resizable().scaledToFit().frame(maxHeight: 220).clipShape(RoundedRectangle(cornerRadius: 12)).accessibilityLabel("Reference camera photo from the saved room scan")
+            }
+            if purpose == .update, session.phase == .locating || session.phase == .unavailable {
+                Button("Capture a separate pass") { Task { await session.start(.update, reference: reference, archive: library.archive, unaligned: true) } }.frame(minHeight: 44)
+                Text("A separate pass preserves this room's history, but its measurements use a new coordinate frame.").font(.caption).foregroundStyle(ProTheme.secondary)
+            }
+            if session.cameraActive {
+                LabeledContent("Observed vertices", value: session.vertexCount.formatted())
+                if let distance = session.distance {
+                    LabeledContent("Surface at reticle", value: "\(distance.formatted(.number.precision(.fractionLength(2)))) m")
+                    Text("Depth estimate · \(session.confidence == 2 ? "high" : "limited") confidence").font(.caption).foregroundStyle(ProTheme.secondary)
+                }
+                if purpose != .localize {
+                    Button(session.firstPoint == nil ? "Set first dimension point" : "Set second dimension point") { session.selectPoint() }
+                        .buttonStyle(ControlStyle(primary: false)).disabled(!session.tracked || (session.confidence ?? 0) < 1).frame(minHeight: 44)
+                    if session.firstPoint != nil || !session.dimensions.isEmpty { Button("Undo last point") { session.undoPoint() }.frame(minHeight: 44) }
+                    ForEach(session.dimensions) { dimension in LabeledContent(dimension.title, value: "\(dimension.meters.formatted(.number.precision(.fractionLength(2)))) m") }
+                }
+            }
+            if session.phase == .processing { ProgressView("Preparing saved geometry…") }
+            if session.phase == .review, let room = session.draft {
+                RoomMeshCanvas(room: room)
+                Button("Review and save room") { saving = true }.buttonStyle(ControlStyle())
+            }
+            if session.canFinish { Button("Finish scan") { session.finish() }.buttonStyle(ControlStyle()) }
+            if session.canPin {
+                Button("Use this orientation") { keepOrientation = true; dismiss() }.buttonStyle(ControlStyle())
+                Text("Keep the camera unobstructed while you capture readings. Tracking ends when you close MagicCuts or choose End room orientation.").font(.caption).foregroundStyle(ProTheme.secondary)
+            }
+        }
+    }
+
 }
 
 struct RoomSaveView: View {

@@ -1,0 +1,14 @@
+{
+  "prompt": "Make ONLY two precise measurement-geometry corrections to the attached MagicCuts Native Utility visualization study sheet. Preserve the complete twelve-cell layout, all content, type, component shapes, palette, tonal depth, images and other geometry.\n\n1. In the Compare cell, the baseline value is -71 dBm. Its gray marker must sit JUST TO THE LEFT of the -70 tick, one single dB step left of -70, exactly 29/60 of the way from the -100 left endpoint to the -40 right endpoint. It must NOT be midway between -80 and -70. Keep the Current -63 dBm blue marker at 37/60 of that same scale, and keep +8 dB. Both rails have precisely identical scale geometry.\n\n2. In Forecast & history, make the top forecast a truthful evenly spaced 24-hour horizontal time axis labeled Now at far left, 6h at one quarter, 12h at midpoint, 18h at three quarters, 24h at far right. Draw one blue forecast interval from hour1 to hour3 near the start and one teal interval from hour18 to hour23 near the end, as separate thin rounded bands with distinct endpoints. Do not keep the unequally spaced 1h/3h/6h marks. The lower Delayed history histogram and Collected yesterday label are unchanged.\n\nEverything else remains intact. This is illustrative Sample data in a design study sheet.",
+  "tool": "image_gen.imagegen",
+  "role": "visualization-atlas",
+  "approved": false,
+  "seed": "4de84d38",
+  "direction": "Native Utility",
+  "sampleData": true,
+  "originalGeneratedFile": "/Users/bradzellman/.codex/generated_images/01a097bc-322c-7d22-be64-507f247a2be3/exec-c0678d4a-4cc0-4c3e-833b-fa5b9ab8c952.png",
+  "references": [
+    "/Users/bradzellman/.codex/worktrees/559c/MagicCuts/.impeccable/mocks/native-utility/visualization-families.png"
+  ],
+  "supersedes": "visualization-families.png"
+}
