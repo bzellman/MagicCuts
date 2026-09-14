@@ -185,6 +185,26 @@ nonisolated final class ProximityTests: XCTestCase {
         do { _ = try await IsDeviceNearbyIntent.check(id: DemoRadio.deviceID, storage: storage, radio: radio); XCTFail("Deleted must throw") }
         catch { XCTAssertEqual(error as? BluetoothError, .deletedDevice) }
     }
+
+    @MainActor func testDiscoveryListOrderIsStableUntilSortChanges() {
+        let first = RadioDevice(id: DemoRadio.deviceID, name: "Weak", rssi: -90, services: [], lastSeen: .now)
+        let second = RadioDevice(id: UUID(uuidString: "BBBBBBBB-1111-2222-3333-444444444444")!, name: "Strong", rssi: -50, services: [], lastSeen: .now)
+        var order = DiscoveryList.tracking([], ids: [first.id, second.id])
+        XCTAssertEqual(order, [first.id, second.id])
+        let louder = RadioDevice(id: first.id, name: "Weak", rssi: -40, services: [], lastSeen: .now)
+        let quieter = RadioDevice(id: second.id, name: "Strong", rssi: -80, services: [], lastSeen: .now)
+        order = DiscoveryList.tracking(order, ids: [first.id, second.id])
+        XCTAssertEqual(order, [first.id, second.id])
+        XCTAssertEqual(DiscoveryList.displayed([louder, quieter], search: "", order: order).map(\.rssi), [-40, -80])
+        XCTAssertEqual(DiscoveryList.ranked([louder, quieter], by: .signal), [first.id, second.id])
+        XCTAssertEqual(DiscoveryList.ranked([louder, quieter], by: .name), [second.id, first.id])
+        XCTAssertEqual(DiscoveryList.ranked([louder, quieter], by: .found), [first.id, second.id])
+        let third = RadioDevice(id: UUID(uuidString: "CCCCCCCC-1111-2222-3333-444444444444")!, name: "Mid", rssi: -60, services: [], lastSeen: .now)
+        order = DiscoveryList.tracking(order, ids: [first.id, second.id, third.id])
+        XCTAssertEqual(order, [first.id, second.id, third.id])
+        XCTAssertEqual(DiscoveryList.displayed([louder, quieter, third], search: "strong", order: order).map(\.id), [second.id])
+        XCTAssertEqual(DiscoveryList.tracking(order, ids: [second.id]), [second.id])
+    }
 }
 
 @MainActor

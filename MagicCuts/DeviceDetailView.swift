@@ -11,10 +11,13 @@ struct DeviceDetailView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dynamicTypeSize) private var dynamicType
     @Environment(\.scenePhase) private var phase
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Query(sort: \TestRecord.date, order: .reverse) private var allRecords: [TestRecord]
     @AppStorage("technicalMode") private var technical = false
-    @State private var edit = false
-    @State private var rename = false
+    @State private var editor: Editor = .none
+    @State private var draftThreshold = -70
+    @State private var draftName = ""
+    @State private var draftResult: TestEvidence?
     @State private var running: TestPosition?
     @State private var task: Task<Void, Never>?
     @State private var samples: [SignalSample] = []
@@ -25,6 +28,13 @@ struct DeviceDetailView: View {
     private var latestAway: TestEvidence? { current.first { $0.position == .away } }
     private var validated: Bool { latestNearby?.validated == true && latestAway?.validated == true }
     private var latest: TestEvidence? { records.first?.evidence }
+    private var editingThreshold: Bool { editor == .threshold }
+    private var gaugeThreshold: Int { editingThreshold ? draftThreshold : device.requiredSignalStrength }
+    private var gaugeSamples: [SignalSample] {
+        if running != nil { return samples }
+        if editingThreshold { return draftResult?.samples ?? [] }
+        return latest?.samples ?? []
+    }
     init(device: MonitoredDevice, radio: any RadioScanning) {
         self.device = device
         self.radio = radio
@@ -42,13 +52,27 @@ struct DeviceDetailView: View {
     private var detailContent: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
+                if editor == .name {
+                    TextField("Device name", text: $draftName).textFieldStyle(.roundedBorder).disabled(running != nil).accessibilityIdentifier("device.name")
+                    Text("Choose a name you’ll recognize in Shortcuts.").font(.callout).foregroundStyle(.secondary)
+                }
                 if !(-100 ... -1).contains(device.requiredSignalStrength) { InlineFailure(message: BluetoothError.invalidThreshold.localizedDescription) }
                 if AppRuntime.isUITesting { Text("Demo readings").font(.caption).foregroundStyle(.secondary) }
-                SignalGauge(threshold: device.requiredSignalStrength, samples: running != nil ? samples : (latest?.samples ?? []), showMeasurements: technical)
-                Button("Edit threshold") { edit = true; TuneTip().invalidate(reason: .actionPerformed) }
-                    .buttonStyle(ControlStyle(primary: false)).disabled(running != nil).accessibilityIdentifier("threshold.edit")
+                SignalGauge(threshold: gaugeThreshold, samples: gaugeSamples, onChange: editingThreshold && running == nil ? { draftThreshold = $0; draftResult = nil; samples = [] } : nil, showMeasurements: technical || editingThreshold)
+                    .disabled(editingThreshold && running != nil)
+                if editingThreshold {
+                    Text("Nearby when RSSI ≥ \(draftThreshold) dBm").font(.callout).monospacedDigit()
+                } else {
+                    Button("Edit threshold") { beginThresholdEdit() }
+                        .buttonStyle(ControlStyle(primary: false)).disabled(running != nil || editor == .name).accessibilityIdentifier("threshold.edit")
+                }
                 if let error { InlineFailure(message: error) }
-                if let latest {
+                if editingThreshold, let draftResult {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(draftResult.summary).font(.headline)
+                        Text("Draft test · not saved validation").font(.caption)
+                    }
+                } else if !editingThreshold, let latest {
                     VStack(alignment: .leading, spacing: 6) {
                         Text(latest.summary).font(.headline)
                         if latest.isDraft { Text("Draft test · not saved validation").font(.caption) }
@@ -63,6 +87,14 @@ struct DeviceDetailView: View {
                     }
                 }
                 Text("Walls and movement change signal. Test nearby and away.").font(.callout).foregroundStyle(.secondary)
+                if editingThreshold {
+                    Button(running == .draft ? "Stop test" : "Test draft") {
+                        if running == .draft { cancel() } else { run(.draft) }
+                    }.buttonStyle(ControlStyle(primary: false)).accessibilityIdentifier("draft.test")
+                    Button("Apply threshold") { applyThreshold() }
+                        .buttonStyle(ControlStyle()).disabled(running != nil).accessibilityIdentifier("threshold.apply")
+                    Text("Signal is not an exact distance.").font(.caption).foregroundStyle(.secondary)
+                }
                 if records.isEmpty { TipView(TuneTip()) }
                 else if !validated { TipView(ValidateTip()) }
                 else { TipView(ShortcutTip()) }
@@ -74,8 +106,10 @@ struct DeviceDetailView: View {
                     ShortcutConfirmation(device: device)
                 }.font(.callout)
                 NavigationLink { ShortcutsSetupView(device: device) } label: { HandoffRow(title: "Configure Shortcut") }
+                    .disabled(editor != .none || running != nil)
                 Divider()
                 NavigationLink { TestHistoryView(device: device) } label: { HandoffRow(title: "Test history (\(records.count))", symbol: "chevron.right") }
+                    .disabled(editor != .none || running != nil)
                 if technical {
                     Text("Device identifier").font(.headline)
                     Text(device.persistentIdentifier).font(.caption.monospaced()).textSelection(.enabled)
@@ -99,21 +133,40 @@ struct DeviceDetailView: View {
                     .accessibilityIdentifier("mode.detail")
                     .accessibilityLabel("Reading detail")
                     .accessibilityValue(technical ? "Technical" : "Simple")
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Rename", systemImage: "pencil") { rename = true }.disabled(running != nil)
+                    .disabled(editor != .none)
                 }
             }
-            .safeAreaInset(edge: .top, spacing: 0) { testControls.padding(.horizontal, MC.inset).padding(.vertical, 8).background(MC.canvas) }
-            .sheet(isPresented: $edit) { EditDeviceView(device: device, radio: radio) }
-            .sheet(isPresented: $rename) { RenameDeviceView(device: device) }
+            .toolbar { toolbar }
+            .safeAreaInset(edge: .top, spacing: 0) {
+                if editor == .none {
+                    testControls.padding(.horizontal, MC.inset).padding(.vertical, 8).background(MC.canvas)
+                }
+            }
             .onDisappear { cancel() }
             .onChange(of: phase) { _, value in if value == .background && running != nil { cancel(); error = "Test interrupted. Keep MagicCuts open and try again." } }
+    }
+    @ToolbarContentBuilder private var toolbar: some ToolbarContent {
+        if editor == .threshold {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel") { abandonEditor() }.foregroundStyle(.primary).accessibilityIdentifier("threshold.cancel")
+            }
+        } else if editor == .name {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel") { abandonEditor() }.foregroundStyle(.primary)
+            }
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Save") { saveName() }.disabled(draftName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || running != nil)
+            }
+        } else {
+            ToolbarItem(placement: .primaryAction) {
+                Button("Rename", systemImage: "pencil") { beginRename() }.disabled(running != nil)
+            }
+        }
     }
     private var testControls: some View {
         let layout = dynamicType.isAccessibilitySize ? AnyLayout(VStackLayout(spacing: 1)) : AnyLayout(HStackLayout(spacing: 1))
         return layout {
-            if let running {
+            if let running, running != .draft {
                 HStack { ProgressView().tint(MC.onAction); Text("Testing \(running.title.lowercased())…") }.font(.headline).foregroundStyle(MC.onAction).padding().frame(maxWidth: .infinity).background(MC.action)
                 Button("Stop") { cancel() }.buttonStyle(ControlStyle(primary: false)).accessibilityIdentifier("test.stop")
             } else {
@@ -122,12 +175,55 @@ struct DeviceDetailView: View {
             }
         }.clipShape(RoundedRectangle(cornerRadius: 12))
     }
+    private func beginThresholdEdit() {
+        cancel()
+        draftThreshold = min(-1, max(-100, device.requiredSignalStrength))
+        draftResult = nil
+        samples = []
+        error = nil
+        withAnimation(reduceMotion ? nil : .snappy(duration: 0.22)) { editor = .threshold }
+        TuneTip().invalidate(reason: .actionPerformed)
+    }
+    private func beginRename() {
+        cancel()
+        draftName = device.name
+        error = nil
+        withAnimation(reduceMotion ? nil : .snappy(duration: 0.22)) { editor = .name }
+    }
+    private func abandonEditor() {
+        cancel()
+        draftResult = nil
+        samples = []
+        error = nil
+        withAnimation(reduceMotion ? nil : .snappy(duration: 0.22)) { editor = .none }
+    }
     private func cancel() { task?.cancel(); task = nil; running = nil }
+    private func applyThreshold() {
+        do {
+            let repository = DeviceRepository(context: context)
+            let device = try repository.existingDevice(modelID)
+            guard let id = device.uuid else { throw BluetoothError.deletedDevice }
+            try repository.save(device, id: id, name: device.name, threshold: draftThreshold, services: device.serviceUUIDs)
+            abandonEditor()
+        } catch { self.error = error.localizedDescription }
+    }
+    private func saveName() {
+        do {
+            let repository = DeviceRepository(context: context)
+            let device = try repository.existingDevice(modelID)
+            guard let id = device.uuid else { throw BluetoothError.deletedDevice }
+            try repository.save(device, id: id, name: draftName, threshold: device.requiredSignalStrength, services: device.serviceUUIDs)
+            abandonEditor()
+        } catch { self.error = error.localizedDescription }
+    }
     private func run(_ position: TestPosition) {
         guard let id = device.uuid else { error = "Device identifier is invalid."; return }
-        guard (-100 ... -1).contains(device.requiredSignalStrength) else { error = BluetoothError.invalidThreshold.localizedDescription; return }
+        let threshold = position == .draft ? draftThreshold : device.requiredSignalStrength
+        if position != .draft {
+            guard (-100 ... -1).contains(threshold) else { error = BluetoothError.invalidThreshold.localizedDescription; return }
+        }
         running = position; samples = []; error = nil
-        let threshold = device.requiredSignalStrength
+        if position == .draft { draftResult = nil }
         let identity = TestDeviceIdentity(device)
         let services = device.serviceUUIDs
         var start = Date()
@@ -141,12 +237,17 @@ struct DeviceDetailView: View {
                 return
             } catch { failure = error.localizedDescription }
             guard !Task.isCancelled else { return }
-            let evidence = TestEvidence(startedAt: start, endedAt: Date(), threshold: threshold, position: position, isDraft: false, samples: samples, failure: failure)
+            let evidence = TestEvidence(startedAt: start, endedAt: Date(), threshold: threshold, position: position, isDraft: position == .draft, samples: samples, failure: failure)
+            if position == .draft { draftResult = evidence }
             do { try DeviceRepository(context: context).record(evidence, identity: identity) } catch { self.error = "Could not save test: \(error.localizedDescription)" }
             running = nil
             if position == .away { ValidateTip().invalidate(reason: .actionPerformed) }
         }
     }
+}
+
+private enum Editor {
+    case none, threshold, name
 }
 
 struct ShortcutConfirmation: View {
