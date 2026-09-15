@@ -75,8 +75,20 @@ nonisolated struct DepthFrameEvidence {
     var fit: SurfaceFit?
 }
 
+/// Pixel values copied out of an `ARFrame` so the frame can be released before plane fitting.
+nonisolated struct DepthCapture: Sendable {
+    var image: DepthEvidence
+    var centerPoint: SpatialVector?
+    var centerConfidence: UInt8?
+    var patch: [SpatialVector]
+}
+
 nonisolated enum DepthProcessing {
     static func read(frame: ARFrame) -> DepthFrameEvidence? {
+        capture(frame).map(finish)
+    }
+
+    static func capture(_ frame: ARFrame) -> DepthCapture? {
         guard let depth = frame.sceneDepth else { return nil }
         let buffer = depth.depthMap
         guard CVPixelBufferGetPixelFormatType(buffer) == kCVPixelFormatType_DepthFloat32 else { return nil }
@@ -128,7 +140,12 @@ nonisolated enum DepthProcessing {
             }
         }
         image.centerPoint = worldPoint(x: midX, y: midY)
-        return DepthFrameEvidence(image: image, centerPoint: worldPoint(x: midX, y: midY),
-                                  centerConfidence: confidenceBase.map { $0[midY*confidenceStride+midX] }, fit: SurfaceFitting.fit(patch))
+        return DepthCapture(image: image, centerPoint: worldPoint(x: midX, y: midY),
+                            centerConfidence: confidenceBase.map { $0[midY*confidenceStride+midX] }, patch: patch)
+    }
+
+    static func finish(_ capture: DepthCapture) -> DepthFrameEvidence {
+        DepthFrameEvidence(image: capture.image, centerPoint: capture.centerPoint,
+                           centerConfidence: capture.centerConfidence, fit: SurfaceFitting.fit(capture.patch))
     }
 }

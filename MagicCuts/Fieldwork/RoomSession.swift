@@ -19,10 +19,24 @@ nonisolated enum RoomSessionPhase: String, Sendable {
     }
 }
 
-nonisolated enum RoomSessionPurpose: Sendable { case newRoom, update, localize, measurement }
+nonisolated enum RoomSessionPurpose: Sendable {
+    case newRoom, update, localize, measurement
+    /// Scene reconstruction is for saved room geometry. LiDAR distance tools only need scene depth.
+    var usesSceneReconstruction: Bool {
+        switch self {
+        case .newRoom, .update: true
+        case .localize, .measurement: false
+        }
+    }
+    /// World tracking and scene depth are required for every camera purpose. Mesh reconstruction is only required when this purpose captures a room.
+    func isCaptureSupported(worldTracking: Bool, sceneDepth: Bool, mesh: Bool) -> Bool {
+        guard worldTracking, sceneDepth else { return false }
+        return !usesSceneReconstruction || mesh
+    }
+}
 
 @MainActor @Observable
-final class RoomSession: NSObject, @preconcurrency ARSessionDelegate {
+final class RoomSession: NSObject {
     private(set) var phase: RoomSessionPhase = .idle
     private(set) var purpose: RoomSessionPurpose = .newRoom
     private(set) var instruction = "Start a scan or locate yourself in a saved room."
@@ -65,15 +79,45 @@ final class RoomSession: NSObject, @preconcurrency ARSessionDelegate {
     @ObservationIgnored private var priorPhase: RoomSessionPhase = .idle
     @ObservationIgnored private var hasRestoredFrame = false
     @ObservationIgnored private var provenance: RoomCaptureProvenance?
+    @ObservationIgnored private let sink: RoomSessionSink
+    @ObservationIgnored private var frameEpoch: UInt64 = 0
 
     var roomName: String { reference?.roomName ?? draft?.roomName ?? "New room" }
     var canPin: Bool { cameraActive && tracked && phase == .located && reference != nil }
     var canFinish: Bool { (phase == .scanning || phase == .interrupted) && (purpose == .newRoom || purpose == .update) && !patches.isEmpty && !finishing }
 
     override init() {
+        let owner = RoomSessionOwner()
+        let queue = DispatchQueue(label: "com.bradzellman.magiccuts.room-frames")
+        let sink = RoomSessionSink(
+            queue: queue,
+            onFrame: { sample in
+                Task { @MainActor in
+                    owner.session?.applyFrame(sample)
+                    owner.session?.sink.markIdle(epoch: sample.epoch)
+                }
+            },
+            onMeshes: { patches, epoch in
+                Task { @MainActor in owner.session?.applyMeshes(patches, epoch: epoch) }
+            },
+            onRemoved: { ids, epoch in
+                Task { @MainActor in owner.session?.removeMeshes(ids, epoch: epoch) }
+            },
+            onFailure: { message, epoch in
+                Task { @MainActor in
+                    owner.session?.handleInterruption(epoch: epoch)
+                    owner.session?.failure = message
+                }
+            },
+            onInterrupt: { epoch in
+                Task { @MainActor in owner.session?.handleInterruption(epoch: epoch) }
+            }
+        )
+        self.sink = sink
         super.init()
-        arSession.delegate = self
-        arSession.delegateQueue = .main
+        owner.session = self
+        arSession.delegate = sink
+        arSession.delegateQueue = queue
     }
 
     func start(_ purpose: RoomSessionPurpose, reference: RoomRevision? = nil, archive: InstrumentArchive, unaligned: Bool = false) async {
@@ -86,9 +130,11 @@ final class RoomSession: NSObject, @preconcurrency ARSessionDelegate {
         frameID = unaligned ? UUID() : reference?.coordinateFrameID ?? UUID()
         startedAt = .now; lastFrameTime = -.infinity; lastCheckpoint = -.infinity
         let token = generation
-        guard ARWorldTrackingConfiguration.isSupported,
-              ARWorldTrackingConfiguration.supportsFrameSemantics(.sceneDepth),
-              ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh) else {
+        guard purpose.isCaptureSupported(
+            worldTracking: ARWorldTrackingConfiguration.isSupported,
+            sceneDepth: ARWorldTrackingConfiguration.supportsFrameSemantics(.sceneDepth),
+            mesh: ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh)
+        ) else {
             phase = .unavailable; failure = "This capture needs a LiDAR-equipped device. Saved rooms and manual measurement pins remain available."
             return
         }
@@ -100,12 +146,18 @@ final class RoomSession: NSObject, @preconcurrency ARSessionDelegate {
             guard token == generation, !Task.isCancelled else { return }
             let config = ARWorldTrackingConfiguration()
             config.frameSemantics = .sceneDepth
+            // Raw depth remains available for surface fitting; do not flatten it with plane detection.
+            let reconstruction: ARWorldTrackingConfiguration.SceneReconstruction
+            if purpose.usesSceneReconstruction {
+                reconstruction = ARWorldTrackingConfiguration.supportsSceneReconstruction(.meshWithClassification) ? .meshWithClassification : .mesh
+            } else {
+                reconstruction = []
+            }
+            config.sceneReconstruction = reconstruction
             provenance = RoomCaptureProvenance(systemVersion: UIDevice.current.systemVersion, deviceFamily: UIDevice.current.model,
                 appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown",
-                reconstruction: ARWorldTrackingConfiguration.supportsSceneReconstruction(.meshWithClassification) ? "Mesh with classification" : "Mesh",
+                reconstruction: reconstruction == .meshWithClassification ? "Mesh with classification" : reconstruction.contains(.mesh) ? "Mesh" : "Depth only",
                 depthSource: "ARFrame.sceneDepth", events: [])
-            // Raw depth remains available for surface fitting; do not flatten it with plane detection.
-            config.sceneReconstruction = purpose == .localize ? [] : (ARWorldTrackingConfiguration.supportsSceneReconstruction(.meshWithClassification) ? .meshWithClassification : .mesh)
             if reference != nil, !unaligned {
                 guard let data = reference?.worldMapData,
                       let map = try NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data) else {
@@ -118,8 +170,9 @@ final class RoomSession: NSObject, @preconcurrency ARSessionDelegate {
                 phase = purpose == .measurement ? .measuring : .scanning
                 instruction = "Move slowly and look at surfaces from more than one angle."
             }
-            cameraActive = true
+            frameEpoch = sink.arm(collectMeshes: purpose.usesSceneReconstruction)
             arSession.run(config, options: [.resetTracking, .removeExistingAnchors])
+            cameraActive = true
             if phase == .scanning { startRoomPlan(token: token) }
             if phase == .locating {
                 timeout = Task { [weak self] in
@@ -190,6 +243,7 @@ final class RoomSession: NSObject, @preconcurrency ARSessionDelegate {
             catch { warnings.append("Orientation data unavailable: \(error.localizedDescription)") }
             guard self.generation == token, !Task.isCancelled else { return }
             let photo = self.referencePhoto()
+            self.frameEpoch = self.sink.disarm()
             self.arSession.pause(); self.cameraActive = false; self.tracked = false
             var revision = self.makeRevision()
             revision.worldMapData = map; revision.referenceImage = photo; revision.warnings = warnings
@@ -209,6 +263,7 @@ final class RoomSession: NSObject, @preconcurrency ARSessionDelegate {
     func end() {
         generation = UUID(); timeout?.cancel(); timeout = nil; completionTask?.cancel(); completionTask = nil
         capture?.delegate = nil; capture?.stop(pauseARSession: true); capture = nil; bridge = nil
+        frameEpoch = sink.disarm()
         arSession.pause(); cameraActive = false; tracked = false; currentPose = nil; currentPoseDate = nil
         surfacePoint = nil; distance = nil; confidence = nil; surfaceFit = nil; depth = nil; history = []; phase = .idle
     }
@@ -252,35 +307,34 @@ final class RoomSession: NSObject, @preconcurrency ARSessionDelegate {
         else if !dimensions.isEmpty { dimensions.removeLast() }
     }
 
-    func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        guard cameraActive, frame.timestamp - lastFrameTime >= 0.12 else { return }
-        lastFrameTime = frame.timestamp
-        let now = Date().addingTimeInterval(frame.timestamp - ProcessInfo.processInfo.systemUptime)
-        if case .normal = frame.camera.trackingState { tracked = true } else { tracked = false }
-        let state = tracked ? "Tracking normal" : Self.trackingExplanation(frame.camera.trackingState)
+    private func applyFrame(_ sample: RoomFrameSample) {
+        guard cameraActive, sample.epoch == frameEpoch, sample.timestamp - lastFrameTime >= 0.12 else { return }
+        lastFrameTime = sample.timestamp
+        let now = Date().addingTimeInterval(sample.timestamp - ProcessInfo.processInfo.systemUptime)
+        tracked = sample.tracked
+        let state = sample.tracked ? "Tracking normal" : sample.trackingExplanation
         if provenance?.events.last?.state != state, (provenance?.events.count ?? 1000) < 1000 {
             provenance?.events.append(RoomTrackingEvent(elapsed: max(0, now.timeIntervalSince(startedAt)), state: state))
         }
-        if tracked, phase == .locating {
+        if sample.tracked, phase == .locating {
             hasRestoredFrame = true; timeout?.cancel()
             phase = purpose == .localize ? .located : .scanning
             instruction = purpose == .localize ? "Your position is tracked. Capture measurements here or open another instrument." : "Room located. Scan the areas you want to observe again."
             if purpose == .update { startRoomPlan(token: generation) }
         }
-        if !tracked {
+        if !sample.tracked {
             history = []; surfacePoint = nil; distance = nil; currentPose = nil; currentPoseDate = nil; surfaceFit = nil; depth = nil
             if phase == .located || phase == .scanning || phase == .measuring { priorPhase = phase; phase = .interrupted }
-            instruction = Self.trackingExplanation(frame.camera.trackingState)
+            instruction = sample.trackingExplanation
             return
         }
         if phase == .interrupted { phase = priorPhase; instruction = "Tracking recovered." }
-        let pose = SpatialTransform(frame.camera.transform)
+        let pose = sample.pose
         currentPose = pose; currentPoseDate = now; history.append((now, pose)); history.removeAll { now.timeIntervalSince($0.0) > 5 }
-        let evidence = DepthProcessing.read(frame: frame)
-        depth = evidence?.image; surfacePoint = evidence?.centerPoint; confidence = evidence?.centerConfidence
-        distance = surfacePoint.map { pose.position.distance(to: $0) }; surfaceFit = evidence?.fit
-        if phase == .scanning, !finishing, !checkpointing, frame.timestamp - lastCheckpoint > 10 {
-            lastCheckpoint = frame.timestamp
+        depth = sample.evidence?.image; surfacePoint = sample.evidence?.centerPoint; confidence = sample.evidence?.centerConfidence
+        distance = surfacePoint.map { pose.position.distance(to: $0) }; surfaceFit = sample.evidence?.fit
+        if phase == .scanning, !finishing, !checkpointing, sample.timestamp - lastCheckpoint > 10 {
+            lastCheckpoint = sample.timestamp
             let revision = makeRevision()
             if revision.isValid, let archive {
                 checkpointing = true
@@ -294,51 +348,25 @@ final class RoomSession: NSObject, @preconcurrency ARSessionDelegate {
         }
     }
 
-    func session(_ session: ARSession, didAdd anchors: [ARAnchor]) { collect(anchors) }
-    func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) { collect(anchors) }
-    func session(_ session: ARSession, didRemove anchors: [ARAnchor]) {
-        guard phase == .scanning || phase == .measuring else { return }
-        for anchor in anchors { patches.removeValue(forKey: anchor.identifier) }
+    private func applyMeshes(_ incoming: [RoomMeshPatch], epoch: UInt64) {
+        guard cameraActive, epoch == frameEpoch, tracked, phase == .scanning, !finishing else { return }
+        for patch in incoming where patch.isValid { patches[patch.id] = patch }
+        vertexCount = patches.values.reduce(0) { $0 + $1.vertices.count }; captureVersion += 1
+        if vertexCount > 1_800_000 { instruction = "This scan is large. Finish and review before capturing another pass."; if canFinish { finish() } }
+    }
+
+    private func removeMeshes(_ ids: [UUID], epoch: UInt64) {
+        guard cameraActive, epoch == frameEpoch, phase == .scanning else { return }
+        for id in ids { patches.removeValue(forKey: id) }
         vertexCount = patches.values.reduce(0) { $0 + $1.vertices.count }; captureVersion += 1
     }
-    func session(_ session: ARSession, didFailWithError error: Error) {
-        sessionWasInterrupted(session); failure = error.localizedDescription
-    }
-    func sessionWasInterrupted(_ session: ARSession) {
-        guard cameraActive else { return }
+
+    private func handleInterruption(epoch: UInt64) {
+        guard cameraActive, epoch == frameEpoch else { return }
         tracked = false; history = []; currentPose = nil; currentPoseDate = nil
         surfacePoint = nil; distance = nil; confidence = nil; surfaceFit = nil; depth = nil
         if phase != .interrupted { priorPhase = phase }
         phase = .interrupted
-    }
-
-    private func collect(_ anchors: [ARAnchor]) {
-        guard tracked, phase == .scanning || phase == .measuring, !finishing else { return }
-        for case let anchor as ARMeshAnchor in anchors {
-            let geometry = anchor.geometry
-            guard geometry.vertices.count > 0, geometry.faces.primitiveType == .triangle else { continue }
-            var vertices: [SpatialVector] = []; vertices.reserveCapacity(geometry.vertices.count)
-            for index in 0..<geometry.vertices.count {
-                let address = geometry.vertices.buffer.contents().advanced(by: geometry.vertices.offset + index * geometry.vertices.stride)
-                let floats = address.assumingMemoryBound(to: Float.self)
-                vertices.append(SpatialVector(x: floats[0], y: floats[1], z: floats[2]))
-            }
-            var indices: [UInt32] = []; indices.reserveCapacity(geometry.faces.count * 3)
-            let faces = geometry.faces.buffer.contents()
-            for index in 0..<(geometry.faces.count * geometry.faces.indexCountPerPrimitive) {
-                let p = faces.advanced(by: index * geometry.faces.bytesPerIndex)
-                indices.append(geometry.faces.bytesPerIndex == 4 ? p.load(as: UInt32.self) : UInt32(p.load(as: UInt16.self)))
-            }
-            var classes: [UInt8] = []
-            if let source = geometry.classification {
-                classes = (0..<source.count).map { source.buffer.contents().advanced(by: source.offset + $0 * source.stride).load(as: UInt8.self) }
-            }
-            let patch = RoomMeshPatch(id: anchor.identifier, transform: SpatialTransform(anchor.transform), vertices: vertices,
-                                      triangleIndices: indices, classifications: classes, observedAt: .now)
-            if patch.isValid { patches[anchor.identifier] = patch }
-        }
-        vertexCount = patches.values.reduce(0) { $0 + $1.vertices.count }; captureVersion += 1
-        if vertexCount > 1_800_000 { instruction = "This scan is large. Finish and review before capturing another pass."; if canFinish { finish() } }
     }
 
     private func makeRevision() -> RoomRevision {
@@ -355,7 +383,8 @@ final class RoomSession: NSObject, @preconcurrency ARSessionDelegate {
     }
 
     private func worldMap() async throws -> Data? {
-        guard let frame = arSession.currentFrame, frame.worldMappingStatus == .mapped || frame.worldMappingStatus == .extending else { return nil }
+        let status = arSession.currentFrame?.worldMappingStatus
+        guard status == .mapped || status == .extending else { return nil }
         return try await withCheckedThrowingContinuation { continuation in
             arSession.getCurrentWorldMap { map, error in
                 if let error { continuation.resume(throwing: error); return }
@@ -366,11 +395,12 @@ final class RoomSession: NSObject, @preconcurrency ARSessionDelegate {
     }
 
     private func referencePhoto() -> Data? {
-        guard let frame = arSession.currentFrame else { return nil }
-        let image = CIImage(cvPixelBuffer: frame.capturedImage)
-        let context = CIContext()
-        guard let cg = context.createCGImage(image, from: image.extent) else { return nil }
-        return UIImage(cgImage: cg, scale: 1, orientation: .right).jpegData(compressionQuality: 0.65)
+        let cg: CGImage? = {
+            guard let frame = arSession.currentFrame else { return nil }
+            let image = CIImage(cvPixelBuffer: frame.capturedImage)
+            return CIContext().createCGImage(image, from: image.extent)
+        }()
+        return cg.flatMap { UIImage(cgImage: $0, scale: 1, orientation: .right).jpegData(compressionQuality: 0.65) }
     }
 
     private static func components(_ room: CapturedRoom) -> [RoomComponent] {
@@ -392,7 +422,7 @@ final class RoomSession: NSObject, @preconcurrency ARSessionDelegate {
     private static func confidenceName(_ confidence: CapturedRoom.Confidence) -> String {
         switch confidence { case .high: "High"; case .medium: "Medium"; case .low: "Low"; @unknown default: "Unknown" }
     }
-    private static func trackingExplanation(_ state: ARCamera.TrackingState) -> String {
+    nonisolated fileprivate static func trackingExplanation(_ state: ARCamera.TrackingState) -> String {
         switch state {
         case .normal: "Tracking available."
         case .notAvailable: "Camera tracking is unavailable."
@@ -405,6 +435,177 @@ final class RoomSession: NSObject, @preconcurrency ARSessionDelegate {
             @unknown default: "Hold the phone steady while tracking recovers."
             }
         }
+    }
+}
+
+nonisolated struct RoomFrameAdmission: Sendable, Equatable {
+    var epoch: UInt64 = 0
+    var inFlight = false
+    var inFlightEpoch: UInt64 = 0
+    var lastTimestamp = -Double.infinity
+    var armed = false
+    var collectMeshes = false
+
+    mutating func disarm() -> UInt64 {
+        epoch += 1
+        inFlight = false
+        inFlightEpoch = 0
+        lastTimestamp = -.infinity
+        armed = false
+        collectMeshes = false
+        return epoch
+    }
+
+    mutating func arm(collectMeshes: Bool) -> UInt64 {
+        epoch += 1
+        inFlight = false
+        inFlightEpoch = 0
+        lastTimestamp = -.infinity
+        armed = true
+        self.collectMeshes = collectMeshes
+        return epoch
+    }
+
+    mutating func beginFrame(timestamp: TimeInterval, interval: TimeInterval = 0.12) -> UInt64? {
+        guard armed, !inFlight, timestamp - lastTimestamp >= interval else { return nil }
+        inFlight = true
+        inFlightEpoch = epoch
+        lastTimestamp = timestamp
+        return epoch
+    }
+
+    mutating func markIdle(epoch: UInt64) {
+        guard inFlight, inFlightEpoch == epoch else { return }
+        inFlight = false
+    }
+}
+
+nonisolated private struct RoomFrameSample: Sendable {
+    var epoch: UInt64
+    var timestamp: TimeInterval
+    var tracked: Bool
+    var trackingExplanation: String
+    var pose: SpatialTransform
+    var evidence: DepthFrameEvidence?
+}
+
+/// Weak owner box so sink handlers can be immutable `let`s after `RoomSession` init.
+nonisolated private final class RoomSessionOwner: @unchecked Sendable {
+    weak var session: RoomSession?
+}
+
+/// ARKit callbacks run on `queue`. `admission` is only mutated on that queue. Handlers are immutable after init.
+nonisolated private final class RoomSessionSink: NSObject, ARSessionDelegate, @unchecked Sendable {
+    let queue: DispatchQueue
+    private let onFrame: @Sendable (RoomFrameSample) -> Void
+    private let onMeshes: @Sendable ([RoomMeshPatch], UInt64) -> Void
+    private let onRemoved: @Sendable ([UUID], UInt64) -> Void
+    private let onFailure: @Sendable (String, UInt64) -> Void
+    private let onInterrupt: @Sendable (UInt64) -> Void
+    private var admission = RoomFrameAdmission()
+
+    init(
+        queue: DispatchQueue,
+        onFrame: @escaping @Sendable (RoomFrameSample) -> Void,
+        onMeshes: @escaping @Sendable ([RoomMeshPatch], UInt64) -> Void,
+        onRemoved: @escaping @Sendable ([UUID], UInt64) -> Void,
+        onFailure: @escaping @Sendable (String, UInt64) -> Void,
+        onInterrupt: @escaping @Sendable (UInt64) -> Void
+    ) {
+        self.queue = queue
+        self.onFrame = onFrame
+        self.onMeshes = onMeshes
+        self.onRemoved = onRemoved
+        self.onFailure = onFailure
+        self.onInterrupt = onInterrupt
+        super.init()
+    }
+
+    func arm(collectMeshes: Bool) -> UInt64 {
+        queue.sync { admission.arm(collectMeshes: collectMeshes) }
+    }
+
+    func disarm() -> UInt64 {
+        queue.sync { admission.disarm() }
+    }
+
+    func markIdle(epoch: UInt64) {
+        queue.async { self.admission.markIdle(epoch: epoch) }
+    }
+
+    func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        guard let epoch = admission.beginFrame(timestamp: frame.timestamp) else { return }
+        let timestamp = frame.timestamp
+        let tracked: Bool
+        if case .normal = frame.camera.trackingState { tracked = true } else { tracked = false }
+        let explanation = RoomSession.trackingExplanation(frame.camera.trackingState)
+        let pose = SpatialTransform(frame.camera.transform)
+        let capture = DepthProcessing.capture(frame)
+        let deliver = onFrame
+        Task.detached {
+            let evidence = capture.map(DepthProcessing.finish)
+            deliver(RoomFrameSample(epoch: epoch, timestamp: timestamp, tracked: tracked, trackingExplanation: explanation, pose: pose, evidence: evidence))
+        }
+    }
+
+    func session(_ session: ARSession, didAdd anchors: [ARAnchor]) { deliverMeshes(anchors) }
+    func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) { deliverMeshes(anchors) }
+    func session(_ session: ARSession, didRemove anchors: [ARAnchor]) {
+        guard admission.collectMeshes else { return }
+        onRemoved(anchors.map(\.identifier), admission.epoch)
+    }
+    func session(_ session: ARSession, didFailWithError error: Error) {
+        onFailure(error.localizedDescription, admission.epoch)
+    }
+    func sessionWasInterrupted(_ session: ARSession) { onInterrupt(admission.epoch) }
+
+    private func deliverMeshes(_ anchors: [ARAnchor]) {
+        guard admission.collectMeshes else { return }
+        let epoch = admission.epoch
+        let patches = anchors.compactMap { RoomMeshPatch(meshAnchor: $0 as? ARMeshAnchor) }
+        guard !patches.isEmpty else { return }
+        onMeshes(patches, epoch)
+    }
+}
+
+extension RoomMeshPatch {
+    nonisolated fileprivate init?(meshAnchor: ARMeshAnchor?) {
+        guard let anchor = meshAnchor else { return nil }
+        let geometry = anchor.geometry
+        guard geometry.vertices.count > 0, geometry.faces.primitiveType == .triangle else { return nil }
+        self.init(id: anchor.identifier, transform: SpatialTransform(anchor.transform), vertices: Self.copyVertices(geometry.vertices),
+                  triangleIndices: Self.copyIndices(geometry.faces), classifications: geometry.classification.map(Self.copyBytes) ?? [],
+                  observedAt: .now)
+        if !isValid { return nil }
+    }
+
+    nonisolated private static func copyVertices(_ source: ARGeometrySource) -> [SpatialVector] {
+        let count = source.count, stride = source.stride, offset = source.offset, base = source.buffer.contents()
+        var vertices = [SpatialVector](repeating: SpatialVector(x: 0, y: 0, z: 0), count: count)
+        vertices.withUnsafeMutableBufferPointer { dest in
+            for index in 0..<count {
+                let floats = base.advanced(by: offset + index * stride).assumingMemoryBound(to: Float.self)
+                dest[index] = SpatialVector(x: floats[0], y: floats[1], z: floats[2])
+            }
+        }
+        return vertices
+    }
+
+    nonisolated private static func copyIndices(_ faces: ARGeometryElement) -> [UInt32] {
+        let count = faces.count * faces.indexCountPerPrimitive
+        let base = faces.buffer.contents()
+        if faces.bytesPerIndex == 4 {
+            return Array(UnsafeBufferPointer(start: base.assumingMemoryBound(to: UInt32.self), count: count))
+        }
+        return (0..<count).map { UInt32(base.advanced(by: $0 * faces.bytesPerIndex).load(as: UInt16.self)) }
+    }
+
+    nonisolated private static func copyBytes(_ source: ARGeometrySource) -> [UInt8] {
+        let count = source.count, stride = source.stride, offset = source.offset, base = source.buffer.contents()
+        if stride == 1, offset == 0 {
+            return Array(UnsafeBufferPointer(start: base.assumingMemoryBound(to: UInt8.self), count: count))
+        }
+        return (0..<count).map { base.advanced(by: offset + $0 * stride).load(as: UInt8.self) }
     }
 }
 
