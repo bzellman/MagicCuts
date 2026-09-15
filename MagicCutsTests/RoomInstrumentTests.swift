@@ -379,4 +379,59 @@ nonisolated struct RoomMeshEditingTests {
         let moved = SpatialVector(x: 1, y: 1.2, z: 1)
         #expect(layout.pose(viewpoint: .inside, interior: moved, yaw: 0, elevation: 0, zoom: 1).position == moved.simd)
     }
+
+    @Test func lidarCameraAndLocalizationSkipSceneReconstruction() {
+        #expect(!RoomSessionPurpose.measurement.usesSceneReconstruction)
+        #expect(!RoomSessionPurpose.localize.usesSceneReconstruction)
+        #expect(RoomSessionPurpose.newRoom.usesSceneReconstruction)
+        #expect(RoomSessionPurpose.update.usesSceneReconstruction)
+        #expect(RoomSessionPurpose.measurement.isCaptureSupported(worldTracking: true, sceneDepth: true, mesh: false))
+        #expect(RoomSessionPurpose.localize.isCaptureSupported(worldTracking: true, sceneDepth: true, mesh: false))
+        #expect(!RoomSessionPurpose.newRoom.isCaptureSupported(worldTracking: true, sceneDepth: true, mesh: false))
+        #expect(!RoomSessionPurpose.update.isCaptureSupported(worldTracking: true, sceneDepth: true, mesh: false))
+        #expect(RoomSessionPurpose.newRoom.isCaptureSupported(worldTracking: true, sceneDepth: true, mesh: true))
+        #expect(!RoomSessionPurpose.measurement.isCaptureSupported(worldTracking: true, sceneDepth: false, mesh: true))
+        #expect(!RoomSessionPurpose.measurement.isCaptureSupported(worldTracking: false, sceneDepth: true, mesh: true))
+    }
+
+    @Test func depthFinishFitsACopiedPatchWithoutHoldingAnARFrame() throws {
+        let patch = (0..<12).flatMap { x in (0..<12).map { z in SpatialVector(x: Float(x) / 10, y: 1, z: Float(z) / 10) } }
+        let capture = DepthCapture(
+            image: DepthEvidence(width: 1, height: 1, meters: [1], confidence: [2], minimum: 0.25, maximum: 5, cameraPose: SpatialTransform()),
+            centerPoint: SpatialVector(x: 0.5, y: 1, z: 0.5),
+            centerConfidence: 2,
+            patch: patch
+        )
+        let evidence = DepthProcessing.finish(capture)
+        let fit = try #require(evidence.fit)
+        #expect(abs(fit.slopeDegrees) < 0.01)
+        #expect(evidence.centerConfidence == 2)
+        let tooSmall = DepthCapture(image: capture.image, centerPoint: nil, centerConfidence: nil, patch: Array(patch.prefix(10)))
+        #expect(DepthProcessing.finish(tooSmall).fit == nil)
+    }
+
+    @Test func frameAdmissionRejectsDisarmedAndStaleIdleSignals() {
+        var admission = RoomFrameAdmission()
+        #expect(admission.beginFrame(timestamp: 1) == nil)
+        let first = admission.arm(collectMeshes: false)
+        #expect(admission.collectMeshes == false)
+        #expect(admission.beginFrame(timestamp: 1) == first)
+        #expect(admission.beginFrame(timestamp: 1.05) == nil)
+        admission.markIdle(epoch: first - 1)
+        #expect(admission.inFlight)
+        #expect(admission.beginFrame(timestamp: 2) == nil)
+        admission.markIdle(epoch: first)
+        #expect(!admission.inFlight)
+        #expect(admission.beginFrame(timestamp: 2) == first)
+        let disarmed = admission.disarm()
+        #expect(disarmed != first)
+        #expect(admission.beginFrame(timestamp: 3) == nil)
+        admission.markIdle(epoch: first)
+        let resumed = admission.arm(collectMeshes: true)
+        #expect(resumed != first)
+        #expect(admission.collectMeshes)
+        admission.markIdle(epoch: first)
+        #expect(admission.beginFrame(timestamp: 4) == resumed)
+        #expect(admission.inFlight)
+    }
 }

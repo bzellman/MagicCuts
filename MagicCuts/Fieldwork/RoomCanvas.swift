@@ -366,6 +366,8 @@ struct RoomCameraView: UIViewRepresentable {
     func makeUIView(context: Context) -> ARView {
         let view = ARView(frame: .zero, cameraMode: .ar, automaticallyConfigureSession: false)
         view.session = session.arSession
+        view.renderOptions.insert(.disableMotionBlur)
+        view.renderOptions.insert(.disableCameraGrain)
         view.scene.addAnchor(context.coordinator.anchor)
         return view
     }
